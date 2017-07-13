@@ -6,6 +6,37 @@ function find_element_fromtext(text){
 
 }
 
+
+function __savefile(fs){
+    console.log("Opened file sysetm: " + fs.name);
+}
+
+function __error_savefile(){
+    switch(e.code){
+        case FileError.QUOTA_EXCEEDED_ERR:
+
+            break;
+            
+        case FileError.NOT_FOUND_ERR:
+
+            break;
+        case FileError.SECURITY_ERR:
+
+            break;
+        case FileError.INVALID_MODIFICATION_ERR:
+
+            break;
+        case FileError.INVALID_STATE_ERR:
+
+            break;
+        default:
+    };
+}
+
+function savefile(text){
+    window.requestFileSystem( window.PERISTENT, 1024, __savefile, __error_savefile );
+}
+
 function find_element_fromcurpos(){
     var setpos_x = window.pageXOffset + curpos.x;
     var setpos_y = window.pageYOffset + curpos.y;
