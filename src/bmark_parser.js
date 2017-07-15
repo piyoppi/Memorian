@@ -3,7 +3,7 @@
 export default class bmark_parser{
     
     constructor(){
-        this._rules = {
+        this._selection_rules = {
             div: {
                 rules: [ { method: this.keep_len, param: {length: 100}, conbination: "or" } ],
             },
@@ -11,9 +11,18 @@ export default class bmark_parser{
                 rules: [ { method: this.keep_len, param: {length: 100}, conbination: "or" } ],
             }
         }
+
+        this._element_rules = [
+            elem: ["h1", "h2", "h3", "h4", "h5", "h6", "h7"],
+            method: this.is_near_element
+        ]
     }
 
     parse(selection_elem){
+        this.get_selection_element(selection_elem)
+    }
+
+    get_selection_element(selection_elem){
         if( this.chk_element(selection_elem) ){
             return selection_elem;
         }
@@ -23,8 +32,8 @@ export default class bmark_parser{
     }
 
     chk_element(elem){
-        let rule = this._rules[elem.tagName];
-        if( !rule ) rule = this._rules.other;
+        let rule = this._selection_rules[elem.tagName];
+        if( !rule ) rule = this._selection_rules.other;
 
         let is_valid = false;
         rule.rules.forEach( (val) => { 
