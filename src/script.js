@@ -18,7 +18,9 @@ function find_element_fromcurpos(){
     var setpos_y = window.pageYOffset + curpos.y;
     let obj = document.elementFromPoint(curpos.x, curpos.y);
     let retobj = bmark_parser.parse( obj );
+    let rettags = bmark_parser.get_information_tagsearch( obj );
     console.log( retobj );
+    console.log( rettags );
     return retobj;
 }
 

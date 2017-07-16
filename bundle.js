@@ -14,7 +14,7 @@ var bmark_parser = function () {
     function bmark_parser() {
         _classCallCheck(this, bmark_parser);
 
-        this._rules = {
+        this._selection_rules = {
             div: {
                 rules: [{ method: this.keep_len, param: { length: 100 }, conbination: "or" }]
             },
@@ -22,28 +22,85 @@ var bmark_parser = function () {
                 rules: [{ method: this.keep_len, param: { length: 100 }, conbination: "or" }]
             }
         };
+
+        this._element_rules = [{ elem: ["h1"], method: this.is_near_element, params: null }, { elem: ["h2"], method: this.is_near_element, params: null }, { elem: ["h3"], method: this.is_near_element, params: null }, { elem: ["h4"], method: this.is_near_element, params: null }, { elem: ["h5"], method: this.is_near_element, params: null }, { elem: ["h6"], method: this.is_near_element, params: null }];
+        this._element_checklist = [];
     }
 
     _createClass(bmark_parser, [{
         key: "parse",
         value: function parse(selection_elem) {
-            if (this.chk_element(selection_elem)) {
+            return this.get_selection_element(selection_elem);
+        }
+
+        //----------------------------------------------------------------------------
+        //      Find tags
+        //----------------------------------------------------------------------------
+
+    }, {
+        key: "get_information_tagsearch",
+        value: function get_information_tagsearch(selection_elem) {
+            this._init_chk_element();
+            this._chk_element(selection_elem);
+            return this._element_rules;
+        }
+    }, {
+        key: "_init_chk_element",
+        value: function _init_chk_element() {
+            var _this = this;
+
+            this._element_rules.forEach(function (rule) {
+                _this._element_checklist.push(rule.elem);
+                rule.buffers = {};
+                rule.elements = [];
+            });
+        }
+    }, {
+        key: "_chk_findelements_rule",
+        value: function _chk_findelements_rule(selection_elem, chk_elem, rule) {
+            rule.method.call(this, selection_elem, chk_elem, rule);
+        }
+    }, {
+        key: "_chk_element",
+        value: function _chk_element(selection_elem) {
+            var _this2 = this;
+
+            this._element_rules.forEach(function (rule) {
+                rule.elem.forEach(function (tagstr) {
+                    var tagList = document.getElementsByTagName(tagstr);
+                    for (var i = 0; i < tagList.length; i++) {
+                        var chk_elem = tagList[i];
+                        _this2._chk_findelements_rule(selection_elem, chk_elem, rule);
+                    }
+                });
+            });
+            return false;
+        }
+
+        //----------------------------------------------------------------------------
+        //      Get selection element
+        //----------------------------------------------------------------------------
+
+    }, {
+        key: "get_selection_element",
+        value: function get_selection_element(selection_elem) {
+            if (this._chk_selection_rules(selection_elem)) {
                 return selection_elem;
             } else {
                 return this.parse(selection_elem.parentNode);
             }
         }
     }, {
-        key: "chk_element",
-        value: function chk_element(elem) {
-            var _this = this;
+        key: "_chk_selection_rules",
+        value: function _chk_selection_rules(elem) {
+            var _this3 = this;
 
-            var rule = this._rules[elem.tagName];
-            if (!rule) rule = this._rules.other;
+            var rule = this._selection_rules[elem.tagName];
+            if (!rule) rule = this._selection_rules.other;
 
             var is_valid = false;
             rule.rules.forEach(function (val) {
-                var buf_result = val.method.call(_this, elem, val.param);
+                var buf_result = val.method.call(_this3, elem, val.param);
                 if (val.conbination === "or" && buf_result) {
                     is_valid = true;return;
                 }
@@ -60,6 +117,24 @@ var bmark_parser = function () {
         key: "keep_len",
         value: function keep_len(elem, param) {
             return elem.innerHTML.length > param.length;
+        }
+    }, {
+        key: "is_near_element",
+        value: function is_near_element(selection_elem, chk_elem, param) {
+            var bRect_selectionelem = selection_elem.getBoundingClientRect();
+            var bRect_chk_elem = chk_elem.getBoundingClientRect();
+            var diff_distance = bRect_selectionelem.top - bRect_chk_elem.top;
+            if (diff_distance < 0) return;
+            if (bRect_chk_elem.width === 0) return;
+            if (bRect_chk_elem.height === 0) return;
+            if (!param.buffers.dist) {
+                param.elements.push(chk_elem);
+                param.buffers.dist = diff_distance;
+                console.log(chk_elem.tagName + "," + param.buffers.dist);
+            } else if (param.buffers.dist > diff_distance) {
+                param.elements[0] = chk_elem;
+                param.buffers.dist = diff_distance;
+            }
         }
     }]);
 
@@ -95,7 +170,9 @@ function find_element_fromcurpos() {
     var setpos_y = window.pageYOffset + curpos.y;
     var obj = document.elementFromPoint(curpos.x, curpos.y);
     var retobj = bmark_parser.parse(obj);
+    var rettags = bmark_parser.get_information_tagsearch(obj);
     console.log(retobj);
+    console.log(rettags);
     return retobj;
 }
 
