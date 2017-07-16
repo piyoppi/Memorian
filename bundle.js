@@ -27,17 +27,12 @@ var bmark_parser = function () {
         this._element_checklist = [];
     }
 
+    //----------------------------------------------------------------------------
+    //      Find tags
+    //----------------------------------------------------------------------------
+
+
     _createClass(bmark_parser, [{
-        key: "parse",
-        value: function parse(selection_elem) {
-            return this.get_selection_element(selection_elem);
-        }
-
-        //----------------------------------------------------------------------------
-        //      Find tags
-        //----------------------------------------------------------------------------
-
-    }, {
         key: "get_information_tagsearch",
         value: function get_information_tagsearch(selection_elem) {
             this._init_chk_element();
@@ -82,12 +77,17 @@ var bmark_parser = function () {
         //----------------------------------------------------------------------------
 
     }, {
+        key: "parse",
+        value: function parse(selection_elem) {
+            return this.get_selection_element(selection_elem);
+        }
+    }, {
         key: "get_selection_element",
         value: function get_selection_element(selection_elem) {
             if (this._chk_selection_rules(selection_elem)) {
                 return selection_elem;
             } else {
-                return this.parse(selection_elem.parentNode);
+                return this.get_selection_element(selection_elem.parentNode);
             }
         }
     }, {
@@ -169,11 +169,16 @@ function find_element_fromcurpos() {
     var setpos_x = window.pageXOffset + curpos.x;
     var setpos_y = window.pageYOffset + curpos.y;
     var obj = document.elementFromPoint(curpos.x, curpos.y);
-    var retobj = bmark_parser.parse(obj);
-    var rettags = bmark_parser.get_information_tagsearch(obj);
-    console.log(retobj);
-    console.log(rettags);
-    return retobj;
+    var block_elem = bmark_parser.parse(obj);
+    var additional_info = bmark_parser.get_information_tagsearch(block_elem);
+    console.log(block_elem);
+    console.log(additional_info);
+    return {
+        block: block_elem.innerHTML,
+        additional_info: additional_info,
+        title: document.title,
+        url: window.location.href
+    };
 }
 
 function handler_mousemove(e) {
@@ -185,10 +190,9 @@ document.addEventListener("contextmenu", handler_mousemove, false);
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
     if (request.id = "element_memo") {
-        console.log(find_element_fromcurpos().innerHTML);
-        sendResponse({ selection_elem: find_element_fromcurpos().innerHTML });
+        sendResponse(find_element_fromcurpos());
     } else {
-        sendResponse({ selection_text: window.getSelection() });
+        sendResponse();
     }
 });
 

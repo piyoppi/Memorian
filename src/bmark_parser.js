@@ -23,9 +23,6 @@ export default class bmark_parser{
         this._element_checklist = [];
     }
 
-    parse(selection_elem){
-        return this.get_selection_element(selection_elem);
-    }
 
     //----------------------------------------------------------------------------
     //      Find tags
@@ -64,13 +61,17 @@ export default class bmark_parser{
     //----------------------------------------------------------------------------
     //      Get selection element
     //----------------------------------------------------------------------------
+    
+    parse(selection_elem){
+        return this.get_selection_element(selection_elem);
+    }
 
     get_selection_element(selection_elem){
         if( this._chk_selection_rules(selection_elem) ){
             return selection_elem;
         }
         else{
-            return this.parse(selection_elem.parentNode);
+            return this.get_selection_element(selection_elem.parentNode);
         }
     }
 
