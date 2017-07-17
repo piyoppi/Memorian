@@ -43,4 +43,6 @@ request.onupgradeneeded = (e) => {
     console.log("upgrade!!");
 };
 
-
+function get_new_bookmarks(){
+    alert("hoge");
+}

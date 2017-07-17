@@ -5,15 +5,20 @@
     "content_scripts": [
         {
             "matches": [ "http://*/*", "https://*/*" ],
-            "js": ["script.bundle.js"],
-            "css": ["style.css"]
+            "js": ["js/script.bundle.js"],
+            "css": ["css/style.css"]
         }
     ],
     "icons": {
         "16": "icon_16.png"
     },
+    "browser_action": {
+        "default_icon": "icon_16.png",
+        "default_title": "sample",
+        "default_popup": "html/popup.html"
+    },
     "permissions": ["tabs", "contextMenus"],
     "background": {
-        "scripts": ["bg.bundle.js"]
+        "scripts": ["js/bg.bundle.js"]
     }
 }

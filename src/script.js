@@ -1,7 +1,6 @@
 import selection from './selection.js'
 import parser from './bmark_parser.js'
 
-require('vue');
 
 var selectbox = new selection(document.body);
 var bmark_parser = new parser(document.body);

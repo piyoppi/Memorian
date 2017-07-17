@@ -1,14 +1,21 @@
 module.exports = {
     entry: {
         script: './src/script.js',
-        bg: './src/bg.js'
+        bg: './src/bg.js',
+        popup: './src/popup.js'
     },
-    output: {filename: 'dist/[name].bundle.js'},
+    output: {filename: 'dist/js/[name].bundle.js'},
     module: {
-        loaders: [{
-            test: /\.jsx?$/, 
-            exclude: /node_modules/,
-            loader: 'babel-loader' 
-        }]
+        loaders: [
+            {
+                test: /\.jsx?$/, 
+                exclude: /node_modules/,
+                loader: 'babel-loader' 
+            },
+            {
+                test: /\.vue$/,
+                loader: 'vue-loader'
+            },
+        ]
     }
 }
