@@ -12,6 +12,6 @@ Session.vim
 tags
 
 node_modules/
-dist/*
+dist/js/*
 !.gitkeep
 

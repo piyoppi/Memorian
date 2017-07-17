@@ -1,0 +1,19 @@
+{
+    "manifest_version": 2,
+    "name": "Test Extention",
+    "version": "0.1",
+    "content_scripts": [
+        {
+            "matches": [ "http://*/*", "https://*/*" ],
+            "js": ["script.bundle.js"],
+            "css": ["style.css"]
+        }
+    ],
+    "icons": {
+        "16": "icon_16.png"
+    },
+    "permissions": ["tabs", "contextMenus"],
+    "background": {
+        "scripts": ["bg.bundle.js"]
+    }
+}
