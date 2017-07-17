@@ -30,6 +30,7 @@ export default class bmark_parser{
     get_information_tagsearch(selection_elem){
         this._init_chk_element();
         this._chk_element(selection_elem);
+
         return this._element_rules;
     }
 
