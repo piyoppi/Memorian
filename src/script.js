@@ -34,7 +34,7 @@ function find_element_fromcurpos(){
     });
 
     return {
-                block: block_elem.innerHTML,
+                block: block_elem.innerText,
                 additional_info: send_additional_info,
                 title: document.title,
                 url: window.location.href,

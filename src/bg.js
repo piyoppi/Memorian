@@ -43,6 +43,36 @@ request.onupgradeneeded = (e) => {
     console.log("upgrade!!");
 };
 
-function get_new_bookmarks(){
-    alert("hoge");
+function get_new_bookmarks(callback){
+    let transaction = db.transaction(["bookmarks"], "readwrite");
+    let objectStore = transaction.objectStore("bookmarks");
+    let data = [];
+    console.log("start");
+    objectStore.openCursor().onsuccess = function(e){
+        var cursor = e.target.result;
+        if( cursor ){
+            console.log(cursor.key);
+            data.push( {num: cursor.key, data: cursor.value} );
+            cursor.continue();
+        }
+        else{
+            console.log("end");
+            callback(data);
+        }
+    }
 }
+
+function retValue(obj){
+    chrome.runtime.sendMessage(obj, ()=>{});
+}
+
+chrome.runtime.onMessage.addListener(
+        function(request, sender, sendResponse) {
+            if( request.id === "get_bookmarks" ){
+                get_new_bookmarks( (e)=>{ console.log(e); retValue({data: e, key: request.key}) });
+            }
+            else{
+                sendResponse("none");
+            }
+        });
+
