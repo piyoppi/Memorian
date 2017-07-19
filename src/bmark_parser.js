@@ -5,10 +5,10 @@ export default class bmark_parser{
     constructor(){
         this._selection_rules = {
             div: {
-                rules: [ { method: this.keep_len, param: {length: 100}, conbination: "or" } ],
+                rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],
             },
             other: {
-                rules: [ { method: this.keep_len, param: {length: 100}, conbination: "or" } ],
+                rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],
             }
         }
 
@@ -92,7 +92,7 @@ export default class bmark_parser{
     //----------------------------------------------------------------------------
     //      Rules
     //----------------------------------------------------------------------------
-    keep_len(elem, param){ return (elem.innerHTML.length > param.length) }
+    keep_len(elem, param){ return (elem.innerText.length > param.length) }
 
     is_near_element(selection_elem, chk_elem, param){ 
         let bRect_selectionelem = selection_elem.getBoundingClientRect();

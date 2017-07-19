@@ -13,7 +13,11 @@ function mnu_ElementMemo_click(info, tab){
         console.log( response );
         transaction = db.transaction(["bookmarks"], "readwrite");
         var objectStore = transaction.objectStore("bookmarks");
-        var data = { block_html: response.block, url: response.url, title: response.title, addinfo_tostr: response.send_additional_info_tostr };
+        var data = { block: response.block,
+                     url: response.url,
+                     title: response.title,
+                     header_tag_text: response.header_tag_text
+        };
         var request = objectStore.add(data);
         request.onsuccess = function(e) { console.log("success!!!"); };
     });

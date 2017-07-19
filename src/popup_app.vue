@@ -10,9 +10,11 @@ ul{
     <ul>
         <li v-for="item in bookmark_list">
             <a :href="item.data.url">{{ item.data.title }}</a>
+            <div v-htag="item.data.header_tag_text">
+            </div>
             <pre>
                 <code v-highlight>
-                    {{ item.data.block_html }}
+                    {{ item.data.block }}
                 </code>
             </pre>
         </li>
@@ -42,13 +44,19 @@ export default {
             bind: function(el, binding){
                 if (binding.value) { el.innerHTML = binding.value; }
                 hljs.highlightBlock(el);
-                console.log("hogehoge");
             },
             componentUpdated: function(el, binding){
                 if (binding.value) { el.innerHTML = binding.value; }
                 hljs.highlightBlock(el);
-                console.log("fugafuga");
             }
+        },
+        htag: {
+            bind: function(el, binding){
+                if( !binding.value ) return;
+                let tags = binding.value.split(",");
+                el.innerHTML = "";
+                tags.forEach( val=>{ if( val !== "" ){ el.innerHTML += ((el.innerHTML === "") ? "" : " > ") + val;}} );
+            },
         }
     }
 }
