@@ -28,10 +28,11 @@ function find_element_fromcurpos(){
     additional_info.forEach( (info) => {
         if( info.elements.length > 0 ){
             let set_innertext = info.elements[0].innerText;
-            send_additional_info[info.elem[0]] = { text: set_innertext}
-            header_tag_text += set_innertext + ",";
+            send_additional_info[info.elem[0]] = {text: set_innertext}
+            header_tag_text += set_innertext + "<,>";
         }
     });
+    header_tag_text = header_tag_text.substr(0, header_tag_text.length-3);
 
     return {
                 block: block_elem.innerText,

@@ -16,12 +16,12 @@ export default class bmark_parser{
         }
 
         this._element_rules = [
-            {elem: ["h1"], method: this.is_near_element, params: null},
-            {elem: ["h2"], method: this.is_near_element, params: null},
-            {elem: ["h3"], method: this.is_near_element, params: null},
-            {elem: ["h4"], method: this.is_near_element, params: null},
-            {elem: ["h5"], method: this.is_near_element, params: null},
-            {elem: ["h6"], method: this.is_near_element, params: null},
+            {elem: ["h1"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
+            {elem: ["h2"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
+            {elem: ["h3"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
+            {elem: ["h4"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
+            {elem: ["h5"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
+            {elem: ["h6"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
         ];
         this._element_checklist = [];
     }
@@ -40,13 +40,17 @@ export default class bmark_parser{
     _init_chk_element(){
         this._element_rules.forEach( (rule) => {
             this._element_checklist.push(rule.elem);
-            rule.buffers = {};
-            rule.elements=[];
+            this._clear_chk_element(rule);
         });
     }
 
+    _clear_chk_element(rule){
+        rule.buffers = {};
+        rule.elements=[];
+    }
+
     _chk_findelements_rule( selection_elem, chk_elem, rule ){
-        rule.method.call(this, selection_elem, chk_elem, rule);
+        rule.methods.forEach( method=>{ method.call(this, selection_elem, chk_elem, rule); });
     }
 
     _chk_element(selection_elem){
@@ -96,6 +100,22 @@ export default class bmark_parser{
     //      Rules
     //----------------------------------------------------------------------------
     keep_len(elem, param){ return (elem.innerText.length > param.length) }
+
+    is_parentnode_has_selection_elem(selection_elem, chk_elem, param){
+        if( chk_elem.parentNode.tagName === "body" ) return false;
+        let nodelist = chk_elem.parentNode.getElementsByTagName(selection_elem.tagName);
+        let result = false;
+        for( var i=0; i<nodelist.length; i++ ){
+            let elem = nodelist[i];
+            if( selection_elem.innerHTML === elem.innerHTML ){
+                result = true;
+            }
+        }
+        if( result === false ){
+            if( !this.is_parentnode_has_selection_elem(selection_elem, chk_elem.parentNode, param ) ) this._clear_chk_element(param);
+        }
+        return result;
+    }
 
     is_near_element(selection_elem, chk_elem, param){ 
         let bRect_selectionelem = selection_elem.getBoundingClientRect();

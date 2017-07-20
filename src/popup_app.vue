@@ -5,13 +5,31 @@ ul{
     width: 400px;
 }
 .htag_list{
-    list-style: none;
+    list-style-type: none;
 }
 .htag_list li{
     display: inline-block; 
-    list-style-image: url("img/pankuzu.png");
 }
+
+.htag_list li:before{
+    content: " ";
+    width: 10px;
+    height: 10px;
+    background-position: center;
+    background-repeat: none;
+    background-image: url("../img/pankuzu.png"); 
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.htag_list li:first-child:before{
+    width: 0;
+    height: 0;
+    background-image: none; 
+}
+
 </style>
+
 
 <template>
     <ul>
@@ -49,14 +67,12 @@ export default {
             this.bookmark_list.forEach( val => {
                 let header_tag = val.header_tag_text
                 console.log(val);
-                if(header_tag) val.header_tags = header_tag.split(",");
+                if(header_tag) val.header_tags = header_tag.split("<,>");
             });
-            console.log(this.bookmark_list);
         }); 
     },
     methods: {
         delete_item: function(item, index){
-            console.log(item);
             bmark.delete_item(item.key);
             this.bookmark_list.splice(index, 1);
         }
