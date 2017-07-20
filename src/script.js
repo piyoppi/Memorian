@@ -27,7 +27,7 @@ function find_element_fromcurpos(){
     let header_tag_text = "";
     additional_info.forEach( (info) => {
         if( info.elements.length > 0 ){
-            let set_innertext = info.elements[0].innerHTML;
+            let set_innertext = info.elements[0].innerText;
             send_additional_info[info.elem[0]] = { text: set_innertext}
             header_tag_text += set_innertext + ",";
         }

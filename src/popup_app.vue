@@ -9,6 +9,7 @@ ul{
 }
 .htag_list li{
     display: inline-block; 
+    list-style-image: url("img/pankuzu.png");
 }
 </style>
 
