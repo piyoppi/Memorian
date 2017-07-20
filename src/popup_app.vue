@@ -4,20 +4,27 @@
 ul{
     width: 400px;
 }
+.htag_list{
+    list-style: none;
+}
+.htag_list li{
+    display: inline-block; 
+}
 </style>
 
 <template>
     <ul>
-        <li v-for="item in bookmark_list">
-            <a :href="item.data.url">{{ item.data.title }}</a>
-            <ul>
-                <li v-for="htag in item.data.header_tags">{{ htag }}</li>
+        <li v-for="(item, index) in bookmark_list">
+            <a :href="item.url">{{ item.title }}</a>
+            <ul class="htag_list">
+                <li v-for="htag in item.header_tags">{{ htag }}</li>
             </ul>
             <pre>
                 <code v-highlight>
-                    {{ item.data.block }}
+                    {{ item.block }}
                 </code>
             </pre>
+            <a v-on:click="delete_item(item, index)" href="#">削除</a>
         </li>
     </ul>
 </template>
@@ -39,15 +46,19 @@ export default {
         bmark.get_bookmarks_request((e) => {
             this.bookmark_list = e;
             this.bookmark_list.forEach( val => {
-                let header_tag = val.data.header_tag_text
-                console.log( val);
-                if(header_tag) val.data.header_tags = header_tag.split(",");
+                let header_tag = val.header_tag_text
+                console.log(val);
+                if(header_tag) val.header_tags = header_tag.split(",");
             });
             console.log(this.bookmark_list);
         }); 
     },
     methods: {
-
+        delete_item: function(item, index){
+            console.log(item);
+            bmark.delete_item(item.key);
+            this.bookmark_list.splice(index, 1);
+        }
     },
     directives: {
         highlight: {

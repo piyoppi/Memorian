@@ -5,7 +5,10 @@ export default class bmark_parser{
     constructor(){
         this._selection_rules = {
             div: {
-                rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],
+                rules: [ { method: this.keep_len, param: {length: 20}, conbination: "or" } ],
+            },
+            code: {
+                rules: [ { method: this.keep_len, param: {length: 20}, conbination: "or" } ],
             },
             other: {
                 rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],

@@ -8,8 +8,8 @@ export default class popup_controller{
 
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
+                console.log(request);
                 if( request.key in this._callback_buffer ){
-                    console.log("get" + request.key);
                     this._callback_buffer[request.key](request.data);
                     delete this._callback_buffer[request.key];
                 }
@@ -25,6 +25,10 @@ export default class popup_controller{
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
         chrome.runtime.sendMessage({id: "get_bookmarks", key: key}, (e)=>{});
+    }
+
+    delete_item(key){
+        chrome.runtime.sendMessage({id: "remove_item", key: key}, (e)=>{});
     }
 
 }
