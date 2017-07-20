@@ -10,8 +10,9 @@ ul{
     <ul>
         <li v-for="item in bookmark_list">
             <a :href="item.data.url">{{ item.data.title }}</a>
-            <div v-htag="item.data.header_tag_text">
-            </div>
+            <ul>
+                <li v-for="htag in item.data.header_tags">{{ htag }}</li>
+            </ul>
             <pre>
                 <code v-highlight>
                     {{ item.data.block }}
@@ -29,15 +30,24 @@ import styles from 'highlight.js/styles/dark.css'
 let bmark = new GetBmark();
 
 export default {
-    data: {
-        bookmark_list: []
+    data: function(){
+        return{
+            bookmark_list: []
+        }
     },
     created: function(){
         bmark.get_bookmarks_request((e) => {
             this.bookmark_list = e;
+            this.bookmark_list.forEach( val => {
+                let header_tag = val.data.header_tag_text
+                console.log( val);
+                if(header_tag) val.data.header_tags = header_tag.split(",");
+            });
+            console.log(this.bookmark_list);
         }); 
     },
     methods: {
+
     },
     directives: {
         highlight: {
