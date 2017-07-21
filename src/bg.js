@@ -15,7 +15,8 @@ function mnu_ElementMemo_click(info, tab){
         var data = { block: response.block,
                      url: response.url,
                      title: response.title,
-                     header_tag_text: response.header_tag_text
+                     header_tag_text: response.header_tag_text,
+                     tags: response.tags
         };
         var request = objectStore.add(data);
         request.onsuccess = function(e) { };
