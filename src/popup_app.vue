@@ -34,9 +34,11 @@ ul{
 <template>
     <ul>
         <li v-for="(item, index) in bookmark_list">
-            <a :href="item.url">{{ item.title }}</a>
+            <a :href="item.url" v-on:click="jump_link(item)">{{ item.title }}</a>
             <ul class="htag_list">
-                <li v-for="htag in item.header_tags">{{ htag }}</li>
+                <li v-for="htag in item.tags">
+                    <a :href="item.url">{{ htag.text }}</a>
+                </li>
             </ul>
             <pre>
                 <code v-highlight>
@@ -75,6 +77,9 @@ export default {
         delete_item: function(item, index){
             bmark.delete_item(item.key);
             this.bookmark_list.splice(index, 1);
+        },
+        jump_link: function(item){
+            bmark.jump_link(item.url);
         }
     },
     directives: {

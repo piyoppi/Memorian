@@ -7,13 +7,6 @@ var bmark_parser = new parser(document.body);
 
 var curpos = {x: 0, y: 0};
 
-function select_area(){
-}
-
-function find_element_fromtext(text){
-
-}
-
 function find_element_fromcurpos(){
     let obj = document.elementFromPoint(curpos.x, curpos.y);
     let block_elem = bmark_parser.parse( obj );
@@ -25,7 +18,7 @@ function find_element_fromcurpos(){
         if( info.elements.length > 0 ){
             let elem = info.elements[0];
             let set_innertext = elem.innerText;
-            send_additional_info[info.elem[0]] = {text: set_innertext, id: elem.id};
+            send_additional_info[info.elem[0]] = {text: set_innertext, id: elem.id, class: elem.className};
             header_tag_text += set_innertext + "<,>";
         }
     });
@@ -45,17 +38,27 @@ function handler_mousemove(e){
     curpos.y = e.clientY;
 }
 
+function jump_link(url){
+    window.location.href = url;
+}
+
 document.addEventListener("contextmenu", handler_mousemove, false);
 
-chrome.runtime.onMessage.addListener(
-  function(request, sender, sendResponse) {
-      if( request.id = "element_memo" ){
-          sendResponse(find_element_fromcurpos());
-      }
-      else{
-          sendResponse();
-      }
-  }
-);
+chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
+    console.log(request);
+    switch( request.id ){
+        case "element_memo":
+            sendResponse(find_element_fromcurpos());
+            break;
+
+        case "jump_link":
+            jump_link(request.url);
+            break;
+
+        default:
+            sendResponse();
+    }
+});
+
 
 

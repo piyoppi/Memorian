@@ -77,6 +77,7 @@ function retValue(obj){
 
 chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
+            console.log(request);
             switch( request.id ){
                 case "get_bookmarks":
                     get_new_bookmarks( (e)=>{ console.log(e); retValue({data: e, key: request.key}) });
@@ -84,9 +85,11 @@ chrome.runtime.onMessage.addListener(
 
                 case "remove_item":
                     remove_bookmark(request.key);
+                    break;
 
                 default:
                     sendResponse("none");
+                    break;
 
             }
         });
