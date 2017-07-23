@@ -1,6 +1,6 @@
 
 
-<style>
+<style scoped>
 ul{
     width: 400px;
 }
@@ -40,11 +40,7 @@ ul{
                     <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
                 </li>
             </ul>
-            <pre>
-                <code v-highlight>
-                    {{ item.block }}
-                </code>
-            </pre>
+            <pre><code v-highlight>{{ item.block }}</code></pre>
             <a v-on:click="delete_item(item, index)" href="#">削除</a>
         </li>
     </ul>
@@ -53,7 +49,7 @@ ul{
 <script>
 import GetBmark from './get_bmark_controller.js'
 import hljs from 'highlight.js'
-import styles from 'highlight.js/styles/dark.css'
+import styles from 'highlight.js/styles/hybrid.css'
 
 let bmark = new GetBmark();
 
