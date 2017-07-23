@@ -1,3 +1,7 @@
+//window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+//window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+//window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
+import simpleSearcher from './simple_searcher.js'
 
 var db_version = 2.3;
 var db;
@@ -11,12 +15,16 @@ function contextMenu_Click(info, tab){
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
         transaction = db.transaction(["bookmarks"], "readwrite");
-        var objectStore = transaction.objectStore("bookmarks");
-        var data = { block: response.block,
+        let objectStore = transaction.objectStore("bookmarks");
+        let textForFinding = response.block + " " +
+                             response.header_tag_text + " " + 
+                             response.title;
+        let data = { block: response.block,
                      url: response.url,
                      title: response.title,
                      header_tag_text: response.header_tag_text,
-                     tags: response.tags
+                     tags: response.tags,
+                     text_for_finding: textForFinding.toLowerCase()
         };
         var request = objectStore.add(data);
         request.onsuccess = function(e) { };
@@ -34,9 +42,6 @@ chrome.contextMenus.create({
     onclick: mnu_ElementMemo_click
 });
 
-window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 
 var request = window.indexedDB.open("Bookmarkers", db_version);
 request.onsuccess = (e) => { db = e.target.result; }
@@ -46,7 +51,7 @@ request.onupgradeneeded = (e) => {
     var objectStore = db.createObjectStore("bookmarks", { autoIncrement: true });
 };
 
-function get_new_bookmarks(callback){
+function get_all_bookmarks(callback){
     let transaction = db.transaction(["bookmarks"], "readwrite");
     let objectStore = transaction.objectStore("bookmarks");
     let data = [];
@@ -65,7 +70,6 @@ function get_new_bookmarks(callback){
 }
 
 function remove_bookmark(key){
-    console.log("delete " + key);
     let transaction = db.transaction(["bookmarks"], "readwrite");
     let objectStore = transaction.objectStore("bookmarks");
     objectStore.delete(key);
@@ -75,15 +79,27 @@ function retValue(obj){
     chrome.runtime.sendMessage(obj, ()=>{});
 }
 
+function find(query, callback){
+    console.log("find");
+    let searcher = new simpleSearcher();
+    get_all_bookmarks(e=>{
+        callback( searcher.find(e, query, ["text_for_finding"]) );
+    });
+}
+
 chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
             switch( request.id ){
                 case "get_bookmarks":
-                    get_new_bookmarks( (e)=>{ console.log(e); retValue({data: e, key: request.key}) });
+                    get_all_bookmarks( (e)=>{ retValue({data: e, key: request.key}) });
                     break;
 
                 case "remove_item":
                     remove_bookmark(request.key);
+                    break;
+
+                case "find":
+                    find(request.query, (e)=>{ retValue({data: e, key: request.key}) });
                     break;
 
                 default:

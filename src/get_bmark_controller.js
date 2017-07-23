@@ -8,8 +8,8 @@ export default class popup_controller{
 
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
-                console.log(request);
                 if( request.key in this._callback_buffer ){
+                    console.log(request);
                     this._callback_buffer[request.key](request.data);
                     delete this._callback_buffer[request.key];
                 }
@@ -35,6 +35,12 @@ export default class popup_controller{
         chrome.tabs.query({active: true, currentWindow: true}, tab=>{
             chrome.tabs.sendMessage(tab[0].id, {id: "jump_link", item: item, tag: tag }, (e)=>{});
         });
+    }
+
+    find(query, callback){
+        let key = this.keygen();
+        this._callback_buffer[ key ] = callback;
+        chrome.runtime.sendMessage({id: "find", query: query, key: key}, (e)=>{});
     }
 
 }

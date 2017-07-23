@@ -3,12 +3,39 @@
 <style scoped>
 ul{
     width: 400px;
+    list-style-type: none;
+    margin: 0;
+    padding: 10px;
+}
+.bmark_item{
+    padding: 0 0 10px 0;
+    border-style: solid;
+    border-width: 0 0 1px 0;
+    border-color: gainsboro;
+}
+.bmark_item:last-child{
+    border-style: none;
+}
+
+.page_title{
+    text-decoration: none;
+    display: block;
+    margin: 8px 3px;
+    color: black;
+    font-weight: bold;
+    font-size: 10pt;
 }
 .htag_list{
+    margin: 3px;
+    padding: 0;
     list-style-type: none;
 }
 .htag_list li{
     display: inline-block; 
+}
+
+.htag_list li>a{
+    color: gray;
 }
 
 .htag_list li:before{
@@ -28,22 +55,31 @@ ul{
     background-image: none; 
 }
 
+input[type="text"]{
+    width: calc( 100% - 50px );
+    padding: 3px;
+}
+
 </style>
 
 
 <template>
-    <ul>
-        <li v-for="(item, index) in bookmark_list">
-            <a :href="item.url" v-on:click="jump_link(item, '')">{{ item.title }}</a>
-            <ul class="htag_list">
-                <li v-for="htag in item.tags">
-                    <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
-                </li>
-            </ul>
-            <pre><code v-highlight>{{ item.block }}</code></pre>
-            <a v-on:click="delete_item(item, index)" href="#">削除</a>
-        </li>
-    </ul>
+    <div>
+        <input type="text" v-model="query">
+        <input type="button" value="Find" v-on:click="find()">
+        <ul>
+            <li v-for="(item, index) in bookmark_list" class="bmark_item">
+                <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
+                <ul class="htag_list">
+                    <li v-for="htag in item.tags">
+                        <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
+                    </li>
+                </ul>
+                <pre><code v-highlight="item.block"></code></pre>
+                <a v-on:click="delete_item(item, index)" href="#">削除</a>
+            </li>
+        </ul>
+    </div>
 </template>
 
 <script>
@@ -56,17 +92,13 @@ let bmark = new GetBmark();
 export default {
     data: function(){
         return{
-            bookmark_list: []
+            bookmark_list: [],
+            query: ""
         }
     },
     created: function(){
-        bmark.get_bookmarks_request((e) => {
+        bmark.get_bookmarks_request(e=>{
             this.bookmark_list = e;
-            this.bookmark_list.forEach( val => {
-                let header_tag = val.header_tag_text
-                console.log(val);
-                if(header_tag) val.header_tags = header_tag.split("<,>");
-            });
         }); 
     },
     methods: {
@@ -76,18 +108,26 @@ export default {
         },
         jump_link: function(item, tag){
             bmark.jump_link(item, tag);
+        },
+        find: function(){
+            bmark.find(this.query, e=>{ console.log("#"); console.log(e); this.bookmark_list = e; });
         }
     },
     directives: {
-        highlight: {
-            bind: function(el, binding){
-                if (binding.value) { el.innerHTML = binding.value; }
-                hljs.highlightBlock(el);
-            },
-            componentUpdated: function(el, binding){
-                if (binding.value) { el.innerHTML = binding.value; }
-                hljs.highlightBlock(el);
-            }
+        highlight: function(el, binding){
+            console.log(el);
+            console.log("XXX" + binding.value);
+            if (binding.value) { el.className=""; el.innerText = binding.value; }
+            hljs.highlightBlock(el);
+            //bind: function(el, binding){
+            //    if (binding.value) { el.innerHTML = binding.value; }
+            //    hljs.highlightBlock(el);
+            //},
+            //componentUpdated: function(el, binding){
+            //    console.log(binding);
+            //    if (binding.value) { el.innerHTML = binding.value; }
+            //    hljs.highlightBlock(el);
+            //}
         },
         htag: {
             bind: function(el, binding){

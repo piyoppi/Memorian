@@ -2,7 +2,6 @@ import selection from './selection.js'
 import parser from './bmark_parser.js'
 import JumpLink from './jump_link.js'
 
-
 var selectbox = new selection(document.body);
 var bmark_parser = new parser(document.body);
 
@@ -48,7 +47,6 @@ window.addEventListener("load", ()=>{
 document.addEventListener("contextmenu", handler_mousemove, false);
 
 chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
-    console.log(request);
     switch( request.id ){
         case "element_memo":
             sendResponse(find_element_fromcurpos());
