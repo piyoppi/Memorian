@@ -4,15 +4,12 @@ export default class bmark_parser{
     
     constructor(){
         this._selection_rules = {
-            div: {
-                rules: [ { method: this.keep_len, param: {length: 20}, conbination: "or" } ],
-            },
-            code: {
-                rules: [ { method: this.keep_len, param: {length: 20}, conbination: "or" } ],
-            },
-            other: {
-                rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],
-            }
+            div: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
+            code: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
+            pre: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
+            figure: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
+            table: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
+            other: {rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],}
         }
 
         this._element_rules = [
@@ -103,6 +100,7 @@ export default class bmark_parser{
     //----------------------------------------------------------------------------
 
     parse(selection_elem){
+        console.log(selection_elem);
         return this.get_selection_element(selection_elem);
     }
 
@@ -116,7 +114,7 @@ export default class bmark_parser{
     }
 
     _chk_selection_rules(elem){
-        let rule = this._selection_rules[elem.tagName];
+        let rule = this._selection_rules[elem.tagName.toLowerCase()];
         if( !rule ) rule = this._selection_rules.other;
 
         let is_valid = false;
@@ -131,7 +129,7 @@ export default class bmark_parser{
     //----------------------------------------------------------------------------
     //      Rules
     //----------------------------------------------------------------------------
-    keep_len(elem, param){ return (elem.innerText.length > param.length) }
+    keep_len(elem, param){ return (elem.innerText.length >= param.length) }
 
     _splice_array(indexes, arr){
         indexes.sort((a,b)=>a-b);
