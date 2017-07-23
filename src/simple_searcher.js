@@ -5,17 +5,16 @@ export default class simpleSearcher{
     }
 
     find(find_list, query, keys){
-        console.log(query);
+        if( query === "" ) return [];
         query = query.replace(/ |　/g, " ");
-        let wordCount = (query.split(" ") || []).length;
-        let convQuery = query.replace(/\|/g, "\|").replace(/ /g, "|");
-        let re = new RegExp(convQuery);
+        let words = query.split(" ");
+        let wordCount = words.length;
         let hit_list = [];
         
         find_list.forEach( val=>{
-            if( keys.some( key=>re.test( val[key] ) ) ){
-                hit_list.push( val );
-            }
+            let targetStr = "";
+            keys.forEach( key=>{ targetStr += val[key]; });
+            if( !words.some( word=>!targetStr.includes(word)) ) hit_list.push( val );
         });
         return hit_list;
     }

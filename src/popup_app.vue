@@ -65,7 +65,7 @@ input[type="text"]{
 
 <template>
     <div>
-        <input type="text" v-model="query">
+        <input type="text" v-model="query"  v-on:keyup.enter="find()" v-textarea="bookmark_list.length !== 0">
         <input type="button" value="Find" v-on:click="find()">
         <ul>
             <li v-for="(item, index) in bookmark_list" class="bmark_item">
@@ -114,20 +114,10 @@ export default {
         }
     },
     directives: {
+        textarea: function(el, binding){ el.focus(); },
         highlight: function(el, binding){
-            console.log(el);
-            console.log("XXX" + binding.value);
             if (binding.value) { el.className=""; el.innerText = binding.value; }
             hljs.highlightBlock(el);
-            //bind: function(el, binding){
-            //    if (binding.value) { el.innerHTML = binding.value; }
-            //    hljs.highlightBlock(el);
-            //},
-            //componentUpdated: function(el, binding){
-            //    console.log(binding);
-            //    if (binding.value) { el.innerHTML = binding.value; }
-            //    hljs.highlightBlock(el);
-            //}
         },
         htag: {
             bind: function(el, binding){
