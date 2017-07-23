@@ -1,5 +1,6 @@
 import selection from './selection.js'
 import parser from './bmark_parser.js'
+import JumpLink from './jump_link.js'
 
 
 var selectbox = new selection(document.body);
@@ -18,7 +19,7 @@ function find_element_fromcurpos(){
         if( info.elements.length > 0 ){
             let elem = info.elements[0];
             let set_innertext = elem.innerText;
-            send_additional_info[info.elem[0]] = {text: set_innertext, id: elem.id, class: elem.className};
+            send_additional_info[info.elem] = {tagName: info.elem, text: set_innertext, id: elem.id, class: elem.className};
             header_tag_text += set_innertext + "<,>";
         }
     });
@@ -38,9 +39,11 @@ function handler_mousemove(e){
     curpos.y = e.clientY;
 }
 
-function jump_link(url){
-    window.location.href = url;
-}
+
+window.addEventListener("load", ()=>{
+    JumpLink.JumpToElementAfterLoad();
+});
+
 
 document.addEventListener("contextmenu", handler_mousemove, false);
 
@@ -52,7 +55,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
             break;
 
         case "jump_link":
-            jump_link(request.url);
+            JumpLink.Jump(request.item, request.tag);
             break;
 
         default:

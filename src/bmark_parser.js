@@ -16,14 +16,20 @@ export default class bmark_parser{
         }
 
         this._element_rules = [
-            {elem: ["h1"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
-            {elem: ["h2"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
-            {elem: ["h3"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
-            {elem: ["h4"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
-            {elem: ["h5"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
-            {elem: ["h6"], methods: [this.is_near_element, this.is_parentnode_has_selection_elem], params: null},
+            {elem: "h1", methods: [this.is_parentnode_has_selection_elems, this.is_near_element], params: null},
+            {elem: "h2", methods: [this.is_parentnode_has_selection_elems, this.is_near_element], params: null},
+            {elem: "h3", methods: [this.is_parentnode_has_selection_elems, this.is_near_element], params: null},
+            {elem: "h4", methods: [this.is_parentnode_has_selection_elems, this.is_near_element], params: null},
+            {elem: "h5", methods: [this.is_parentnode_has_selection_elems, this.is_near_element], params: null},
+            {elem: "h6", methods: [this.is_parentnode_has_selection_elems, this.is_near_element], params: null},
         ];
-        this._element_checklist = [];
+
+        this._element_relation_rules = [
+            {elem: "h2", compareTagName: ["h3", "h4", "h5", "h6"], howto_select_elem: this.selectfirstElement, methods: [this.isPositionLower]},
+            {elem: "h3", compareTagName: ["h4", "h5", "h6"],       howto_select_elem: this.selectfirstElement, methods: [this.isPositionLower]},
+            {elem: "h4", compareTagName: ["h5", "h6"],             howto_select_elem: this.selectfirstElement, methods: [this.isPositionLower]},
+            {elem: "h5", compareTagName: ["h6"],                   howto_select_elem: this.selectfirstElement, methods: [this.isPositionLower]},
+        ]
     }
 
 
@@ -33,13 +39,12 @@ export default class bmark_parser{
     get_information_tagsearch(selection_elem){
         this._init_chk_element();
         this._chk_element(selection_elem);
-
+        this._chk_relation_rules();
         return this._element_rules;
     }
 
     _init_chk_element(){
         this._element_rules.forEach( (rule) => {
-            this._element_checklist.push(rule.elem);
             this._clear_chk_element(rule);
         });
     }
@@ -49,27 +54,54 @@ export default class bmark_parser{
         rule.elements=[];
     }
 
-    _chk_findelements_rule( selection_elem, chk_elem, rule ){
-        rule.methods.forEach( method=>{ method.call(this, selection_elem, chk_elem, rule); });
+    _chk_findelements_rule( selection_elem, chk_elems, rule ){
+        rule.elements = chk_elems;
+        rule.methods.forEach( method=>{
+            method.call(this, selection_elem, rule);
+        });
     }
 
     _chk_element(selection_elem){
         this._element_rules.forEach( (rule) => {
-            rule.elem.forEach( ( tagstr) => {
-                let tagList = document.getElementsByTagName(tagstr);
-                for(let i=0; i<tagList.length; i++){
-                    let chk_elem = tagList[i];
-                    this._chk_findelements_rule( selection_elem, chk_elem, rule);
+            let tagList = Array.prototype.slice.call(document.getElementsByTagName(rule.elem));
+            this._chk_findelements_rule(selection_elem, tagList, rule);
+        });
+        return false;
+    }
+
+    _FindRuleFromTagName(list, tagName){ return list.find( (item, index, array)=>item.elem === tagName ) || null; }
+
+    _chk_relation_rules(){
+        this._element_relation_rules.forEach( rule=>{ this._chk_relation_rule(rule); } );
+    }
+
+    _chk_relation_rule( rule ){
+        rule.methods.forEach( method=>{
+            let element_rule = this._FindRuleFromTagName( this._element_rules, rule.elem);
+            if( !element_rule ) return;
+            let chk_elem = rule.howto_select_elem.call(this, element_rule.elements);
+            if( !chk_elem ) return;
+
+            rule.compareTagName.forEach( compareTagName=>{
+                let compare_rule = this._FindRuleFromTagName(this._element_rules, compareTagName);
+                if( !compare_rule ) return;
+                let compare_elems = compare_rule.elements;
+
+                for( let i=0; i<compare_elems.length; i++ ){
+                    let compare_elem = compare_elems[i];
+                    if( !method.call(this, chk_elem, compare_elem) ){
+                        compare_elems.splice(i, 1);
+                        i--;
+                    }
                 }
             });
         });
-        return false;
     }
 
     //----------------------------------------------------------------------------
     //      Get selection element
     //----------------------------------------------------------------------------
-    
+
     parse(selection_elem){
         return this.get_selection_element(selection_elem);
     }
@@ -101,38 +133,50 @@ export default class bmark_parser{
     //----------------------------------------------------------------------------
     keep_len(elem, param){ return (elem.innerText.length > param.length) }
 
-    is_parentnode_has_selection_elem(selection_elem, chk_elem, param){
-        if( chk_elem.parentNode.tagName === "body" ) return false;
-        let nodelist = chk_elem.parentNode.getElementsByTagName(selection_elem.tagName);
-        let result = false;
-        for( var i=0; i<nodelist.length; i++ ){
-            let elem = nodelist[i];
-            if( selection_elem.innerHTML === elem.innerHTML ){
-                result = true;
+    _splice_array(indexes, arr){
+        indexes.sort((a,b)=>a-b);
+        for( let i=indexes.length-1; i>=0; i-- ){
+            arr.splice(i, 1);
+        }
+    }
+
+    is_parentnode_has_selection_elems(selection_elem, rule){
+        rule.elements.forEach( (chk_elem, index)=>{
+            rule.elements = this.is_parentnode_has_selection_elem(selection_elem, rule);
+        });
+    }
+
+    is_parentnode_has_selection_elem(chk_elem, rule){
+        if( chk_elem.parentNode.tagName.toLowerCase() === "body" ) return [];
+        let nodelist = chk_elem.parentNode.getElementsByTagName(rule.elem);
+        if( nodelist.length === 0 ){
+            return this.is_parentnode_has_selection_elem(chk_elem.parentNode, rule)
+        }
+        return Array.prototype.slice.call(nodelist);
+    }
+
+    is_near_element(selection_elem, rule){ 
+        let minInfo = null;
+        rule.elements.forEach( chk_elem=>{
+            let bRect_selectionelem = selection_elem.getBoundingClientRect();
+            let bRect_chk_elem = chk_elem.getBoundingClientRect();
+            let diff_distance = bRect_selectionelem.top - bRect_chk_elem.top;
+            if( diff_distance < 0 ) return;
+            if( bRect_chk_elem.width === 0 ) return;
+            if( bRect_chk_elem.height === 0 ) return;
+            if( (!minInfo) || (minInfo.dist > diff_distance) ){
+                minInfo = {dist: diff_distance, elem: chk_elem}
             }
+        });
+        if( minInfo ){
+            rule.elements = [minInfo.elem];
         }
-        if( result === false ){
-            if( !this.is_parentnode_has_selection_elem(selection_elem, chk_elem.parentNode, param ) ) this._clear_chk_element(param);
-        }
-        return result;
-    }
-
-    is_near_element(selection_elem, chk_elem, param){ 
-        let bRect_selectionelem = selection_elem.getBoundingClientRect();
-        let bRect_chk_elem = chk_elem.getBoundingClientRect();
-        let diff_distance = bRect_selectionelem.top - bRect_chk_elem.top;
-        if( diff_distance < 0 ) return;
-        if( bRect_chk_elem.width === 0 ) return;
-        if( bRect_chk_elem.height === 0 ) return;
-        if( !param.buffers.dist ){
-            param.elements.push( chk_elem );
-            param.buffers.dist = diff_distance;
-            console.log(chk_elem.tagName + "," + param.buffers.dist );
-        }
-        else if( param.buffers.dist > diff_distance ){
-            param.elements[0] = chk_elem;    
-            param.buffers.dist = diff_distance;
+        else{
+            rule.elements = [];
         }
     }
 
+    isPositionLower(selection_elem, chk_elem){ return selection_elem.getBoundingClientRect().top < chk_elem.getBoundingClientRect().top; }
+
+    selectfirstElement(elements){ return elements.length !== 0 ? elements[0] : null; }
 }

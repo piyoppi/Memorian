@@ -34,10 +34,10 @@ ul{
 <template>
     <ul>
         <li v-for="(item, index) in bookmark_list">
-            <a :href="item.url" v-on:click="jump_link(item)">{{ item.title }}</a>
+            <a :href="item.url" v-on:click="jump_link(item, '')">{{ item.title }}</a>
             <ul class="htag_list">
                 <li v-for="htag in item.tags">
-                    <a :href="item.url">{{ htag.text }}</a>
+                    <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
                 </li>
             </ul>
             <pre>
@@ -78,8 +78,8 @@ export default {
             bmark.delete_item(item.key);
             this.bookmark_list.splice(index, 1);
         },
-        jump_link: function(item){
-            bmark.jump_link(item.url);
+        jump_link: function(item, tag){
+            bmark.jump_link(item, tag);
         }
     },
     directives: {

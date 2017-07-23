@@ -31,10 +31,9 @@ export default class popup_controller{
         chrome.runtime.sendMessage({id: "remove_item", key: key}, (e)=>{});
     }
 
-    jump_link(url){
+    jump_link(item, tag){
         chrome.tabs.query({active: true, currentWindow: true}, tab=>{
-            console.log(tab);
-            chrome.tabs.sendMessage(tab[0].id, {id: "jump_link", url: url}, (e)=>{});
+            chrome.tabs.sendMessage(tab[0].id, {id: "jump_link", item: item, tag: tag }, (e)=>{});
         });
     }
 

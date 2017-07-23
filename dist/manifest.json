@@ -17,7 +17,7 @@
         "default_title": "sample",
         "default_popup": "html/popup.html"
     },
-    "permissions": ["tabs", "contextMenus"],
+    "permissions": ["tabs", "contextMenus", "storage"],
     "background": {
         "scripts": ["js/bg.bundle.js"]
     }
