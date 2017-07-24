@@ -14,34 +14,31 @@ function contextMenu_Click(info, tab){
 
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
-        transaction = db.transaction(["bookmarks"], "readwrite");
-        let objectStore = transaction.objectStore("bookmarks");
-        let textForFinding = response.content+ " " +
-                             response.header_tag_text + " " + 
-                             response.title;
-        let data = { contents: [response.content],
-                     url: response.url,
-                     title: response.title,
-                     header_tag_text: response.header_tag_text,
-                     tags: response.tags,
-                     text_for_finding: textForFinding.toLowerCase()
-        };
-        var request = objectStore.add(data);
-        request.onsuccess = function(e) { };
+        setBookmarkData(response);
     });
 }
 
-chrome.contextMenus.create({
-    title: "この部分を切り抜く",
-    contexts: ["selection"],
-    onclick: contextMenu_Click
-});
+function setBookmarkData(data){
+    transaction = db.transaction(["bookmarks"], "readwrite");
+    let objectStore = transaction.objectStore("bookmarks");
+    let textForFinding = data.content+ " " +
+        data.header_tag_text + " " + 
+        data.title;
+    let textForDuplicateCheck = data.title + data.header_tag_text + data.url;
+    let data = { contents: [data.content],
+        url: data.url,
+        title: data.title,
+        header_tag_text: data.header_tag_text,
+        tags: data.tags,
+        text_for_finding: textForFinding.toLowerCase(),
+        text_for_dupcheck: textForDuplicateCheck
+    };
+    var request = objectStore.add(data);
+    request.onsuccess = function(e) { };
+}
 
-chrome.contextMenus.create({
-    title: "この部分を切り抜く",
-    onclick: mnu_ElementMemo_click
-});
-
+chrome.contextMenus.create({ title: "この部分を切り抜く", contexts: ["selection"], onclick: contextMenu_Click });
+chrome.contextMenus.create({ title: "この部分を切り抜く", onclick: mnu_ElementMemo_click });
 
 var request = window.indexedDB.open("Bookmarkers", db_version);
 request.onsuccess = (e) => { db = e.target.result; }
