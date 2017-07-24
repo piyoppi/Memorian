@@ -14,17 +14,44 @@ function contextMenu_Click(info, tab){
 
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
-        setBookmarkData(response);
+        updateBookmarkData(response).then( e => {
+
+        })
+        .catch( e=>{
+            setBookmarkData(response);
+        });
+    });
+}
+
+
+function getTextForDuplicateCheck(data){
+    return data.title + data.header_tag_text + data.url;
+}
+
+function updateBookmarkData(data){
+    let dupchk_text = getTextForDuplicateCheck(data);
+    transaction = db.transaction(["bookmarks"], "readwrite");
+    let objectStore = transaction.objectStore("bookmarks");
+    let index = objectStore.index("text_for_dupcheck");
+    return new Promise((resolve, reject) => {
+        let get_item = index.get(dupchk_text);
+        get_item.onsuccess = e => {
+            let updateData = e.target.result;
+            if( !updateData ){ reject(e); return; }
+            updateData.contents.push(data.content);
+            var requestUpdate = objectStore.put(updateData);
+            requestUpdate.onerror = e => { reject(e) };
+            requestUpdate.onsuccess = e => { resolve(e) };
+        }
+        get_item.onerror = e => { reject(e); }
     });
 }
 
 function setBookmarkData(data){
     transaction = db.transaction(["bookmarks"], "readwrite");
     let objectStore = transaction.objectStore("bookmarks");
-    let textForFinding = data.content+ " " +
-        data.header_tag_text + " " + 
-        data.title;
-    let textForDuplicateCheck = data.title + data.header_tag_text + data.url;
+    let textForFinding = data.content+ " " + data.header_tag_text + " " + data.title;
+    let textForDuplicateCheck = getTextForDuplicateCheck(data);
     let addData = { contents: [data.content],
         url: data.url,
         title: data.title,
@@ -45,7 +72,8 @@ request.onsuccess = (e) => { db = e.target.result; }
 request.onerror = () => {};
 request.onupgradeneeded = (e) => { 
     var db = e.target.result;
-    var objectStore = db.createObjectStore("bookmarks", { autoIncrement: true });
+    var objectStore = db.createObjectStore("bookmarks", {keyPath: "id", autoIncrement: true });
+    objectStore.createIndex("text_for_dupcheck", "text_for_dupcheck", { unique: true });
 };
 
 function get_all_bookmarks(callback){
@@ -77,7 +105,6 @@ function retValue(obj){
 }
 
 function find(query, callback){
-    console.log("find");
     let searcher = new simpleSearcher();
     get_all_bookmarks(e=>{
         callback( searcher.find(e, query, ["text_for_finding"]) );
