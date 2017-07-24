@@ -60,6 +60,31 @@ input[type="text"]{
     padding: 3px;
 }
 
+.btn_cp{
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-style: none;
+    background-image: url('../img/memopad.png');
+    background-position: center;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    opacity: 0.7;
+}
+
+.btn_cp:hover{
+    background-color: gainsboro;
+}
+.btn_cp:active{
+    background-color: gray;
+}
+
+.code_item{
+    position: relative;
+}
+
 </style>
 
 
@@ -76,9 +101,9 @@ input[type="text"]{
                     </li>
                 </ul>
                 <ul>
-                    <li v-for="content in item.contents">
+                    <li class="code_item" v-for="content in item.contents">
                         <pre><code v-highlight="content"></code></pre>
-                        <a :data-clipboard-text="content" class="btn_cp" href="#">コピー</a>
+                        <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
                     </li>
                 </ul>
                 <a v-on:click="delete_item(item, index)" href="#">削除</a>
