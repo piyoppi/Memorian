@@ -73,7 +73,6 @@ input[type="text"]{
     right: 5px;
     opacity: 0.7;
 }
-
 .btn_cp:hover{
     background-color: gainsboro;
 }

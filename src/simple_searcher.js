@@ -6,7 +6,7 @@ export default class simpleSearcher{
 
     find(find_list, query, keys){
         if( query === "" ) return [];
-        query = query.replace(/ |　/g, " ");
+        query = query.toLowerCase().replace(/ |　/g, " ");
         let words = query.split(" ");
         let wordCount = words.length;
         let hit_list = [];
