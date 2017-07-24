@@ -67,7 +67,7 @@ input[type="text"]{
     <div>
         <input type="text" v-model="query"  v-on:keyup.enter="find()" v-textarea="bookmark_list.length !== 0">
         <input type="button" value="Find" v-on:click="find()">
-     ]   <ul>
+        <ul>
             <li v-for="(item, index) in bookmark_list" class="bmark_item">
                 <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
                 <ul class="htag_list">
@@ -78,6 +78,7 @@ input[type="text"]{
                 <ul>
                     <li v-for="content in item.contents">
                         <pre><code v-highlight="content"></code></pre>
+                        <a :data-clipboard-text="content" class="btn_cp" href="#">コピー</a>
                     </li>
                 </ul>
                 <a v-on:click="delete_item(item, index)" href="#">削除</a>
@@ -90,6 +91,8 @@ input[type="text"]{
 import GetBmark from './get_bmark_controller.js'
 import hljs from 'highlight.js'
 import styles from 'highlight.js/styles/hybrid.css'
+import clipbrd from 'clipboard'
+new clipbrd('.btn_cp');
 
 let bmark = new GetBmark();
 

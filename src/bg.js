@@ -25,7 +25,7 @@ function setBookmarkData(data){
         data.header_tag_text + " " + 
         data.title;
     let textForDuplicateCheck = data.title + data.header_tag_text + data.url;
-    let data = { contents: [data.content],
+    let addData = { contents: [data.content],
         url: data.url,
         title: data.title,
         header_tag_text: data.header_tag_text,
@@ -33,7 +33,7 @@ function setBookmarkData(data){
         text_for_finding: textForFinding.toLowerCase(),
         text_for_dupcheck: textForDuplicateCheck
     };
-    var request = objectStore.add(data);
+    var request = objectStore.add(addData);
     request.onsuccess = function(e) { };
 }
 
