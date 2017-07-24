@@ -67,7 +67,7 @@ input[type="text"]{
     <div>
         <input type="text" v-model="query"  v-on:keyup.enter="find()" v-textarea="bookmark_list.length !== 0">
         <input type="button" value="Find" v-on:click="find()">
-        <ul>
+     ]   <ul>
             <li v-for="(item, index) in bookmark_list" class="bmark_item">
                 <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
                 <ul class="htag_list">
@@ -75,7 +75,11 @@ input[type="text"]{
                         <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
                     </li>
                 </ul>
-                <pre><code v-highlight="item.block"></code></pre>
+                <ul>
+                    <li v-for="content in item.contents">
+                        <pre><code v-highlight="content"></code></pre>
+                    </li>
+                </ul>
                 <a v-on:click="delete_item(item, index)" href="#">削除</a>
             </li>
         </ul>

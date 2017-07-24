@@ -25,7 +25,7 @@ function find_element_fromcurpos(){
     header_tag_text = header_tag_text.substr(0, header_tag_text.length-3);
 
     return {
-                block: block_elem.innerText,
+                content: block_elem.innerText,
                 title: document.title,
                 url: window.location.href,
                 header_tag_text: header_tag_text,

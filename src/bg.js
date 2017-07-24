@@ -16,10 +16,10 @@ function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
         transaction = db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
-        let textForFinding = response.block + " " +
+        let textForFinding = response.content+ " " +
                              response.header_tag_text + " " + 
                              response.title;
-        let data = { block: response.block,
+        let data = { contents: [response.content],
                      url: response.url,
                      title: response.title,
                      header_tag_text: response.header_tag_text,
