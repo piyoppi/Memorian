@@ -55,10 +55,6 @@ ul{
     background-image: none; 
 }
 
-input[type="text"]{
-    width: calc( 100% - 50px );
-    padding: 3px;
-}
 
 .btn_cp{
     width: 20px;
@@ -84,14 +80,27 @@ input[type="text"]{
     position: relative;
 }
 
+#header{
+    position: fixed;
+    top: 0;
+    width: 100%;
+    background-color: white;
+    z-index: 2;
+}
+
+#outer{
+    margin-top: 30px;
+}
+
 </style>
 
 
 <template>
-    <div>
-        <input type="text" v-model="query"  v-on:keyup.enter="find()" v-textarea="bookmark_list.length !== 0">
-        <input type="button" value="Find" v-on:click="find()">
-        <ul>
+    <div id="outer">
+        <div id="header">
+            <find-component @find="find"></find-component>
+        </div>
+        <ul id="snippet_list">
             <li v-for="(item, index) in bookmark_list" class="bmark_item">
                 <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
                 <ul class="htag_list">
@@ -119,12 +128,16 @@ import clipbrd from 'clipboard'
 new clipbrd('.btn_cp');
 
 let bmark = new GetBmark();
+import FindComponent from './findset.vue'
+
 
 export default {
+    components: {
+        FindComponent
+    },
     data: function(){
         return{
             bookmark_list: [],
-            query: ""
         }
     },
     created: function(){
@@ -140,12 +153,11 @@ export default {
         jump_link: function(item, tag){
             bmark.jump_link(item, tag);
         },
-        find: function(){
-            bmark.find(this.query, e=>{ console.log("#"); console.log(e); this.bookmark_list = e; });
+        find: function(query){
+            bmark.find(query, e=>{ console.log("#"); console.log(e); this.bookmark_list = e; });
         }
     },
     directives: {
-        textarea: function(el, binding){ el.focus(); },
         highlight: function(el, binding){
             if (binding.value) { el.className=""; el.innerText = binding.value; }
             hljs.highlightBlock(el);
