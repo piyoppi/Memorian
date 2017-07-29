@@ -1,6 +1,19 @@
 import selection from './selection.js'
 import parser from './bmark_parser.js'
 import JumpLink from './jump_link.js'
+import Vue from 'vue'
+var appOptions = require('./msg.vue');
+var app;
+
+//window.addEventListener("load", function(){
+    var el = document.createElement("div");
+    el.id = "chrome_extension_bmark_msg";
+    console.log(el);
+    document.body.appendChild(el);
+    app = new Vue(appOptions).$mount("#" + el.id);
+    //app.hide();
+//}, false);
+
 
 var selectbox = new selection(document.body);
 var bmark_parser = new parser(document.body);
@@ -23,6 +36,8 @@ function find_element_fromcurpos(){
         }
     });
     header_tag_text = header_tag_text.substr(0, header_tag_text.length-3);
+
+    app.show(block_elem.innerText);
 
     return {
                 content: block_elem.innerText,
