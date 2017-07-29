@@ -27,8 +27,12 @@ export default class popup_controller{
         chrome.runtime.sendMessage({id: "get_bookmarks", offset: offset, length: len, key: key}, (e)=>{});
     }
 
-    delete_item(key){
+    removeItem(key){
         chrome.runtime.sendMessage({id: "remove_item", key: key}, (e)=>{});
+    }
+
+    removeCode(key, index){
+        chrome.runtime.sendMessage({id: "remove_code", key: key, index: index}, (e)=>{});
     }
 
     jump_link(item, tag){

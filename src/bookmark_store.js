@@ -113,6 +113,20 @@ export default class bookmarkStore{
         objectStore.delete(key);
     }
 
+    removeCode(key, index){
+        let transaction = this._db.transaction(["bookmarks"], "readwrite");
+        let objectStore = transaction.objectStore("bookmarks");
+        objectStore.get(key).onsuccess = e=>{ 
+            let updateData = e.target.result;
+            if( !updateData ){ throw "Update data is nothing"; return; }
+            updateData.contents.splice(index, 1);
+            var requestUpdate = objectStore.put(updateData);
+            requestUpdate.onerror = e => { throw "Update was failed" };
+            requestUpdate.onsuccess = e => { return Promise.resolve("hoge"); };
+        };
+
+    }
+
     find(query, callback){
         if( !query || query.query === "" ){
             this.getBookmarks(query.offset, query.length, callback);

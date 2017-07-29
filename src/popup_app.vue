@@ -92,6 +92,10 @@ ul{
     margin-top: 30px;
 }
 
+.insert-enter, .insert-leave-to{ right: -500px; }
+.insert-enter-active, .insert-leave-active{
+    transition: right 300ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
+}
 </style>
 
 
@@ -109,12 +113,13 @@ ul{
                     </li>
                 </ul>
                 <ul>
-                    <li class="code_item" v-for="content in item.contents">
+                    <li class="code_item" v-for="(content, contentIndex) in item.contents">
                         <pre><code v-highlight="content"></code></pre>
                         <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
+                        <button v-on:click="removeCode(item, contentIndex)" class="btn_remove" href="#">remove</button>
                     </li>
                 </ul>
-                <a v-on:click="delete_item(item, index)" href="#">削除</a>
+                <a v-on:click="removeItem(item, index)" href="#">削除</a>
             </li>
         </ul>
     </div>
@@ -154,8 +159,8 @@ export default {
         }, false);
     },
     methods: {
-        delete_item: function(item, index){
-            bmark.delete_item(item.key);
+        removeItem: function(item, index){
+            bmark.removeItem(item.key);
             this.bookmarkList.splice(index, 1);
         },
         jump_link: function(item, tag){
@@ -171,6 +176,10 @@ export default {
                 this.bookmarkList = this.bookmarkList.concat(e);
                 if( e.length < getDataAmount ) this.isStopScroll = true;
             });
+        },
+        removeCode: function(item, index){
+            bmark.removeCode(item.key, index);
+            item.contents.splice(index, 1);
         }
     },
     directives: {
