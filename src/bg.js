@@ -12,7 +12,7 @@ function mnu_ElementMemo_click(info, tab){
         bStore.updateBookmarkData(response).then( e => {
         })
         .catch( e=>{
-            setBookmarkData(response);
+            bStore.setBookmarkData(response);
         });
     });
 }
