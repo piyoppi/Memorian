@@ -101,7 +101,7 @@ ul{
             <find-component @find="find"></find-component>
         </div>
         <ul id="snippet_list">
-            <li v-for="(item, index) in bookmark_list" class="bmark_item">
+            <li v-for="(item, index) in bookmarkList" class="bmark_item">
                 <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
                 <ul class="htag_list">
                     <li v-for="htag in item.tags">
@@ -130,6 +130,7 @@ new clipbrd('.btn_cp');
 let bmark = new GetBmark();
 import FindComponent from './findset.vue'
 
+let getDataAmount = 5;
 
 export default {
     components: {
@@ -137,15 +138,17 @@ export default {
     },
     data: function(){
         return{
-            bookmark_list: [],
-            query: ""
+            bookmarkList: [],
+            query: "",
+            isStopScroll: false,
         }
     },
     created: function(){
-        bmark.get_bookmarks_request(0, 3, e=>{
-            this.bookmark_list = e;
+        bmark.get_bookmarks_request(0, getDataAmount, e=>{
+            this.bookmarkList = e;
         }); 
         document.addEventListener("scroll", ()=>{
+            if( this.isStopScroll ) return;
             console.log( document.documentElement.clientHeight - window.innerHeight - window.scrollY );
             if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
         }, false);
@@ -153,18 +156,20 @@ export default {
     methods: {
         delete_item: function(item, index){
             bmark.delete_item(item.key);
-            this.bookmark_list.splice(index, 1);
+            this.bookmarkList.splice(index, 1);
         },
         jump_link: function(item, tag){
             bmark.jump_link(item, tag);
         },
         find: function(query){
+            this.isStopScroll = false;
             this.query = query;
-            bmark.find({query: query, offset: 0, length: 3}, e=>{ this.bookmark_list = e; });
+            bmark.find({query: query, offset: 0, length: getDataAmount}, e=>{ this.bookmarkList = e; });
         },
         paginate: function(){
-            bmark.find({query: this.query, offset: this.bookmark_list.length, length: 3}, e=>{
-                this.bookmark_list = this.bookmark_list.concat(e);
+            bmark.find({query: this.query, offset: this.bookmarkList.length, length: getDataAmount}, e=>{
+                this.bookmarkList = this.bookmarkList.concat(e);
+                if( e.length < getDataAmount ) this.isStopScroll = true;
             });
         }
     },
