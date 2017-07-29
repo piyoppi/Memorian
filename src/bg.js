@@ -1,6 +1,3 @@
-//window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
-//window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
-//window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange;
 import bookmarkStore from './bookmark_store.js'
 
 var bStore = new bookmarkStore({version: "2.3"});
@@ -12,14 +9,13 @@ function contextMenu_Click(info, tab){
 
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
-        updateBookmarkData(response).then( e => {
+        bStore.updateBookmarkData(response).then( e => {
         })
         .catch( e=>{
             setBookmarkData(response);
         });
     });
 }
-
 
 chrome.contextMenus.create({ title: "この部分を切り抜く", contexts: ["selection"], onclick: contextMenu_Click });
 chrome.contextMenus.create({ title: "この部分を切り抜く", onclick: mnu_ElementMemo_click });

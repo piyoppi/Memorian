@@ -146,7 +146,8 @@ export default {
             this.bookmark_list = e;
         }); 
         document.addEventListener("scroll", ()=>{
-            if( document.height - window.scrollY < 10 ) this.paginate();
+            console.log( document.documentElement.clientHeight - window.innerHeight - window.scrollY );
+            if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
         }, false);
     },
     methods: {
@@ -159,10 +160,12 @@ export default {
         },
         find: function(query){
             this.query = query;
-            bmark.find({query: query, start: 0, length: 3}, e=>{ this.bookmark_list = e; });
+            bmark.find({query: query, offset: 0, length: 3}, e=>{ this.bookmark_list = e; });
         },
         paginate: function(){
-            bmark.find({query: this.query, start: this.bookmark_list.length, length: 3}, e=>{ this.bookmark_list = e; });
+            bmark.find({query: this.query, offset: this.bookmark_list.length, length: 3}, e=>{
+                this.bookmark_list = this.bookmark_list.concat(e);
+            });
         }
     },
     directives: {
