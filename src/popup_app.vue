@@ -138,12 +138,16 @@ export default {
     data: function(){
         return{
             bookmark_list: [],
+            query: ""
         }
     },
     created: function(){
-        bmark.get_bookmarks_request(e=>{
+        bmark.get_bookmarks_request(0, 3, e=>{
             this.bookmark_list = e;
         }); 
+        document.addEventListener("scroll", ()=>{
+            if( document.height - window.scrollY < 10 ) this.paginate();
+        }, false);
     },
     methods: {
         delete_item: function(item, index){
@@ -154,7 +158,11 @@ export default {
             bmark.jump_link(item, tag);
         },
         find: function(query){
-            bmark.find(query, e=>{ console.log("#"); console.log(e); this.bookmark_list = e; });
+            this.query = query;
+            bmark.find({query: query, start: 0, length: 3}, e=>{ this.bookmark_list = e; });
+        },
+        paginate: function(){
+            bmark.find({query: this.query, start: this.bookmark_list.length, length: 3}, e=>{ this.bookmark_list = e; });
         }
     },
     directives: {

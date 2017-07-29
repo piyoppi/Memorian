@@ -21,10 +21,10 @@ export default class popup_controller{
         return String(Math.random() * 100000);
     }
 
-    get_bookmarks_request(callback){
+    get_bookmarks_request(offset, len, callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
-        chrome.runtime.sendMessage({id: "get_bookmarks", key: key}, (e)=>{});
+        chrome.runtime.sendMessage({id: "get_bookmarks", offset: offset, length: len, key: key}, (e)=>{});
     }
 
     delete_item(key){
