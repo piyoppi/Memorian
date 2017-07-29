@@ -29,7 +29,7 @@ input[type="button"]{
 
 <template>
     <div class="outer">
-        <input id="query_textbox" type="text" v-model="query"  v-on:keyup.enter="find()">
+        <input id="query_textbox" type="text" v-model="query" v-inputFocus v-on:keyup.enter="find()">
         <input type="button" value="" v-on:click="find()">
     </div>
 </template>
@@ -41,15 +41,17 @@ export default{
             query: ""
         }
     },
+    created: function(){
+    },
     methods: {
         find: function(){
             this.$emit('find', this.query);
         },
         focus: function(){
-            document.getElementById("query_textbox").focus();
         }
     },
     directives: {
+        inputFocus:{ bind: function(el, value){ setTimeout( ()=>{ el.focus(); }, 1); } }
     }
 }
 </script>

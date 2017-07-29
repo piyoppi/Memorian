@@ -80,7 +80,7 @@ function get_all_bookmarks(callback){
     let transaction = db.transaction(["bookmarks"], "readwrite");
     let objectStore = transaction.objectStore("bookmarks");
     let data = [];
-    objectStore.openCursor().onsuccess = function(e){
+    objectStore.openCursor(IDBKeyRange.lowerBound(0), "prev").onsuccess = function(e){
         var cursor = e.target.result;
         if( cursor ){
             let ret_val = cursor.value;
