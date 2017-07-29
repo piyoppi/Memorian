@@ -116,7 +116,7 @@ ul{
                     <li class="code_item" v-for="(content, contentIndex) in item.contents">
                         <pre><code v-highlight="content"></code></pre>
                         <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
-                        <button v-on:click="removeCode(item, contentIndex)" class="btn_remove" href="#">remove</button>
+                        <button v-on:click="removeCode(item, contentIndex, index)" class="btn_remove" href="#">remove</button>
                     </li>
                 </ul>
                 <a v-on:click="removeItem(item, index)" href="#">削除</a>
@@ -177,9 +177,12 @@ export default {
                 if( e.length < getDataAmount ) this.isStopScroll = true;
             });
         },
-        removeCode: function(item, index){
-            bmark.removeCode(item.key, index);
-            item.contents.splice(index, 1);
+        removeCode: function(item, contentIndex, index){
+            bmark.removeCode(item.key, contentIndex);
+            item.contents.splice(contentIndex, 1);
+            if( item.contents.length === 0 ){
+                this.removeItem(item, index)
+            }
         }
     },
     directives: {
