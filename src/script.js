@@ -5,14 +5,12 @@ import Vue from 'vue'
 var appOptions = require('./msg.vue');
 var app;
 
-//window.addEventListener("load", function(){
-    var el = document.createElement("div");
-    el.id = "chrome_extension_bmark_msg";
-    console.log(el);
-    document.body.appendChild(el);
-    app = new Vue(appOptions).$mount("#" + el.id);
-    //app.hide();
-//}, false);
+var el = document.createElement("div");
+el.id = "chrome_extension_bmark_msg";
+console.log(el);
+document.body.appendChild(el);
+app = new Vue(appOptions).$mount("#" + el.id);
+app.hide();
 
 
 var selectbox = new selection(document.body);
@@ -37,15 +35,15 @@ function find_element_fromcurpos(){
     });
     header_tag_text = header_tag_text.substr(0, header_tag_text.length-3);
 
-    app.show(block_elem.innerText);
+    app.show(block_elem.innerText, 2500);
 
     return {
-                content: block_elem.innerText,
-                title: document.title,
-                url: window.location.href,
-                header_tag_text: header_tag_text,
-                tags: send_additional_info
-           };
+        content: block_elem.innerText,
+        title: document.title,
+        url: window.location.href,
+        header_tag_text: header_tag_text,
+        tags: send_additional_info
+    };
 }
 
 function handler_mousemove(e){

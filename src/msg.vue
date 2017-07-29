@@ -3,7 +3,7 @@
     width: 450px;
     position: fixed;
     bottom: 2px;
-    right: 0;
+    right: 0px;
     border: solid 1px gray;
     text-align: center;
     vertical-align: middle;
@@ -18,14 +18,20 @@ pre{
     background-color: transparent;
     border-style: none;
 }
+.insert-enter, .insert-leave-to{ right: -500px; }
+.insert-enter-active, .insert-leave-active{
+    transition: right 300ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
+}
 </style>
 
 
 <template>
-    <div class="msg_outer" v-show="isShow">
-        コピーが完了しました
-        <pre><code v-highlight="content"></code></pre>
-    </div>
+    <transition name="insert">
+        <div class="msg_outer" v-if="isShow">
+            コピーが完了しました
+            <pre><code v-highlight="content"></code></pre>
+        </div>
+    </transition>
 </template>
 
 <script>
@@ -35,16 +41,17 @@ import styles from 'highlight.js/styles/hybrid.css'
 export default {
     data: function(){
         return{
-            isShow: true,
+            isShow: false,
             content: ""
         }
     },
     created: function(){
     },
     methods: {
-        show: function(content){ 
+        show: function(content, timeout){ 
             this.isShow = true;
             this.content = content || "";
+            if( timeout ) setTimeout( ()=>{ this.hide(); }, timeout );
         },
         hide: function(){
             this.isShow = false;
