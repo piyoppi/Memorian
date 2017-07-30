@@ -117,7 +117,7 @@ ul{
                         <button v-on:click="removeCode(item, contentIndex, index)" class="btn_remove" href="#">remove</button>
                     </li>
                 </transition-group>
-                <a v-on:click="removeItem(item, index)" href="#">削除</a>
+                <button v-on:click="removeItem(item, index)" href="#">削除</button>
             </li>
         </transition-group>
     </div>
@@ -186,7 +186,7 @@ export default {
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
         leave_bmark: function(el, done){
-            Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
+            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
         }
     },
     directives: {
