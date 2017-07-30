@@ -78,6 +78,7 @@ ul{
 
 .code_item{
     position: relative;
+    overflow: hidden;
 }
 
 #header{
@@ -92,10 +93,12 @@ ul{
     margin-top: 30px;
 }
 
-.insert-enter, .insert-leave-to{ right: -500px; }
-.insert-enter-active, .insert-leave-active{
-    transition: right 300ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
+/*
+.code-enter, .code-leave-to{overflow: hidden;}
+.code-enter-active, .code-leave-active{
+    transition: all 3000ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
 }
+*/
 </style>
 
 
@@ -112,13 +115,17 @@ ul{
                         <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
                     </li>
                 </ul>
-                <ul>
-                    <li class="code_item" v-for="(content, contentIndex) in item.contents">
+                <transition-group
+                    tag="ul"
+                    v-on:before-leave="beforeLeave" 
+                    v-on:leave="leave" 
+                >
+                    <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
                         <pre><code v-highlight="content"></code></pre>
                         <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
                         <button v-on:click="removeCode(item, contentIndex, index)" class="btn_remove" href="#">remove</button>
                     </li>
-                </ul>
+                </transition-group>
                 <a v-on:click="removeItem(item, index)" href="#">削除</a>
             </li>
         </ul>
@@ -130,6 +137,7 @@ import GetBmark from './get_bmark_controller.js'
 import hljs from 'highlight.js'
 import styles from 'highlight.js/styles/hybrid.css'
 import clipbrd from 'clipboard'
+import Velocity from 'velocity-animate'
 new clipbrd('.btn_cp');
 
 let bmark = new GetBmark();
@@ -154,7 +162,6 @@ export default {
         }); 
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
-            console.log( document.documentElement.clientHeight - window.innerHeight - window.scrollY );
             if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
         }, false);
     },
@@ -183,6 +190,13 @@ export default {
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }
+        },
+        beforeLeave: function(el){
+            console.log("del" + el.offsetHeight);
+            //el.style.maxHeight = "0px";
+        },
+        leave: function(el, done){
+            Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         }
     },
     directives: {
@@ -198,6 +212,6 @@ export default {
                 tags.forEach( val=>{ if( val !== "" ){ el.innerHTML += ((el.innerHTML === "") ? "" : " > ") + val;}} );
             },
         }
-    }
+    },
 }
 </script>
