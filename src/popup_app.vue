@@ -13,6 +13,7 @@ ul{
     border-width: 0 0 1px 0;
     border-color: gainsboro;
     overflow: hidden;
+    position: relative;
 }
 .bmark_item:last-child{
     border-style: none;
@@ -57,29 +58,47 @@ ul{
 }
 
 
-.btn_cp{
+.btn_cp, .btn_removecode, .btn_removebmark{
     width: 20px;
     height: 20px;
     background-color: transparent;
     border-style: none;
-    background-image: url('../img/memopad.png');
     background-position: center;
     background-repeat: no-repeat;
     position: absolute;
-    top: 5px;
-    right: 5px;
     opacity: 0.7;
 }
-.btn_cp:hover{
+.btn_cp{
+    top: 10px;
+    right: 10px;
+    background-image: url('../img/memopad.png');
+}
+.btn_removecode{
+    top: 10px;
+    right: 30px;
+    background-image: url('../img/gomi.png');
+}
+.btn_removebmark{
+    top: 5px;
+    right: 5px;
+    background-image: url('../img/gomi_kuro.png');
+}
+.btn_cp:hover, .btn_removecode:hover, .btn_removebmark:hover{
     background-color: gainsboro;
 }
-.btn_cp:active{
+.btn_cp:active, .btn_removecode:active, .btn_removebmark:active{
     background-color: gray;
 }
 
 .code_item{
     position: relative;
     overflow: hidden;
+    margin: 1px;
+    padding: 1px;
+}
+
+.code_item pre{
+    margin: 1px;
 }
 
 #header{
@@ -105,6 +124,7 @@ ul{
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
                 <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
+                <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
                 <ul class="htag_list">
                     <li v-for="htag in item.tags">
                         <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
@@ -114,10 +134,9 @@ ul{
                     <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
                         <pre><code v-highlight="content"></code></pre>
                         <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
-                        <button v-on:click="removeCode(item, contentIndex, index)" class="btn_remove" href="#">remove</button>
+                        <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
                     </li>
                 </transition-group>
-                <button v-on:click="removeItem(item, index)" href="#">削除</button>
             </li>
         </transition-group>
     </div>

@@ -19,6 +19,7 @@ input[type="button"]{
     height: 30px;
     right: 5px;
     top: 3px;
+    margin-top: 2px;
     border-style: none;
     position: absolute;
 }

@@ -141,6 +141,7 @@ export default class bookmarkStore{
     removeCode(key, index){
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
+        console.log(key + "," + index);
         objectStore.get(key).onsuccess = e=>{ 
             let updateData = e.target.result;
             if( !updateData ){ throw "Update data is nothing"; return; }
