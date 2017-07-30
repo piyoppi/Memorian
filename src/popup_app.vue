@@ -12,6 +12,7 @@ ul{
     border-style: solid;
     border-width: 0 0 1px 0;
     border-color: gainsboro;
+    overflow: hidden;
 }
 .bmark_item:last-child{
     border-style: none;
@@ -93,12 +94,6 @@ ul{
     margin-top: 30px;
 }
 
-/*
-.code-enter, .code-leave-to{overflow: hidden;}
-.code-enter-active, .code-leave-active{
-    transition: all 3000ms cubic-bezier(0.420, 0.000, 0.580, 1.000);
-}
-*/
 </style>
 
 
@@ -107,19 +102,15 @@ ul{
         <div id="header">
             <find-component @find="find"></find-component>
         </div>
-        <ul id="snippet_list">
-            <li v-for="(item, index) in bookmarkList" class="bmark_item">
+        <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
+            <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
                 <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
                 <ul class="htag_list">
                     <li v-for="htag in item.tags">
                         <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
                     </li>
                 </ul>
-                <transition-group
-                    tag="ul"
-                    v-on:before-leave="beforeLeave" 
-                    v-on:leave="leave" 
-                >
+                <transition-group tag="ul" v-on:leave="leave_code" >
                     <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
                         <pre><code v-highlight="content"></code></pre>
                         <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
@@ -128,7 +119,7 @@ ul{
                 </transition-group>
                 <a v-on:click="removeItem(item, index)" href="#">削除</a>
             </li>
-        </ul>
+        </transition-group>
     </div>
 </template>
 
@@ -191,11 +182,10 @@ export default {
                 this.removeItem(item, index)
             }
         },
-        beforeLeave: function(el){
-            console.log("del" + el.offsetHeight);
-            //el.style.maxHeight = "0px";
+        leave_code: function(el, done){
+            Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
-        leave: function(el, done){
+        leave_bmark: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         }
     },

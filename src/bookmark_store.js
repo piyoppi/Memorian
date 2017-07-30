@@ -9,7 +9,23 @@ export default class bookmarkStore{
 
         this.__allDatas = { version: -1, data: null};
         this.__findResults = {query: "", version: -1, data: null};
+        this.__keyList = [];
 
+    }
+
+    getKeyList(){
+        let transaction = this._db.transaction(["bookmarks"], "readwrite");
+        let objectStore = transaction.objectStore("bookmarks");
+        objectStore.openCursor().onsuccess = e => {
+            let cursor = e.target.result;
+            if( cursor ){
+                this.__keyList.push( cursor.key );
+                cursor.continue();
+            }
+            else{
+                this.__keyList.sort( (a, b)=>b-a );
+            }
+        }
     }
 
     getBookmarkCount(){
@@ -25,6 +41,7 @@ export default class bookmarkStore{
         request.onsuccess = (e) => {
             this._db = e.target.result;
             this.getBookmarkCount();
+            this.getKeyList();
         }
         request.onerror = () => {};
         request.onupgradeneeded = (e) => { 
@@ -53,8 +70,8 @@ export default class bookmarkStore{
             text_for_dupcheck: textForDuplicateCheck
         };
         var request = objectStore.add(addData);
-        request.onsuccess = function(e) { console.log(e); };
-        request.onerror = function(e) { console.log(e); };
+        request.onsuccess = e => { console.log(e); this.__keyList.unshift(e.target.result); };
+        request.onerror = e => { console.log(e); };
         this._dataVersion++;
         this.bookmarkCount++;
     }
@@ -80,13 +97,21 @@ export default class bookmarkStore{
     }
 
     getBookmarks(ofs, len, callback){
+        if( ofs >= this.__keyList.length ){
+            callback([]);
+            return;    
+        }
+
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
         let data = [];
         let readcount = 0;
-        let offset = this.bookmarkCount - ofs - len + 1;
+        let keyListIdxOffset = ofs + len;
+        if( this.__keyList.length <= keyListIdxOffset ) keyListIdxOffset = this.__keyList.length-1;
+        let offset = this.__keyList[keyListIdxOffset];
+        let length = this.__keyList[ofs];
 
-        objectStore.openCursor(IDBKeyRange.bound(offset, offset+len), "prev").onsuccess = function(e){
+        objectStore.openCursor(IDBKeyRange.bound(offset, length), "prev").onsuccess = function(e){
             var cursor = e.target.result;
             if( cursor ){
                 let ret_val = cursor.value;
@@ -132,7 +157,6 @@ export default class bookmarkStore{
             this.getBookmarks(query.offset, query.length, callback);
             return;
         }
-        console.log(query);
         let searcher = new simpleSearcher();
         if( (query.query !== this.__findResults.query) || (this._dataVersion !== this.__findResults.version ) ){
             this.getAllBookmarks(e=>{
