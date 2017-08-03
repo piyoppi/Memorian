@@ -24,6 +24,7 @@ export default class bookmarkStore{
             }
             else{
                 this.__keyList.sort( (a, b)=>b-a );
+                console.log(this.__keyList);
             }
         }
     }
@@ -142,6 +143,8 @@ export default class bookmarkStore{
     removeBookmark(key){
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
+        let keylistIdx = this.__keyList.indexOf(key);
+        if( keylistIdx >= 0 ) this.__keyList.splice(keylistIdx, 1);
         objectStore.delete(key);
     }
 
