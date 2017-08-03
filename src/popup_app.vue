@@ -197,6 +197,7 @@ export default {
         removeCode: function(item, contentIndex, index){
             bmark.removeCode(item.key, contentIndex);
             item.contents.splice(contentIndex, 1);
+            console.log(item.contents);
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }

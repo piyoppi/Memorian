@@ -56,19 +56,25 @@ export default class bookmarkStore{
         return data.title + data.header_tag_text + data.url;
     }
 
+    genTextForFinding(data){
+        return (data.content+ " " + data.header_tag_text + " " + data.title).toLowerCase().replace(/\r|\n|\r\n/g, "");
+    }
+
     setBookmarkData(data){
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
-        let textForFinding = data.content+ " " + data.header_tag_text + " " + data.title;
+        let textForFinding = this.genTextForFinding(data);
         let textForDuplicateCheck = this.getTextForDuplicateCheck(data);
-        let addData = { contents: [data.content],
+        let addData = {
+            contents: [data.content],
             url: data.url,
             title: data.title,
             header_tag_text: data.header_tag_text,
             tags: data.tags,
-            text_for_finding: textForFinding.toLowerCase(),
+            text_for_finding: textForFinding + "\n",
             text_for_dupcheck: textForDuplicateCheck
         };
+        console.log(addData.text_for_finding);
         var request = objectStore.add(addData);
         request.onsuccess = e => { console.log(e); this.__keyList.unshift(e.target.result); };
         request.onerror = e => { console.log(e); };
@@ -87,13 +93,14 @@ export default class bookmarkStore{
                 let updateData = e.target.result;
                 if( !updateData ){ reject(e); return; }
                 updateData.contents.push(data.content);
+                updateData.text_for_finding += this.genTextForFinding(data) + "\n";
                 var requestUpdate = objectStore.put(updateData);
                 requestUpdate.onerror = e => { reject(e) };
                 requestUpdate.onsuccess = e => { resolve(e) };
             }
             get_item.onerror = e => { reject(e); }
         });
-        this.dataVersion++;
+        this._dataVersion++;
     }
 
     getBookmarks(ofs, len, callback){
@@ -146,9 +153,18 @@ export default class bookmarkStore{
             let updateData = e.target.result;
             if( !updateData ){ throw "Update data is nothing"; return; }
             updateData.contents.splice(index, 1);
-            var requestUpdate = objectStore.put(updateData);
+
+            console.log(updateData.text_for_finding);
+            let arrTextforFinding = updateData.text_for_finding.split("\n");
+            arrTextforFinding.splice(index, 1);
+            updateData.text_for_finding = arrTextforFinding.join("\n");
+            console.log(updateData.text_for_finding);
+
+
+            let requestUpdate = objectStore.put(updateData);
             requestUpdate.onerror = e => { throw "Update was failed" };
             requestUpdate.onsuccess = e => { return Promise.resolve("hoge"); };
+            this._dataVersion++;
         };
 
     }
