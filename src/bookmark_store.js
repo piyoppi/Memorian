@@ -90,7 +90,7 @@ export default class bookmarkStore{
 
     getOrCreateTag(tagName){
         this.getTag.then( e => Promise.resolve(e) )
-        .catch( e => Promise.resolve(tagName) );
+        .catch( e => { this.addTag(tagName).then( e => Promise.resolve(e) ) });
     }
 
     attachTag(key, tagName){
@@ -114,15 +114,17 @@ export default class bookmarkStore{
     }
 
     addTag(tagName){
-        let addData = {
-            tagName: tagName,
-            contentIDs: []
-        }
-        let transaction = this._db.transaction(["tags"], "readwrite");
-        let objectStore = transaction.objectStore("tags");
-        let request = objectStore.add(addData);
-        request.onsuccess = e => { };
-        request.onerror = e => { };
+        return new Promise( (resolve, reject) => {
+            let addData = {
+                tagName: tagName,
+                contentIDs: []
+            };
+            let transaction = this._db.transaction(["tags"], "readwrite");
+            let objectStore = transaction.objectStore("tags");
+            let request = objectStore.add(addData);
+            request.onsuccess = e => { resolve(addData); };
+            request.onerror = e => { reject(e); };
+        });
     }
 
     setBookmarkData(data){
