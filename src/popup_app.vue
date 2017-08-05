@@ -123,24 +123,7 @@ ul{
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
-                <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
-                <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
-                <ul class="htag_list">
-                    <li v-for="htag in item.tags">
-                        <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
-                    </li>
-                </ul>
-                <transition-group tag="ul" v-on:leave="leave_code" >
-                    <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
-                        <pre><code v-highlight="content"></code></pre>
-                        <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
-                        <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
-                    </li>
-                </transition-group>
-                <!--
-                <button v-on:click="addTag(item)" class="" href="#">tag</button>
-                <input type="text" v-model="taginput" ></input>
-                -->
+                <bookmark-item-component @find="find"></find-component>
             </li>
         </transition-group>
     </div>
@@ -156,12 +139,14 @@ new clipbrd('.btn_cp');
 
 let bmark = new GetBmark();
 import FindComponent from './findset.vue'
+import BookmarkItemComponent from './bookmark_item.vue'
 
 let getDataAmount = 5;
 
 export default {
     components: {
-        FindComponent
+        FindComponent,
+        BookmarkItemComponent
     },
     data: function(){
         return{
