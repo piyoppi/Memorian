@@ -1,6 +1,3 @@
-<style scoped>
-
-</style>
 
 <template>
     <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
@@ -33,49 +30,23 @@ import Velocity from 'velocity-animate'
 new clipbrd('.btn_cp');
 
 let bmark = new GetBmark();
-import FindComponent from './findset.vue'
-
-let getDataAmount = 5;
 
 export default {
     components: {
-        FindComponent
     },
     data: function(){
         return{
-            bookmarkList: [],
-            query: "",
-            isStopScroll: false,
-            taginput: "",
         }
     },
+    props: [
+        "item",
+        "index"
+    ],
     created: function(){
-        bmark.get_bookmarks_request(0, getDataAmount, e=>{
-            this.bookmarkList = e;
-        }); 
-        document.addEventListener("scroll", ()=>{
-            if( this.isStopScroll ) return;
-            if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
-        }, false);
     },
     methods: {
-        removeItem: function(item, index){
-            bmark.removeItem(item.key);
-            this.bookmarkList.splice(index, 1);
-        },
         jump_link: function(item, tag){
             bmark.jump_link(item, tag);
-        },
-        find: function(query){
-            this.isStopScroll = false;
-            this.query = query;
-            bmark.find({query: query, offset: 0, length: getDataAmount}, e=>{ this.bookmarkList = e; });
-        },
-        paginate: function(){
-            bmark.find({query: this.query, offset: this.bookmarkList.length, length: getDataAmount}, e=>{
-                this.bookmarkList = this.bookmarkList.concat(e);
-                if( e.length < getDataAmount ) this.isStopScroll = true;
-            });
         },
         removeCode: function(item, contentIndex, index){
             bmark.removeCode(item.key, contentIndex);
@@ -87,9 +58,6 @@ export default {
         },
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
-        },
-        leave_bmark: function(el, done){
-            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
         },
         addTag: function(item){
 
@@ -111,3 +79,84 @@ export default {
     },
 }
 </script>
+
+<style scoped>
+.page_title{
+    text-decoration: none;
+    display: block;
+    margin: 8px 3px;
+    color: black;
+    font-weight: bold;
+    font-size: 10pt;
+}
+.htag_list{
+    margin: 3px;
+    padding: 0;
+    list-style-type: none;
+}
+.htag_list li{
+    display: inline-block; 
+}
+
+.htag_list li>a{
+    color: gray;
+}
+
+.htag_list li:before{
+    content: " ";
+    width: 10px;
+    height: 10px;
+    background-position: center;
+    background-repeat: none;
+    background-image: url("../img/pankuzu.png"); 
+    display: inline-block;
+    margin-right: 3px;
+}
+
+.htag_list li:first-child:before{
+    width: 0;
+    height: 0;
+    background-image: none; 
+}
+.btn_cp, .btn_removecode, .btn_removebmark{
+    width: 20px;
+    height: 20px;
+    background-color: transparent;
+    border-style: none;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: absolute;
+    opacity: 0.7;
+}
+.btn_cp{
+    top: 10px;
+    right: 10px;
+    background-image: url('../img/memopad.png');
+}
+.btn_removecode{
+    top: 10px;
+    right: 30px;
+    background-image: url('../img/gomi.png');
+}
+.btn_removebmark{
+    top: 5px;
+    right: 5px;
+    background-image: url('../img/gomi_kuro.png');
+}
+.btn_cp:hover, .btn_removecode:hover, .btn_removebmark:hover{
+    background-color: gainsboro;
+}
+.btn_cp:active, .btn_removecode:active, .btn_removebmark:active{
+    background-color: gray;
+}
+.code_item{
+    position: relative;
+    overflow: hidden;
+    margin: 1px;
+    padding: 1px;
+}
+
+.code_item pre{
+    margin: 1px;
+}
+</style>
