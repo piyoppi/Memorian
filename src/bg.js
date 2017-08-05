@@ -43,6 +43,10 @@ chrome.runtime.onMessage.addListener(
                     bStore.find(request.query, (e)=>{ retValue({data: e, key: request.key}) });
                     break;
 
+                case "attachTag":
+                    bStore.attachTagFromDataKey(request.datakey, request.tagName, (e)=>{ retValue({data: e, key: request.key}) });
+                    break;
+
                 default:
                     sendResponse("none");
                     break;

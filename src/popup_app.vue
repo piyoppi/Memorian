@@ -137,6 +137,10 @@ ul{
                         <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
                     </li>
                 </transition-group>
+                <!--
+                <button v-on:click="addTag(item)" class="" href="#">tag</button>
+                <input type="text" v-model="taginput" ></input>
+                -->
             </li>
         </transition-group>
     </div>
@@ -164,6 +168,7 @@ export default {
             bookmarkList: [],
             query: "",
             isStopScroll: false,
+            taginput: "",
         }
     },
     created: function(){
@@ -207,6 +212,9 @@ export default {
         },
         leave_bmark: function(el, done){
             Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
+        },
+        addTag: function(item){
+
         }
     },
     directives: {

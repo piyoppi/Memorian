@@ -94,6 +94,12 @@ export default class bookmarkStore{
         .catch( e => { this.addTag(tagName).then( e => Promise.resolve(e) ) });
     }
 
+    attachTagFromDataKey(datakey, tagName, callback){
+        this.addBookmarkKeyIntoTag( datakey, tagName ).then( tag => {
+            this.getBookmark.then( data => this.addTagKeyIntoBookmark(data, tag.id) );
+        });
+    }
+
     attachTag(data, tagName){
         this.addBookmarkKeyIntoTag.then( tag => {
             this.addTagKeyIntoBookmark(data, tag.id);
