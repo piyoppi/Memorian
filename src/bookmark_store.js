@@ -24,7 +24,6 @@ export default class bookmarkStore{
             }
             else{
                 this.__keyList.sort( (a, b)=>b-a );
-                console.log(this.__keyList);
             }
         }
     }
@@ -92,36 +91,38 @@ export default class bookmarkStore{
     getOrCreateTag(tagName){
         return this.getTag(tagName).then( e => {
             if( e ){
-                console.log(">>>>");
-                console.log(e); return Promise.resolve(e);
+                return Promise.resolve(e);
             }
             else{
-                return this.addTag(tagName).then( e => Promise.resolve(e) );
+                return this.addTag(tagName).then( e => {console.log("getorgetorgetor"); return Promise.resolve(e);} );
             }
         } )
     }
 
     attachTagFromDataKey(datakey, tagName, callback){
         this.addBookmarkKeyIntoTag(datakey, tagName).then( tag => {
-            this.getBookmark(datakey).then( data => this.addTagKeyIntoBookmark(data, tag.id) );
+            console.log("attached????? >>> ");
+            console.log(tag);
+            this.getBookmark(datakey).then( data => this.addTagKeyIntoBookmark(data, tag.id) )
         });
     }
 
-    attachTag(data, tagName){
-        this.addBookmarkKeyIntoTag.then( tag => {
-            this.addTagKeyIntoBookmark(data, tag.id);
-        });
-    }
+    //attachTag(data, tagName){
+    //    this.addBookmarkKeyIntoTag.then( tag => {
+    //        this.addTagKeyIntoBookmark(data, tag.id);
+    //    });
+    //}
 
     addTagKeyIntoBookmark(data, tagkey){
-        data.tags.push(tagkey);
+        console.log("update data");
+        console.log(data);
+        data.tagIds.push(tagkey);
         this.updateBookmarkData(data).then( e=>{} );
     }
 
     addBookmarkKeyIntoTag(datakey, tagName){
         return this.getOrCreateTag(tagName).then( tag => {
-            console.log("addbmakr");
-            console.log(tag);
+            console.log("addbookmarkkkekruyoiiafkla;ugrio");
             tag.contentIDs.push(datakey);
             return new Promise( (resolve, reject) => {
                 let transaction = this._db.transaction(["tags"], "readwrite");
@@ -139,7 +140,8 @@ export default class bookmarkStore{
         let index = objectStore.index("tagName");
         return new Promise( (resolve, reject) => {
             let request = index.get(tagName);
-            request.onsuccess = e => resolve(e.target.result);
+            console.log("getgetgetgetgetgetget");
+            request.onsuccess = e => {console.log("!!!!!!!!!!!!!!"); resolve(e.target.result)};
             request.onerror = e => reject(e);
         });
     }
@@ -149,22 +151,27 @@ export default class bookmarkStore{
         let objectStore = transaction.objectStore("tags");
         return new Promise( (resolve, reject) => {
             let request = objectStore.get(key);
-            request.onsuccess = e => resolve(e.data.result);
+            request.onsuccess = e => resolve(e.target.result);
             request.onerror = e => reject(e);
         });
     }
 
     getTagsAll(){
-        let response = [];
-        let transaction = this._db.transaction(["tags"], "readwrite");
-        let objectStore = transaction.objectStore("tags");
-        objectStore.openCursor().onsuccess = e => {
-            let cursor = e.target.result;
-            if( cursor ){
-                response.push({ key: cursor.key, value: cursor.value });
-                cursor.continue();
+        return new Promise( (resolve, reject) => {
+            let response = [];
+            let transaction = this._db.transaction(["tags"], "readwrite");
+            let objectStore = transaction.objectStore("tags");
+            objectStore.openCursor().onsuccess = e => {
+                let cursor = e.target.result;
+                if( cursor ){
+                    response.push(cursor.value);
+                    cursor.continue();
+                }
+                else{
+                    resolve(response);
+                }
             }
-        }
+        });
     }
 
     addTag(tagName){
@@ -176,7 +183,8 @@ export default class bookmarkStore{
             let transaction = this._db.transaction(["tags"], "readwrite");
             let objectStore = transaction.objectStore("tags");
             let request = objectStore.add(addData);
-            request.onsuccess = e => this.getTag(tagName);
+            console.log("addaddaddaddaddaddadd");
+            request.onsuccess = e => this.getTag(tagName).then( e => resolve(e) );
             request.onerror = e => reject(e);
         });
     }
@@ -204,11 +212,21 @@ export default class bookmarkStore{
     }
 
     updateBookmarkData(data){
-        let dupchk_text = this.getTextForDuplicateCheck(data);
+        return new Promise( (resolve, reject) => {
+            let transaction = this._db.transaction(["bookmarks"], "readwrite");
+            let objectStore = transaction.objectStore("bookmarks");
+            var requestUpdate = objectStore.put(data);
+            requestUpdate.onerror = e => reject(e);
+            requestUpdate.onsuccess = e => resolve(e);
+        });
+    }
+
+    addContentIntoBookmarkData(data){
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
         let index = objectStore.index("text_for_dupcheck");
         return new Promise((resolve, reject) => {
+            let dupchk_text = this.getTextForDuplicateCheck(data);
             let get_item = index.get(dupchk_text);
             get_item.onsuccess = e => {
                 let updateData = e.target.result;
@@ -237,12 +255,11 @@ export default class bookmarkStore{
     attachTagDataToBookmarkDatas(bookmarks){
         let promises = [];
         bookmarks.forEach( bookmark => promises.push(this.attachTagDataToBookmarkData(bookmark)) );
+        console.log("hoeghoge2");
         return Promise.all( promises ).then( results => Promise.resolve( results ) );
     }
 
     attachTagDataToBookmarkData(bookmark){
-        console.log("---");
-        console.log(bookmark);
         let promises = [];
         bookmark.tags = [];
         bookmark.tagIds.forEach( tagId => promises.push(this.getTagFromKey(tagId)) );
@@ -269,7 +286,7 @@ export default class bookmarkStore{
         let offset = this.__keyList[keyListIdxOffset];
         let length = this.__keyList[ofs];
 
-        objectStore.openCursor(IDBKeyRange.bound(offset, length), "prev").onsuccess = function(e){
+        objectStore.openCursor(IDBKeyRange.bound(offset, length), "prev").onsuccess = e => {
             var cursor = e.target.result;
             if( cursor ){
                 let ret_val = cursor.value;
@@ -277,14 +294,14 @@ export default class bookmarkStore{
                 data.push( ret_val );
                 readcount++;
                 if( (len !== 0) && (len === readcount ) ){
-                    this.attachTagDataToBookmarkDatas.then( data => callback(data) );
+                    this.attachTagDataToBookmarkDatas(data).then( data => callback(data) );
                 }
                 else{
                     cursor.continue();
                 }
             }
             else{
-                callback(data);
+                this.attachTagDataToBookmarkDatas(data).then( data => callback(data) );
             }
         }
 
@@ -306,12 +323,9 @@ export default class bookmarkStore{
             if( !updateData ){ throw "Update data is nothing"; return; }
             updateData.contents.splice(index, 1);
 
-            console.log(updateData.text_for_finding);
             let arrTextforFinding = updateData.text_for_finding.split("\n");
             arrTextforFinding.splice(index, 1);
             updateData.text_for_finding = arrTextforFinding.join("\n");
-            console.log(updateData.text_for_finding);
-
 
             let requestUpdate = objectStore.put(updateData);
             requestUpdate.onerror = e => { throw "Update was failed" };

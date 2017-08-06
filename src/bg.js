@@ -9,7 +9,7 @@ function contextMenu_Click(info, tab){
 
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
-        bStore.updateBookmarkData(response).then( e => {
+        bStore.addContentIntoBookmarkData(response).then( e => {
         })
         .catch( e=>{
             bStore.setBookmarkData(response);
@@ -48,7 +48,7 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "getTagsAll":
-                    bStore.getTagsAll((e)=>{ retValue({data: e, key: request.key}) });
+                    bStore.getTagsAll().then((e) => retValue({data: e, key: request.key}));
                     break;
 
                 default:

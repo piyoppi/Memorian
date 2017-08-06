@@ -44,7 +44,7 @@ export default class popup_controller{
     getTagsAll(callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
-        chrome.runtime.sendMessage({id: "getTagsAll", key: key}, (e)=>{});
+        chrome.runtime.sendMessage({id: "getTagsAll", key: key}, callback);
     }
 
     jump_link(item, tag){

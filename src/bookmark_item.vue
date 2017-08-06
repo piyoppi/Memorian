@@ -1,4 +1,3 @@
-
 <template>
     <div>
         <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
@@ -15,6 +14,9 @@
                 <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
             </li>
         </transition-group>
+        <ul v-for="tag in item.tags">
+            <li>{{ tag.tagName }}</li>
+        </ul>
     </div>
 </template>
 
