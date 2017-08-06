@@ -65,6 +65,7 @@ export default class bookmarkStore{
     }
 
     detachTag(key, tagName){
+        console.log("xxx");
         this.getTag(tagName).then( e => {
             let transaction = this._db.transaction(["tags"], "readwrite");
             let objectStore = transaction.objectStore("tags");
@@ -94,7 +95,7 @@ export default class bookmarkStore{
                 return Promise.resolve(e);
             }
             else{
-                return this.addTag(tagName).then( e => {console.log("getorgetorgetor"); return Promise.resolve(e);} );
+                return this.addTag(tagName).then( e => Promise.resolve(e) );
             }
         } )
     }
@@ -109,7 +110,7 @@ export default class bookmarkStore{
     }
 
     detachTagFromDataKey(dataKey, tagKey){
-        this.getBookmark.then( bookmark => {
+        this.getBookmark(dataKey).then( bookmark => {
             let findTagIndex = bookmark.tagIds.indexOf(tagKey);
             if( findTagIndex >= 0 ){
                 bookmark.tagIds.splice(findTagIndex, 1);
@@ -282,7 +283,6 @@ export default class bookmarkStore{
     attachTagDataToBookmarkDatas(bookmarks){
         let promises = [];
         bookmarks.forEach( bookmark => promises.push(this.attachTagDataToBookmarkData(bookmark)) );
-        console.log("hoeghoge2");
         return Promise.all( promises ).then( results => Promise.resolve( results ) );
     }
 

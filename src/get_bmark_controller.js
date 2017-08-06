@@ -9,7 +9,6 @@ export default class popup_controller{
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
                 if( request.key in this._callback_buffer ){
-                    console.log(request);
                     this._callback_buffer[request.key](request.data);
                     delete this._callback_buffer[request.key];
                 }
@@ -54,7 +53,7 @@ export default class popup_controller{
     }
 
     detachTag(dataKey, tagKey){
-        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagName: tagKey}, callback);
+        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagName: tagKey}, e=>{});
     }
 
     find(query, callback){

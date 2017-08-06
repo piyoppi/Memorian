@@ -15,9 +15,9 @@
             </li>
         </transition-group>
         <ul class="taglist">
-            <li v-for="tag in item.tags">
+            <li v-for="(tag, index) in item.tags">
                 {{ tag.tagName }}
-                <button v-on:click="detachTag(item, tag)">x</button>
+                <button v-on:click="detachTag(tag, index)">x</button>
             </li>
         </ul>
     </div>
@@ -54,7 +54,6 @@ export default {
         removeCode: function(item, contentIndex, index){
             bmark.removeCode(item.key, contentIndex);
             item.contents.splice(contentIndex, 1);
-            console.log(item.contents);
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }
@@ -66,8 +65,9 @@ export default {
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
-        detachTag: function(item, tag){
-            detachTag(item.id, tag.id);
+        detachTag: function(tag, index){
+            bmark.detachTag(this.item.id, tag.id);
+            this.item.tags.splice(index, 1);
         }
     },
     directives: {
