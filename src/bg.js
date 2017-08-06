@@ -49,8 +49,13 @@ chrome.runtime.onMessage.addListener(
                     });
                     break;
 
+                case "removeTag":
+                    bStore.detachTagFromAllBookmark(request.tagKey)
+                        .then( e => bStore.removeTag(request.tagKey) );
+                    break;
+
                 case "detachTag":
-                    bStore.detachTagFromDataKey(request.datakey, request.tagName, (e)=>{ retValue({data: e, key: request.key}) });
+                    bStore.detachTagFromDataKey(request.datakey, request.tagKey, (e)=>{ retValue({data: e, key: request.key}) });
                     break;
 
                 case "getTagsAll":

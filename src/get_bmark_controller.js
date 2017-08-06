@@ -40,6 +40,10 @@ export default class popup_controller{
         chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName, key: key}, e=>{});
     }
 
+    removeTag(tagKey){
+        chrome.runtime.sendMessage({id: "removeTag", tagKey: tagKey}, e=>{});
+    }
+
     getTagsAll(callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
@@ -53,7 +57,7 @@ export default class popup_controller{
     }
 
     detachTag(dataKey, tagKey){
-        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagName: tagKey}, e=>{});
+        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagKey: tagKey}, e=>{});
     }
 
     find(query, callback){

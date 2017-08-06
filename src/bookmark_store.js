@@ -64,15 +64,14 @@ export default class bookmarkStore{
         return (data.content+ " " + data.header_tag_text + " " + data.title).toLowerCase().replace(/\r|\n|\r\n/g, "");
     }
 
-    detachTag(key, tagName){
-        console.log("xxx");
-        this.getTag(tagName).then( e => {
+    detachTag(key, tagKey){
+        this.getTagFromKey(tagKey).then( e => {
             let transaction = this._db.transaction(["tags"], "readwrite");
             let objectStore = transaction.objectStore("tags");
             let keyPosition = e.contentIDs.indexOf(key);
             if( keyPosition != 0 ) return;
             if( e.contentIDs.length === 1 ){
-                this.removeTag(tagName);
+                this.removeTag(tagKey);
             }
             else{
                 e.contentIDs.splice(keyPosition, 1);
@@ -83,10 +82,30 @@ export default class bookmarkStore{
         });
     }
 
-    removeTag(tagName){
+    removeTag(tagKey){
         let transaction = this._db.transaction(["tags"], "readwrite");
         let objectStore = transaction.objectStore("tags");
-        objectStore.delete(tagName);
+        objectStore.delete(tagKey);
+    }
+
+    detachTagFromAllBookmark(tagKey){
+        return this.getTagFromKey(tagKey).then( tag => {
+            let transaction = this._db.transaction(["tags"], "readwrite");
+            let objectStore = transaction.objectStore("tags");
+            let promisesBmark = [];
+            tag.contentIDs.forEach( contentID => promisesBmark.push(this.getBookmark(contentID)));
+            return Promise.all(promisesBmark).then( results => {
+                let promisesUpdate = [];
+                results.forEach( bookmark => {
+                    let idx = bookmark.tagIds.indexOf(tagKey);
+                    if( idx >= 0 ){
+                        bookmark.tagIds.splice(idx, 1);
+                        promisesUpdate.push(this.updateBookmarkData(bookmark));
+                    }
+                    return Promise.all(promisesUpdate).then;
+                });
+            });
+        });
     }
 
     getOrCreateTag(tagName){
@@ -102,11 +121,11 @@ export default class bookmarkStore{
 
     attachTagFromDataKey(datakey, tagName){
         return this.addBookmarkKeyIntoTag(datakey, tagName).then( tag => 
-            this.getBookmark(datakey).then( data => {
-                this.addTagKeyIntoBookmark(data, tag.id);
-                return Promise.resolve(tag);
-            })
-        );
+                this.getBookmark(datakey).then( data => {
+                    this.addTagKeyIntoBookmark(data, tag.id);
+                    return Promise.resolve(tag);
+                })
+                );
     }
 
     detachTagFromDataKey(dataKey, tagKey){
@@ -121,13 +140,13 @@ export default class bookmarkStore{
             }
         })
         .then( e => this.getTagFromKey(tagKey) )
-        .then( tagData => {
-            let findDataIndex = tagData.contentIDs.indexOf(dataKey);
-            if( findDataIndex >= 0 ){
-                tagData.contentIDs.splice(findDataIndex, 1);
-                this.updateTag(tagData);
-            }
-        });
+            .then( tagData => {
+                let findDataIndex = tagData.contentIDs.indexOf(dataKey);
+                if( findDataIndex >= 0 ){
+                    tagData.contentIDs.splice(findDataIndex, 1);
+                    this.updateTag(tagData);
+                }
+            });
     }
 
     //attachTag(data, tagName){
