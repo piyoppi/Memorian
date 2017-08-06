@@ -21,6 +21,7 @@ chrome.contextMenus.create({ title: "この部分を切り抜く", contexts: ["s
 chrome.contextMenus.create({ title: "この部分を切り抜く", onclick: mnu_ElementMemo_click });
 
 function retValue(obj){
+    console.log(obj);
     chrome.runtime.sendMessage(obj, ()=>{});
 }
 
@@ -44,7 +45,15 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "attachTag":
-                    bStore.attachTagFromDataKey(request.datakey, request.tagName, (e)=>{ retValue({data: e, key: request.key}) });
+                    bStore.attachTagFromDataKey(request.datakey, request.tagName).then( e=>{
+                        console.log("-^-^^--^-^--");
+                        console.log(e);
+                        retValue({data: e, key: request.key});
+                    });
+                    break;
+
+                case "detachTag":
+                    bStore.detachTagFromDataKey(request.datakey, request.tagName, (e)=>{ retValue({data: e, key: request.key}) });
                     break;
 
                 case "getTagsAll":

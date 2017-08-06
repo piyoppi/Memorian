@@ -38,19 +38,23 @@ export default class popup_controller{
     attachTag(dataKey, tagName, callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
-        chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName, key: key}, callback);
+        chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName, key: key}, e=>{});
     }
 
     getTagsAll(callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
-        chrome.runtime.sendMessage({id: "getTagsAll", key: key}, callback);
+        chrome.runtime.sendMessage({id: "getTagsAll", key: key}, e=>{});
     }
 
     jump_link(item, tag){
         chrome.tabs.query({active: true, currentWindow: true}, tab=>{
             chrome.tabs.sendMessage(tab[0].id, {id: "jump_link", item: item, tag: tag }, (e)=>{});
         });
+    }
+
+    detachTag(dataKey, tagKey){
+        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagName: tagKey}, callback);
     }
 
     find(query, callback){

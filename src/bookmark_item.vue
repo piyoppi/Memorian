@@ -14,8 +14,11 @@
                 <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
             </li>
         </transition-group>
-        <ul v-for="tag in item.tags">
-            <li>{{ tag.tagName }}</li>
+        <ul class="taglist">
+            <li v-for="tag in item.tags">
+                {{ tag.tagName }}
+                <button v-on:click="detachTag(item, tag)">x</button>
+            </li>
         </ul>
     </div>
 </template>
@@ -63,8 +66,8 @@ export default {
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
-        addTag: function(item){
-
+        detachTag: function(item, tag){
+            detachTag(item.id, tag.id);
         }
     },
     directives: {
@@ -162,5 +165,30 @@ export default {
 
 .code_item pre{
     margin: 1px;
+}
+
+.taglist{
+    list-style-type: none;
+}
+
+.taglist li{
+    display: block;
+    float: left;
+    border-radius: 3px;
+    border-style: solid;
+    border-width: 1px;
+    margin: 2px;
+    padding: 3px 6px;
+    cursor: pointer;
+    border-color: gainsboro;
+}
+
+ul.taglist:after{
+    clear: both;
+    display: block;
+    content: " ";
+}
+.taglist li:hover{
+    border-color: black;
 }
 </style>
