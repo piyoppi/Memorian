@@ -4,7 +4,7 @@
         <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
         <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
         <ul class="htag_list">
-            <li v-for="htag in item.tags">
+            <li v-for="htag in item.captions">
                 <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
             </li>
         </ul>
@@ -73,9 +73,9 @@ export default {
         htag: {
             bind: function(el, binding){
                 if( !binding.value ) return;
-                let tags = binding.value.split(",");
+                let captions = binding.value.split(",");
                 el.innerHTML = "";
-                tags.forEach( val=>{ if( val !== "" ){ el.innerHTML += ((el.innerHTML === "") ? "" : " > ") + val;}} );
+                captions.forEach( val=>{ if( val !== "" ){ el.innerHTML += ((el.innerHTML === "") ? "" : " > ") + val;}} );
             },
         }
     },

@@ -42,7 +42,7 @@ function find_element_fromcurpos(){
         title: document.title,
         url: window.location.href,
         header_tag_text: header_tag_text,
-        tags: send_additional_info
+        captions: send_additional_info
     };
 }
 

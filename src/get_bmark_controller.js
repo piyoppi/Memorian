@@ -35,10 +35,16 @@ export default class popup_controller{
         chrome.runtime.sendMessage({id: "remove_code", key: key, index: index}, (e)=>{});
     }
 
-    attachTag(datakey, tagName){
+    attachTag(dataKey, tagName, callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
-        chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName, key: key}, (e)=>{});
+        chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName, key: key}, callback);
+    }
+
+    getTagsAll(callback){
+        let key = this.keygen();
+        this._callback_buffer[ key ] = callback;
+        chrome.runtime.sendMessage({id: "getTagsAll", key: key}, (e)=>{});
     }
 
     jump_link(item, tag){

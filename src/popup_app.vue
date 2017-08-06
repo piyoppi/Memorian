@@ -33,10 +33,6 @@ ul{
 
 </style>
 
-    <!--
-        <button v-on:click="addTag(item)" class="" href="#">tag</button>
-        <input type="text" v-model="taginput" ></input>
-    -->
 
 <template>
     <div id="outer">
@@ -46,6 +42,7 @@ ul{
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
+                <tag-select-component :bookmarkItem="item"></tag-select-component>
             </li>
         </transition-group>
     </div>
@@ -58,13 +55,15 @@ import Velocity from 'velocity-animate'
 let bmark = new GetBmark();
 import FindComponent from './findset.vue'
 import BookmarkItemComponent from './bookmark_item.vue'
+import TagSelectComponent from './addtag_ui.vue'
 
 let getDataAmount = 5;
 
 export default {
     components: {
         FindComponent,
-        BookmarkItemComponent
+        BookmarkItemComponent,
+        TagSelectComponent
     },
     data: function(){
         return{
@@ -74,9 +73,7 @@ export default {
         }
     },
     created: function(){
-        bmark.get_bookmarks_request(0, getDataAmount, e=>{
-            this.bookmarkList = e;
-        }); 
+        bmark.get_bookmarks_request(0, getDataAmount, e => this.bookmarkList = e); 
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
             if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
