@@ -1,23 +1,21 @@
 
 <template>
-    <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
-    <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
-    <ul class="htag_list">
-        <li v-for="htag in item.tags">
-            <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
-        </li>
-    </ul>
-    <transition-group tag="ul" v-on:leave="leave_code" >
-        <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
-            <pre><code v-highlight="content"></code></pre>
-            <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
-            <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
-        </li>
-    </transition-group>
-    <!--
-        <button v-on:click="addTag(item)" class="" href="#">tag</button>
-        <input type="text" v-model="taginput" ></input>
-    -->
+    <div>
+        <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
+        <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
+        <ul class="htag_list">
+            <li v-for="htag in item.tags">
+                <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
+            </li>
+        </ul>
+        <transition-group tag="ul" v-on:leave="leave_code" >
+            <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
+                <pre><code v-highlight="content"></code></pre>
+                <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
+                <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
+            </li>
+        </transition-group>
+    </div>
 </template>
 
 
@@ -39,8 +37,8 @@ export default {
         }
     },
     props: [
-        "item",
-        "index"
+    "item",
+    "index"
     ],
     created: function(){
     },
@@ -55,6 +53,10 @@ export default {
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }
+        },
+        removeItem: function(item, index){
+            bmark.removeItem(item.key);
+            this.$emit('removed_bookmark', item, index);
         },
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});

@@ -33,6 +33,10 @@ ul{
 
 </style>
 
+    <!--
+        <button v-on:click="addTag(item)" class="" href="#">tag</button>
+        <input type="text" v-model="taginput" ></input>
+    -->
 
 <template>
     <div id="outer">
@@ -41,7 +45,7 @@ ul{
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
-                <bookmark-item-component :item="item", :index="index"></find-component>
+                <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
             </li>
         </transition-group>
     </div>
@@ -67,7 +71,6 @@ export default {
             bookmarkList: [],
             query: "",
             isStopScroll: false,
-            taginput: "",
         }
     },
     created: function(){
@@ -85,8 +88,7 @@ export default {
             this.query = query;
             bmark.find({query: query, offset: 0, length: getDataAmount}, e=>{ this.bookmarkList = e; });
         },
-        removeItem: function(item, index){
-            bmark.removeItem(item.key);
+        removedItem: function(item, index){
             this.bookmarkList.splice(index, 1);
         },
         paginate: function(){
@@ -100,18 +102,6 @@ export default {
         },
     },
     directives: {
-        highlight: function(el, binding){
-            if (binding.value) { el.className=""; el.innerText = binding.value; }
-            hljs.highlightBlock(el);
-        },
-        htag: {
-            bind: function(el, binding){
-                if( !binding.value ) return;
-                let tags = binding.value.split(",");
-                el.innerHTML = "";
-                tags.forEach( val=>{ if( val !== "" ){ el.innerHTML += ((el.innerHTML === "") ? "" : " > ") + val;}} );
-            },
-        }
     },
 }
 </script>
