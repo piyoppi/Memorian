@@ -42,7 +42,8 @@ ul{
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
-                <tag-select-component :bookmarkItem="item"></tag-select-component>
+                <button class="btn_taglist" v-on:click="showTagList(item)" href="#">tag</button>
+                <tag-select-component :bookmarkItem="item" v-show="showTagKey == item.id"></tag-select-component>
             </li>
         </transition-group>
     </div>
@@ -70,6 +71,7 @@ export default {
             bookmarkList: [],
             query: "",
             isStopScroll: false,
+            showTagKey: -1,
         }
     },
     created: function(){
@@ -97,6 +99,9 @@ export default {
         leave_bmark: function(el, done){
             Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
         },
+        showTagList: function(item){
+            this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
+        }
     },
     directives: {
     },

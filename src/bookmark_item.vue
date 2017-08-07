@@ -7,8 +7,8 @@
                 <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
             </li>
         </ul>
-        <transition-group tag="ul" v-on:leave="leave_code" >
-            <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
+        <transition-group tag="ul" class="code_list" v-on:leave="leave_code" >
+            <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="contentIndex">
                 <pre><code v-highlight="content"></code></pre>
                 <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
                 <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
@@ -17,7 +17,7 @@
         <ul class="taglist">
             <li v-for="(tag, index) in item.tags">
                 {{ tag.tagName }}
-                <button v-on:click="detachTag(tag, index)">x</button>
+                <button class="remove_tag" v-on:click="detachTag(tag, index)">x</button>
             </li>
         </ul>
     </div>
@@ -68,7 +68,7 @@ export default {
         detachTag: function(tag, index){
             bmark.detachTag(this.item.id, tag.id);
             this.item.tags.splice(index, 1);
-        }
+        },
     },
     directives: {
         highlight: function(el, binding){
@@ -156,6 +156,12 @@ export default {
 .btn_cp:active, .btn_removecode:active, .btn_removebmark:active{
     background-color: gray;
 }
+
+.code_list{
+    margin-left: 0;
+    padding-left: 0;
+}
+
 .code_item{
     position: relative;
     overflow: hidden;
@@ -169,6 +175,7 @@ export default {
 
 .taglist{
     list-style-type: none;
+    padding-left: 0;
 }
 
 .taglist li{
@@ -178,9 +185,31 @@ export default {
     border-style: solid;
     border-width: 1px;
     margin: 2px;
-    padding: 3px 6px;
+    padding: 1px 6px;
+    color: gray;
     cursor: pointer;
     border-color: gainsboro;
+    transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+}
+
+.remove_tag{
+    width: 15px;
+    height: 15px;
+    font-size: 8pt;
+    text-align: center;
+    border-radius: 10px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: gainsboro;
+    margin-left: 10px;
+    color: gainsboro;
+    background-color: white;
+    cursor: pointer;
+    transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+}
+.remove_tag:hover{
+    background-color: gainsboro;
+    color: white;
 }
 
 ul.taglist:after{
