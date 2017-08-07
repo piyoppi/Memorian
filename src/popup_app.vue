@@ -101,6 +101,8 @@ export default {
         },
         showTagList: function(item){
             this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
+        },
+        attachedTag: function(tag){
         }
     },
     directives: {
