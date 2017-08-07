@@ -43,7 +43,7 @@ ul{
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <button class="btn_taglist" v-on:click="showTagList(item)" href="#">tag</button>
-                <tag-select-component :bookmarkItem="item" v-show="showTagKey == item.id"></tag-select-component>
+                <tag-select-component :bookmarkItem="item" v-if="showTagKey == item.id"></tag-select-component>
             </li>
         </transition-group>
     </div>
