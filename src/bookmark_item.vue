@@ -212,7 +212,7 @@ export default {
     color: white;
 }
 
-ul.taglist:after{
+.taglist:after{
     clear: both;
     display: block;
     content: " ";

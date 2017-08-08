@@ -31,6 +31,10 @@ ul{
     margin-top: 30px;
 }
 
+.tagselect_group{
+    overflow: hidden;    
+}
+
 </style>
 
 
@@ -43,7 +47,11 @@ ul{
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <button class="btn_taglist" v-on:click="showTagList(item)" href="#">tag</button>
-                <tag-select-component :bookmarkItem="item" v-if="showTagKey == item.id"></tag-select-component>
+                <transition name="tagsel" v-on:leave="leave_taglist" v-on:enter="show_taglist" v-bind:css="false">
+                    <div class="tagselect_group" v-if="showTagKey == item.id" >
+                        <tag-select-component :bookmarkItem="item" v-bind:key="index"></tag-select-component>
+                    </div>
+                </transition>
             </li>
         </transition-group>
     </div>
@@ -98,6 +106,12 @@ export default {
         },
         leave_bmark: function(el, done){
             Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
+        },
+        leave_taglist: function(el, done){
+            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
+        },
+        show_taglist: function(el, done){
+            Velocity(el, {maxHeight: el.clientHeight + 500 + "px"}, {duration: 600}, {complete: done});
         },
         showTagList: function(item){
             this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
