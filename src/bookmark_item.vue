@@ -8,7 +8,7 @@
             </li>
         </ul>
         <transition-group tag="ul" class="code_list" v-on:leave="leave_code" >
-            <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="contentIndex">
+            <li class="code_item" v-for="(content, contentIndex) in item.contents" v-bind:key="content">
                 <pre><code v-highlight="content"></code></pre>
                 <button :data-clipboard-text="content" class="btn_cp" href="#"></button>
                 <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>

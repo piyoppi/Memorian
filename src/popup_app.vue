@@ -44,7 +44,7 @@ ul{
             <find-component @find="find"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
-            <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="index">
+            <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <button class="btn_taglist" v-on:click="showTagList(item)" href="#">tag</button>
                 <transition name="tagsel" v-on:leave="leave_taglist" v-on:enter="show_taglist" v-bind:css="false">
