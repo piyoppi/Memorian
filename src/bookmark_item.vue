@@ -136,12 +136,12 @@ export default {
     opacity: 0.7;
 }
 .btn_cp{
-    top: 10px;
+    top: 7px;
     right: 10px;
     background-image: url('../img/memopad.png');
 }
 .btn_removecode{
-    top: 10px;
+    top: 7px;
     right: 30px;
     background-image: url('../img/gomi.png');
 }
@@ -160,6 +160,8 @@ export default {
 .code_list{
     margin-left: 0;
     padding-left: 0;
+    margin-top: 2px;
+    padding-top: 0;
 }
 
 .code_item{
@@ -167,10 +169,15 @@ export default {
     overflow: hidden;
     margin: 1px;
     padding: 1px;
+    display: block;
 }
 
 .code_item pre{
     margin: 1px;
+}
+
+.code_item code{
+    padding: 10px;
 }
 
 .taglist{
