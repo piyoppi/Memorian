@@ -260,6 +260,8 @@ export default class bookmarkStore{
 
     updateBookmarkData(data){
         return new Promise( (resolve, reject) => {
+            console.log("update-data");
+            console.log(data);
             let transaction = this._db.transaction(["bookmarks"], "readwrite");
             let objectStore = transaction.objectStore("bookmarks");
             var requestUpdate = objectStore.put(data);
