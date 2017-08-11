@@ -393,8 +393,12 @@ export default class bookmarkStore{
             .then( params => {
                 let tags = params.splice(0, 1)[0];
                 let retBookmarks = [];
+                let registryBookmarkIDs = [];
                 params.forEach( bookmark => {
-                    if( !tags.some( tag => bookmark.tagIds.indexOf(tag.id) < 0) ) retBookmarks.push(bookmark);
+                    if( (!tags.some( tag => bookmark.tagIds.indexOf(tag.id) < 0)) && (registryBookmarkIDs.indexOf(bookmark.id) < 0) ){
+                        retBookmarks.push(bookmark);
+                        registryBookmarkIDs.push(bookmark.id);
+                    }
                 })
                 return Promise.resolve(retBookmarks);
             });
