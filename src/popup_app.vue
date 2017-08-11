@@ -35,6 +35,16 @@ ul{
     overflow: hidden;    
 }
 
+.btn_taglist{
+    width: 20px;
+    height: 20px;
+    background-image: url('../img/tag.png');
+    background-color: white;
+    background-repeat: no-repeat;
+    border-style: none;
+    background-color: none;
+}
+
 </style>
 
 
@@ -46,7 +56,8 @@ ul{
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
-                <button class="btn_taglist" v-on:click="showTagList(item)" href="#">tag</button>
+                <tag-list-component :item="item"></tag-list-component>
+                <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
                 <transition name="tagsel" v-on:leave="leave_taglist" v-on:enter="show_taglist" v-bind:css="false">
                     <div class="tagselect_group" v-if="showTagKey == item.id" >
                         <tag-select-component :bookmarkItem="item" v-bind:key="index"></tag-select-component>
@@ -65,6 +76,7 @@ let bmark = new GetBmark();
 import FindComponent from './findset.vue'
 import BookmarkItemComponent from './bookmark_item.vue'
 import TagSelectComponent from './addtag_ui.vue'
+import TagListComponent from './taglist.vue'
 
 let getDataAmount = 5;
 
@@ -72,7 +84,8 @@ export default {
     components: {
         FindComponent,
         BookmarkItemComponent,
-        TagSelectComponent
+        TagSelectComponent,
+        TagListComponent,
     },
     data: function(){
         return{

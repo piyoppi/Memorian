@@ -14,12 +14,6 @@
                 <button v-on:click="removeCode(item, contentIndex, index)" class="btn_removecode" href="#"></button>
             </li>
         </transition-group>
-        <ul class="taglist">
-            <li v-for="(tag, index) in item.tags">
-                {{ tag.tagName }}
-                <button class="remove_tag" v-on:click="detachTag(tag, index)">x</button>
-            </li>
-        </ul>
     </div>
 </template>
 
@@ -197,6 +191,7 @@ export default {
     cursor: pointer;
     border-color: gainsboro;
     transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
+    height: 20px;
 }
 
 .remove_tag{
