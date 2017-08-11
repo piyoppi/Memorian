@@ -57,13 +57,13 @@ export default {
         find: function(query){
             this.isStopScroll = false;
             this.query = query;
-            bmark.find({query: query, tagQuery: "t: ", offset: 0, length: getDataAmount}, e=>{ this.bookmarkList = e; });
+            bmark.findKeywordOrTag({query: query, offset: 0, length: getDataAmount}, e=>{ this.bookmarkList = e; console.log(e); });
         },
         removedItem: function(item, index){
             this.bookmarkList.splice(index, 1);
         },
         paginate: function(){
-            bmark.find({query: this.query, tagQuery: "t: ", offset: this.bookmarkList.length, length: getDataAmount}, e=>{
+            bmark.findKeywordOrTag({query: this.query, offset: this.bookmarkList.length, length: getDataAmount}, e=>{
                 this.bookmarkList = this.bookmarkList.concat(e);
                 if( e.length < getDataAmount ) this.isStopScroll = true;
             });

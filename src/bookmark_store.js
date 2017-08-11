@@ -259,8 +259,6 @@ export default class bookmarkStore{
 
     updateBookmarkData(data){
         return new Promise( (resolve, reject) => {
-            console.log("update-data");
-            console.log(data);
             let transaction = this._db.transaction(["bookmarks"], "readwrite");
             let objectStore = transaction.objectStore("bookmarks");
             var requestUpdate = objectStore.put(data);
@@ -383,27 +381,28 @@ export default class bookmarkStore{
     }
 
     findUsingTagFromQueryString(query){
-        query = query.toLowerCase().replace(/ |@/g, " ");
-        let tagStrs = query.split(" ");
+        let tagStrs = query.query.toLowerCase().replace(/ |ã€€/g, " ").split(" ");
 
         let findTagPromises = [];
-        return Promise.all(tagStrs.map( tagStr => this.getTag(tagStrs) ))
-            .then( tags => Promise.all( [tags , ...tags.map( tag => this.findBookmarkUsingTagPromises(tag) )] ) )
+        return Promise.all(tagStrs.map( tagStr => this.getTag(tagStr) ))
+            .then( tags =>{
+                let promises = [tags];
+                tags.forEach( tag => promises = promises.concat(this.findBookmarkUsingTagPromises(tag)));
+                return Promise.all( promises ) 
+            })
             .then( params => {
                 let tags = params.splice(0, 1)[0];
                 let retBookmarks = [];
                 params.forEach( bookmark => {
                     if( !tags.some( tag => bookmark.tagIds.indexOf(tag.id) < 0) ) retBookmarks.push(bookmark);
-                });
+                })
                 return Promise.resolve(retBookmarks);
             });
     }
 
     findBookmarkUsingTagPromises(tag){
         let bmarks = [];
-        tag.contentIDs.forEach( contentID => {
-            bmarks.push(this.getBookmark(key));
-        });
+        tag.contentIDs.forEach( contentID => bmarks.push(this.getBookmark(contentID)));
         return bmarks;
     }
 

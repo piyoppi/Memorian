@@ -40,7 +40,8 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "findUsingTag":
-                    bStore.findUsingTagFromQueryString(request.query, e => {retValue({data: e, key: request.key})} );
+                    bStore.findUsingTagFromQueryString(request.query).then( e => retValue({data: e, key: request.key}) );
+                    break;
 
                 case "find":
                     bStore.find(request.query, (e)=>{ retValue({data: e, key: request.key}) });
