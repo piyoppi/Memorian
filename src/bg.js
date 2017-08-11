@@ -46,6 +46,9 @@ chrome.runtime.onMessage.addListener(
                 case "attachTag":
                     bStore.attachTagFromDataKey(request.datakey, request.tagName).then( e=>{
                         retValue({data: e, key: request.key});
+                    })
+                    .catch(e=>{
+                        retValue({data: null});
                     });
                     break;
 

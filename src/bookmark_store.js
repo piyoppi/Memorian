@@ -125,7 +125,7 @@ export default class bookmarkStore{
                     this.addTagKeyIntoBookmark(data, tag.id);
                     return Promise.resolve(tag);
                 })
-                );
+        );
     }
 
     detachTagFromDataKey(dataKey, tagKey){
@@ -149,20 +149,19 @@ export default class bookmarkStore{
             });
     }
 
-    //attachTag(data, tagName){
-    //    this.addBookmarkKeyIntoTag.then( tag => {
-    //        this.addTagKeyIntoBookmark(data, tag.id);
-    //    });
-    //}
-
     addTagKeyIntoBookmark(data, tagkey){
         data.tagIds.push(tagkey);
         this.updateBookmarkData(data).then( e=>{} );
     }
 
-    addBookmarkKeyIntoTag(datakey, tagName){
+    checkDuplicateTag(dataKey, tag){
+        return ( tag.contentIDs.indexOf(dataKey) === -1 );
+    }
+
+    addBookmarkKeyIntoTag(dataKey, tagName){
         return this.getOrCreateTag(tagName).then( tag => {
-            tag.contentIDs.push(datakey);
+            if( !this.checkDuplicateTag(dataKey, tag) ) throw "TagDuplicateError";
+            tag.contentIDs.push(dataKey);
             return new Promise( (resolve, reject) => {
                 let transaction = this._db.transaction(["tags"], "readwrite");
                 let objectStore = transaction.objectStore("tags");
