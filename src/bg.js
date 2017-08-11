@@ -39,6 +39,9 @@ chrome.runtime.onMessage.addListener(
                     bStore.removeCode(request.key, request.index);
                     break;
 
+                case "findUsingTag":
+                    bStore.findUsingTagFromQueryString(request.query, e => {retValue({data: e, key: request.key})} );
+
                 case "find":
                     bStore.find(request.query, (e)=>{ retValue({data: e, key: request.key}) });
                     break;

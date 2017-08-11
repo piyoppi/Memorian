@@ -382,6 +382,31 @@ export default class bookmarkStore{
 
     }
 
+    findUsingTagFromQueryString(query){
+        query = query.toLowerCase().replace(/ |@/g, " ");
+        let tagStrs = query.split(" ");
+
+        let findTagPromises = [];
+        return Promise.all(tagStrs.map( tagStr => this.getTag(tagStrs) ))
+            .then( tags => Promise.all( [tags , ...tags.map( tag => this.findBookmarkUsingTagPromises(tag) )] ) )
+            .then( params => {
+                let tags = params.splice(0, 1)[0];
+                let retBookmarks = [];
+                params.forEach( bookmark => {
+                    if( !tags.some( tag => bookmark.tagIds.indexOf(tag.id) < 0) ) retBookmarks.push(bookmark);
+                });
+                return Promise.resolve(retBookmarks);
+            });
+    }
+
+    findBookmarkUsingTagPromises(tag){
+        let bmarks = [];
+        tag.contentIDs.forEach( contentID => {
+            bmarks.push(this.getBookmark(key));
+        });
+        return bmarks;
+    }
+
     find(query, callback){
         if( !query || query.query === "" ){
             this.getBookmarks(query.offset, query.length, callback);

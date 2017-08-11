@@ -26,29 +26,55 @@ input[type="button"]{
 .outer{
     position: relative;
 }
+
+.findtags{
+    
+}
 </style>
 
 <template>
     <div class="outer">
         <input id="query_textbox" type="text" v-model="query" v-inputFocus v-on:keyup.enter="find()">
         <input type="button" value="" v-on:click="find()">
+        <tag-list-component class="findtags" v-show="findTag.length>0" :tags="findTag" @tagClick="tagClick"></tag-list-component>
     </div>
 </template>
 
 <script>
+import TagListComponent from './taglist.vue'
+import arraySearcher from 'array_searcher'
+import GetBmark from './get_bmark_controller.js'
+let bmark = new GetBmark();
+let searcher = new arraySearcher();
+
 export default{
+    components: {
+        TagListComponent,
+    },
     data: function(){
         return {
-            query: ""
+            query: "",
+            tags: [],
         }
     },
     created: function(){
+        bmark.getTagsAll( e => {
+            this.tags = e;
+            searcher.setHash(this.tags, ["tagName"]);
+        } );
+    },
+    computed: {
+        findTag: function(){
+            return searcher.search(this.query);
+        }
     },
     methods: {
         find: function(){
             this.$emit('find', this.query);
         },
-        focus: function(){
+        tagClick: function(tag){
+            this.query = "t: " + tag.tagName;
+            this.$emit('find', this.query);
         }
     },
     directives: {

@@ -60,10 +60,25 @@ export default class popup_controller{
         chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagKey: tagKey}, e=>{});
     }
 
+    findUsingTag(query, callback){
+        let key = this.keygen();
+        this._callback_buffer[ key ] = callback;
+        chrome.runtime.sendMessage({id: "findUsingTag", query: query, key: key}, (e)=>{});
+    }
+
     find(query, callback){
         let key = this.keygen();
         this._callback_buffer[ key ] = callback;
         chrome.runtime.sendMessage({id: "find", query: query, key: key}, (e)=>{});
+    }
+
+    findKeywordOrTag(query, callback){
+        if( query.substr(0, 3) === "t: " ){
+            this.find(query, callback)
+        }
+        else{
+            this.findUsingTag(query, callback);
+        }
     }
 
 }
