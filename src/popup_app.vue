@@ -7,8 +7,10 @@
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
-                <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
-                <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
+                <div>
+                    <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
+                    <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
+                </div>
                 <transition name="tagsel" v-on:leave="leave_taglist" v-on:enter="show_taglist" v-bind:css="false">
                     <div class="tagselect_group" v-if="showTagKey == item.id" >
                         <tag-select-component :bookmarkItem="item" v-bind:key="index"></tag-select-component>
@@ -137,6 +139,7 @@ ul{
     background-color: none;
     border-radius: 3px;
     cursor: pointer;
+    position: absolute;
 }
 
 .btn_taglist:hover{
@@ -145,11 +148,9 @@ ul{
 
 .taglist{
     margin: 0;
+    margin-bottom: 5px;
     padding: 0;
-    position: relative;
-    top: -25px;
-    left: 25px;
-    margin-bottom: -20px;
+    margin-left: 25px;
 }
 
 

@@ -1,7 +1,7 @@
 
 <template>
     <div>
-        <input class="taginput" type="text" v-model="tagInput" v-on:keyup.="textInput"></input>
+        <input class="taginput" type="text" v-model="tagInput"></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
         <ul class="taglist">
             <li v-for="(tag, index) in getTagList" v-on:click.self="selectTag(tag)">
@@ -74,6 +74,11 @@ export default {
 <style scoped>
 ul{
     list-style-type: none;
+}
+ul:after{
+    clear: both;
+    display: block;
+    content: " ";
 }
 li{
     display: block;
