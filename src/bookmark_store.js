@@ -386,6 +386,7 @@ export default class bookmarkStore{
         let findTagPromises = [];
         return Promise.all(tagStrs.map( tagStr => this.getTag(tagStr) ))
             .then( tags =>{
+                tags = tags.filter( tag => tag );
                 let promises = [tags];
                 tags.forEach( tag => promises = promises.concat(this.findBookmarkUsingTagPromises(tag)));
                 return Promise.all( promises ) 
@@ -395,6 +396,7 @@ export default class bookmarkStore{
                 let retBookmarks = [];
                 let registryBookmarkIDs = [];
                 params.forEach( bookmark => {
+                    if( !bookmark ) return;
                     if( (!tags.some( tag => bookmark.tagIds.indexOf(tag.id) < 0)) && (registryBookmarkIDs.indexOf(bookmark.id) < 0) ){
                         retBookmarks.push(bookmark);
                         registryBookmarkIDs.push(bookmark.id);
@@ -405,6 +407,7 @@ export default class bookmarkStore{
     }
 
     findBookmarkUsingTagPromises(tag){
+        if( !tag ) return null;
         let bmarks = [];
         tag.contentIDs.forEach( contentID => bmarks.push(this.getBookmark(contentID)));
         return bmarks;
