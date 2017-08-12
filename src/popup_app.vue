@@ -97,7 +97,7 @@ ul{
     padding: 10px;
 }
 .bmark_item{
-    padding: 0 0 10px 0;
+    padding: 0;
     border-style: solid;
     border-width: 0 0 1px 0;
     border-color: gainsboro;
@@ -128,6 +128,7 @@ ul{
     width: 22px;
     height: 22px;
     margin-top: 3px;
+    margin-bottom: 0;
     background-image: url('../img/tag.png');
     background-color: white;
     background-repeat: no-repeat;
@@ -148,6 +149,7 @@ ul{
     position: relative;
     top: -25px;
     left: 25px;
+    margin-bottom: -20px;
 }
 
 
