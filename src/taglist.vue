@@ -33,8 +33,6 @@ export default {
             this.$emit('tagClick', tag);
         }
     },
-    directives: {
-    },
 }
 </script>
 
