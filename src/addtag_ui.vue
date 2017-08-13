@@ -1,7 +1,10 @@
 
 <template>
     <div>
-        <input class="taginput" type="text" v-inputFocus v-model="tagInput"></input>
+        <input class="taginput" type="text"
+               v-inputFocus
+               v-model="tagInput"
+               ></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
         <ul class="taglist">
             <li v-for="(tag, index) in getTagList" v-on:click.self="selectTag(tag)">
@@ -64,7 +67,7 @@ export default {
         removeTag: function(tag, index){
             bmark.removeTag(tag.id, e=>{this.tags.push(e);});
             this.tags.splice(index, 1);
-        }
+        },
     },
     directives: {
         inputFocus:{ bind: function(el, value){ setTimeout( ()=>{ el.focus(); }, 1); } }

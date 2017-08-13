@@ -1,6 +1,6 @@
 <template>
     <ul class="taglist">
-        <li v-for="(tag, index) in tags" v-on:click.self="tagClick(tag, index)">
+        <li v-for="(tag, index) in tags" class="tags" v-bind:class="{ tagselected: (selectedIndex == index) }" v-on:keyup.tab="selectNextItem" v-on:click.self="tagClick(tag, index)">
             {{ tag.tagName }}
             <button class="remove_tag" v-show="item" v-on:click="detachTag(tag, index)">x</button>
         </li>
@@ -16,13 +16,19 @@ export default {
     },
     data: function(){
         return{
+            selectedIndex: -1,
         }
     },
     props: [
         "item",
         "tags",
+        "keyEnable"
     ],
     created: function(){
+        document.addEventListener('keydown', this.keyCheck);
+    },
+    watch: {
+        tags: function(val){ this.selectedIndex = -1 }
     },
     methods: {
         detachTag: function(tag, index){
@@ -31,7 +37,30 @@ export default {
         },
         tagClick: function(tag, index){
             this.$emit('tagClick', tag);
+        },
+        selectNextItem: function(){
+            selectedIndex++;
+        },
+        keyCheck: function(e){
+            if( !this.keyEnable ) return;
+            switch(e.keyCode){
+                case 9:
+                    if(e.shiftKey){
+                        this.selectedIndex = ( this.selectedIndex >= 0 ) ? (this.selectedIndex-1) : (this.tags.length-1);
+                    }
+                    else{
+                        this.selectedIndex = ( this.selectedIndex < this.tags.length-1 ) ? (this.selectedIndex+1) : -1;
+                    }
+                    console.log(this.tags.length);
+                    e.preventDefault();
+                    break;
+                case 13:
+                    if( (this.selectedIndex >= 0) && (this.selectedIndex < this.tags.length) ) this.$emit('tagClick', this.tags[this.selectedIndex] );
+                    break;
+            }
         }
+    },
+    directives: {
     },
 }
 </script>
@@ -43,7 +72,7 @@ export default {
     padding-left: 0;
 }
 
-.taglist li{
+.tags{
     display: block;
     float: left;
     border-radius: 3px;
@@ -56,6 +85,15 @@ export default {
     border-color: gainsboro;
     transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
     height: 20px;
+}
+
+.tags:hover{
+    border-color: black;
+}
+
+.tagselected{
+    border-color: blue;
+    border-style: solid;
 }
 
 .remove_tag{
@@ -83,7 +121,5 @@ export default {
     display: block;
     content: " ";
 }
-.taglist li:hover{
-    border-color: black;
-}
+
 </style>

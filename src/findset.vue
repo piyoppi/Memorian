@@ -34,9 +34,15 @@ input[type="button"]{
 
 <template>
     <div class="outer">
-        <input id="query_textbox" type="text" v-model="query" v-inputFocus v-on:keyup.enter="find()">
+        <input id="query_textbox" type="text" v-model="query"
+               v-inputFocus
+               v-on:keyup.enter="find()"
+               v-on:focus="isTaglistKeyEnable = true"
+               v-on:blur="isTaglistKeyEnable = false"
+               >
         <input type="button" value="" v-on:click="find()">
-        <tag-list-component class="findtags" v-show="findTag.length>0" :tags="findTag" @tagClick="tagClick"></tag-list-component>
+        <tag-list-component class="findtags" v-show="findTag.length>0" :keyEnable="isTaglistKeyEnable" :tags="findTag" @tagClick="tagClick"></tag-list-component>
+               
     </div>
 </template>
 
@@ -55,6 +61,7 @@ export default{
         return {
             query: "",
             tags: [],
+            isTaglistKeyEnable: false,
         }
     },
     created: function(){
