@@ -76,3 +76,11 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 
 
 
+document.addEventListener('keydown', function(e){
+    console.log(e);
+    switch(e.keyCode){
+        case 77:
+            if( e.ctrlKey ) chrome.runtime.sendMessage({id: "showBookmarks"}, (e)=>{}); 
+    }
+}, false);
+

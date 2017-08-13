@@ -69,6 +69,10 @@ chrome.runtime.onMessage.addListener(
                     bStore.getTagsAll().then((e) => retValue({data: e, key: request.key}));
                     break;
 
+                case "showBookmarks":
+                    chrome.tabs.create({"url": "html/bg.html" });
+                    break;
+
                 default:
                     sendResponse("none");
                     break;

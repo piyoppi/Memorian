@@ -2,7 +2,8 @@ module.exports = {
     entry: {
         script: './src/script.js',
         bg: './src/bg.js',
-        popup: './src/popup.js'
+        popup: './src/popup.js',
+        list_page: './src/list_page.js',
     },
     output: {filename: 'dist/js/[name].bundle.js'},
     module: {

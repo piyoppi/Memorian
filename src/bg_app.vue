@@ -1,19 +1,19 @@
-<style>
-  .red {
-    color: #f00;
-  }
+<style scoped>
 </style>
 
 <template>
-  <h1 class="red">{{msg}}</h1>
+    <bookmark-list-component show_type="page"></bookmark-list-component>
 </template>
 
 <script>
-  module.exports = {
+import BookmarkListComponent from './bookmark_list.vue'
+export default {
     data: function () {
       return {
-        msg: 'Hello world!'
       }
+    },
+    components: {
+        BookmarkListComponent 
     }
   }
 </script>
