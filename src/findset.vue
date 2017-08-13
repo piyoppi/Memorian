@@ -88,6 +88,7 @@ export default{
     methods: {
         find: function(){
             this.$emit('find', this.query);
+            this.$emit('lostFocus');
         },
         tagClick: function(tag){
             this.query = "t: " + tag.tagName;
