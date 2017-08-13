@@ -7,7 +7,7 @@
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" :selecetd="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
-                <div>
+                <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
                     <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
                 </div>
@@ -217,6 +217,10 @@ ul{
     list-style-type: none;
     margin: 0;
     margin-top: 40px;
+}
+
+.bookmark_tags_outer{
+    min-height: 30px;
 }
 
 </style>
