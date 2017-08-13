@@ -4,18 +4,12 @@
         <input class="taginput" type="text"
                v-inputFocus
                v-model="tagInput"
+               v-on:keyup.enter="addTag"
+               v-on:focus="isTaglistKeyEnable = true"
+               v-on:blur="isTaglistKeyEnable = false"
                ></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
-        <tag-list-component class="taglist" :tagRemoveEnable="true" :keyEnable="isTaglistKeyEnable" :tags="tags" @tagClick="selectTag"></tag-list-component>
-
-        <!--
-        <ul class="taglist">
-            <li v-for="(tag, index) in getTagList" v-on:click.self="selectTag(tag)">
-                {{ tag.tagName }}
-                <button class="remove_tag" v-on:click="removeTag(tag, index)">x</button>
-            </li>
-        </ul>
-        -->
+        <tag-list-component class="taglist" :tagRemoveEnable="true" :keyEnable="isTaglistKeyEnable" :tags="getTagList" @tagClick="selectTag"></tag-list-component>
     </div>
 </template>
 
