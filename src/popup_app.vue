@@ -102,6 +102,19 @@ export default {
                 case 38:
                     this.selectPrevItem();
                     break;
+                case 13:
+                    if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
+                    let bmarkItem = this.bookmarkList[this.selectedIndex];
+                    bmark.jump_link(bmarkItem, bmarkItem.captions.h6 ||
+                                               bmarkItem.captions.h5 ||
+                                               bmarkItem.captions.h4 ||
+                                               bmarkItem.captions.h3 ||
+                                               bmarkItem.captions.h2 ||
+                                               bmarkItem.captions.h1
+                                                );
+                    console.log(bmarkItem);
+                    break;
+
             }
         }
     },
