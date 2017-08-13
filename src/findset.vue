@@ -37,8 +37,8 @@ input[type="button"]{
         <input id="query_textbox" type="text" v-model="query"
                v-inputFocus
                v-on:keyup.enter="find()"
-               v-on:focus="isTaglistKeyEnable = true"
-               v-on:blur="isTaglistKeyEnable = false"
+               v-on:focus="textFocus()"
+               v-on:blur="textBlur()"
                >
         <input type="button" value="" v-on:click="find()">
         <tag-list-component class="findtags" v-show="findTag.length>0" :keyEnable="isTaglistKeyEnable" :tags="findTag" @tagClick="tagClick"></tag-list-component>
@@ -75,6 +75,16 @@ export default{
             return searcher.search(this.query);
         }
     },
+    watch: {
+        query: function(val){
+            if( val !== "" ){
+                this.$emit('focused');
+            }
+            else{
+                this.$emit('lostFocus');
+            }
+        }
+    },
     methods: {
         find: function(){
             this.$emit('find', this.query);
@@ -82,7 +92,15 @@ export default{
         tagClick: function(tag){
             this.query = "t: " + tag.tagName;
             this.$emit('find', this.query);
-        }
+        },
+        textFocus: function(){
+            this.isTaglistKeyEnable = true;
+            if( this.query !== "" ) this.$emit('focused');
+        },
+        textBlur: function(){
+            this.isTaglistKeyEnable = false;
+            this.$emit('lostFocus');
+        },
     },
     directives: {
         inputFocus:{ bind: function(el, value){ setTimeout( ()=>{ el.focus(); }, 1); } }

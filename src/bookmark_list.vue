@@ -2,7 +2,7 @@
 <template>
     <div id="outer">
         <div id="header">
-            <find-component @find="find" id="findset"></find-component>
+            <find-component @find="find" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" class="bmark_item" v-bind:key="item.id">
@@ -63,6 +63,14 @@ export default {
         document.addEventListener('keydown', this.keyCheck);
     },
     methods: {
+        findComponentFocused: function(){
+            this.keyCheckEnable = false;
+            this.selectedIndex = -1;
+        },
+        findComponentLostFocused: function(){
+            this.keyCheckEnable = true;
+            this.selectedIndex = -1;
+        },
         find: function(query){
             this.isStopScroll = false;
             this.query = query;
