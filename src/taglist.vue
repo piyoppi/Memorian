@@ -2,7 +2,7 @@
     <ul class="taglist">
         <li v-for="(tag, index) in tags" class="tags" v-bind:class="{ tagselected: (selectedIndex == index) }" v-on:keyup.tab="selectNextItem" v-on:click.self="tagClick(tag, index)">
             {{ tag.tagName }}
-            <button class="remove_tag" v-show="item" v-on:click="detachTag(tag, index)">x</button>
+            <button class="remove_tag" v-show="item || tagRemoveEnable" v-on:click="detachTag(tag, index)">x</button>
         </li>
     </ul>
 </template>
@@ -22,7 +22,8 @@ export default {
     props: [
         "item",
         "tags",
-        "keyEnable"
+        "keyEnable",
+        "tagRemoveEnable",
     ],
     created: function(){
         document.addEventListener('keydown', this.keyCheck);
@@ -32,8 +33,14 @@ export default {
     },
     methods: {
         detachTag: function(tag, index){
-            bmark.detachTag(this.item.id, tag.id);
-            this.item.tags.splice(index, 1);
+            if( this.tagRemoveEnable ){
+                bmark.removeTag(tag.id, e=>{this.tags.push(e);});
+                this.tags.splice(index, 1);
+            }
+            else if(this.item){
+                bmark.detachTag(this.item.id, tag.id);
+                this.item.tags.splice(index, 1);
+            }
         },
         tagClick: function(tag, index){
             this.$emit('tagClick', tag);

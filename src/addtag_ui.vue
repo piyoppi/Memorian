@@ -6,12 +6,16 @@
                v-model="tagInput"
                ></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
+        <tag-list-component class="taglist" :tagRemoveEnable="true" :keyEnable="isTaglistKeyEnable" :tags="tags" @tagClick="selectTag"></tag-list-component>
+
+        <!--
         <ul class="taglist">
             <li v-for="(tag, index) in getTagList" v-on:click.self="selectTag(tag)">
                 {{ tag.tagName }}
                 <button class="remove_tag" v-on:click="removeTag(tag, index)">x</button>
             </li>
         </ul>
+        -->
     </div>
 </template>
 
@@ -21,14 +25,17 @@ import GetBmark from './get_bmark_controller.js'
 let bmark = new GetBmark();
 import arraySearcher from 'array_searcher'
 let searcher = new arraySearcher();
+import TagListComponent from './taglist.vue'
 
 export default {
     components: {
+        TagListComponent 
     },
     data: function(){
         return{
             tagInput: "",
             tags: [],
+            isTaglistKeyEnable: false,
         }
     },
     props: [
@@ -63,10 +70,6 @@ export default {
                 this.tags.push(tag);
                 this.bookmarkItem.tags.push(tag);
             });
-        },
-        removeTag: function(tag, index){
-            bmark.removeTag(tag.id, e=>{this.tags.push(e);});
-            this.tags.splice(index, 1);
         },
     },
     directives: {
