@@ -5,7 +5,7 @@
             <find-component @find="find"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
-            <li v-for="(item, index) in bookmarkList" class="bmark_item" v-bind:key="item.id">
+            <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <div>
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
@@ -46,6 +46,8 @@ export default {
             query: "",
             isStopScroll: false,
             showTagKey: -1,
+            selectedIndex: -1,
+            keyCheckEnable: true,
         }
     },
     created: function(){
@@ -54,6 +56,7 @@ export default {
             if( this.isStopScroll ) return;
             if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
         }, false);
+        document.addEventListener('keydown', this.keyCheck);
     },
     methods: {
         find: function(query){
@@ -82,7 +85,24 @@ export default {
         showTagList: function(item){
             this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
         },
-        attachedTag: function(tag){
+        selectNextItem: function(){
+            this.selectedIndex = ( this.selectedIndex < (this.bookmarkList.length-1) ) ? (this.selectedIndex+1) : -1;
+            console.log(this.selectedIndex);
+        },
+        selectPrevItem: function(){
+            this.selectedIndex = ( this.selectedIndex >= 0 ) ? (this.selectedIndex-1) : (this.bookmarkList.length-1);
+        },
+        keyCheck: function(e){
+            if( !this.keyCheckEnable ) return;
+            switch(e.keyCode){
+                case 40:
+                    this.selectNextItem();
+                    break;
+
+                case 38:
+                    this.selectPrevItem();
+                    break;
+            }
         }
     },
     directives: {
@@ -93,10 +113,6 @@ export default {
 
 <style scoped>
 ul{
-    width: 400px;
-    list-style-type: none;
-    margin: 0;
-    padding: 10px;
 }
 .bmark_item{
     padding: 0;
@@ -105,6 +121,7 @@ ul{
     border-color: gainsboro;
     overflow: hidden;
     position: relative;
+    padding: 5px;
 }
 .bmark_item:last-child{
     border-style: none;
@@ -153,5 +170,16 @@ ul{
     margin-left: 25px;
 }
 
+.bmarkselected{
+    background-color: #EEE;
+}
+
+#snippet_list{
+    padding: 0;
+    width: 400px;
+    list-style-type: none;
+    margin: 0;
+    margin-top: 40px;
+}
 
 </style>

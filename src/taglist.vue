@@ -49,7 +49,7 @@ export default {
             selectedIndex++;
         },
         keyCheck: function(e){
-            if( !this.keyEnable ) return;
+            if( (!this.keyEnable) || (this.tags.length === 0) ) return;
             switch(e.keyCode){
                 case 9:
                     if(e.shiftKey){
@@ -92,6 +92,7 @@ export default {
     border-color: gainsboro;
     transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
     height: 20px;
+    background-color: white;
 }
 
 .tags:hover{
