@@ -2,7 +2,7 @@
 <template>
     <div id="outer">
         <div id="header">
-            <find-component @find="find"></find-component>
+            <find-component @find="find" id="findset"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" class="bmark_item" v-bind:key="item.id">
@@ -153,6 +153,10 @@ ul{
     border-style: none;
 }
 
+#findset{
+    max-width: 700px;
+}
+
 #header{
     position: fixed;
     top: 0;
@@ -202,7 +206,6 @@ ul{
 
 #snippet_list{
     padding: 0;
-    width: 400px;
     list-style-type: none;
     margin: 0;
     margin-top: 40px;

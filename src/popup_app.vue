@@ -1,8 +1,11 @@
-<style scoped>
+<style>
+    #bmarklist{
+        width: 400px;
+    }
 </style>
 
 <template>
-    <bookmark-list-component></bookmark-list-component>
+    <bookmark-list-component id="bmarklist"></bookmark-list-component>
 </template>
 
 <script>

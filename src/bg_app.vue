@@ -1,8 +1,15 @@
-<style scoped>
+<style>
+    code{
+        font-size: 11pt;
+    }
+    #bmarklist{
+        width: 700px;
+        margin: 0 auto;
+    }
 </style>
 
 <template>
-    <bookmark-list-component show_type="page"></bookmark-list-component>
+    <bookmark-list-component id="bmarklist" show_type="page"></bookmark-list-component>
 </template>
 
 <script>
