@@ -6,7 +6,7 @@
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" class="bmark_item" v-bind:key="item.id">
-                <bookmark-item-component :item="item" :index="index" @removed_bookmark="removedItem"></bookmark-item-component>
+                <bookmark-item-component :item="item" :index="index" :selecetd="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <div>
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
                     <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
@@ -87,13 +87,13 @@ export default {
         },
         selectNextItem: function(){
             this.selectedIndex = ( this.selectedIndex < (this.bookmarkList.length-1) ) ? (this.selectedIndex+1) : -1;
-            console.log(this.selectedIndex);
         },
         selectPrevItem: function(){
             this.selectedIndex = ( this.selectedIndex >= 0 ) ? (this.selectedIndex-1) : (this.bookmarkList.length-1);
         },
         keyCheck: function(e){
             if( !this.keyCheckEnable ) return;
+            let bmarkItem = this.bookmarkList[this.selectedIndex];
             switch(e.keyCode){
                 case 40:
                     this.selectNextItem();
@@ -102,9 +102,18 @@ export default {
                 case 38:
                     this.selectPrevItem();
                     break;
+
+                case 9:                                 //tab
+                    break;
+
+                case 46:                                //delete
+                    if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
+                    bmark.removeItem(bmarkItem);
+                    this.removedItem(bmarkItem, this.selectedIndex);
+                    break;
+
                 case 13:
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
-                    let bmarkItem = this.bookmarkList[this.selectedIndex];
                     bmark.jump_link(bmarkItem, bmarkItem.captions.h6 ||
                                                bmarkItem.captions.h5 ||
                                                bmarkItem.captions.h4 ||

@@ -36,10 +36,17 @@ export default {
         }
     },
     props: [
-    "item",
-    "index"
+        "item",
+        "index",
+        "selected"
     ],
     created: function(){
+    },
+    watch: {
+        selected: function(val){
+            if( val ){document.addEventListener('keydown', this.keyCheck);}
+            else{document.removeEventListener('keydown', this.keyCheck);}
+        }
     },
     methods: {
         jump_link: function(item, tag){
@@ -62,6 +69,12 @@ export default {
         detachTag: function(tag, index){
             bmark.detachTag(this.item.id, tag.id);
             this.item.tags.splice(index, 1);
+        },
+        keyCheck: function(e){
+            switch(e){
+                case 67:
+                    break;
+            }
         },
     },
     directives: {
