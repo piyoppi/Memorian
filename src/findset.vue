@@ -62,6 +62,7 @@ export default{
             query: "",
             tags: [],
             isTaglistKeyEnable: false,
+            isFound: false,
         }
     },
     created: function(){
@@ -72,7 +73,7 @@ export default{
     },
     computed: {
         findTag: function(){
-            return searcher.search(this.query);
+            return this.isFound ? [] : searcher.search(this.query);
         }
     },
     watch: {
@@ -83,12 +84,14 @@ export default{
             else{
                 this.$emit('lostFocus');
             }
+            this.isFound = false;
         }
     },
     methods: {
         find: function(){
             this.$emit('find', this.query);
             this.$emit('lostFocus');
+            this.isFound = true;
         },
         tagClick: function(tag){
             this.query = "t: " + tag.tagName;

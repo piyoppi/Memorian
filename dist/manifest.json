@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Test Extention",
+    "name": "Memorian",
     "version": "0.1",
     "content_scripts": [
         {
@@ -10,10 +10,13 @@
         }
     ],
     "icons": {
-        "16": "icon_16.png"
+        "16": "icon16.png",
+        "32": "icon32.png",
+        "48": "icon48.png",
+        "128": "icon128.png"
     },
     "browser_action": {
-        "default_icon": "icon_16.png",
+        "default_icon": "icon16.png",
         "default_title": "sample",
         "default_popup": "html/popup.html"
     },
