@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="outer" v-focus="selected" tabIndex="0">
         <a :href="item.url" class="page_title" v-on:click="jump_link(item, '')">{{ item.title }}</a>
         <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
         <ul class="htag_list">
@@ -89,7 +89,12 @@ export default {
                 el.innerHTML = "";
                 captions.forEach( val=>{ if( val !== "" ){ el.innerHTML += ((el.innerHTML === "") ? "" : " > ") + val;}} );
             },
-        }
+        },
+        focus: {
+            componentUpdated: function(el, binding){
+                if( binding.value ){ el.focus(); }
+            },
+        },
     },
 }
 </script>
@@ -234,5 +239,9 @@ export default {
 }
 .taglist li:hover{
     border-color: black;
+}
+
+.outer{
+    outline: 0;
 }
 </style>

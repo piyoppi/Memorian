@@ -2,11 +2,11 @@
 <template>
     <div id="outer">
         <div id="header">
-            <find-component @find="find" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
+            <find-component :isFocus="selectedIndex<0" @find="find" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" v-selected="selectedIndex === index"  class="bmark_item" v-bind:key="item.id">
-                <bookmark-item-component :item="item" :index="index" :selecetd="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
+                <bookmark-item-component :item="item" :index="index" :selected="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
                     <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
@@ -69,7 +69,6 @@ export default {
         },
         findComponentLostFocused: function(){
             this.keyCheckEnable = true;
-            this.selectedIndex = -1;
         },
         find: function(query){
             this.isStopScroll = false;
@@ -109,10 +108,12 @@ export default {
             switch(e.keyCode){
                 case 40:
                     this.selectNextItem();
+                    e.preventDefault();
                     break;
 
                 case 38:
                     this.selectPrevItem();
+                    e.preventDefault();
                     break;
 
                 case 9:                                 //tab

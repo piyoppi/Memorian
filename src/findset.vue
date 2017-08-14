@@ -53,7 +53,7 @@ input[type="text"]{
 <template>
     <div class="outer">
         <input id="query_textbox" type="text" v-model="query"
-               v-inputFocus
+               v-isFocus="isFocus"
                v-on:keyup.enter="find()"
                v-on:focus="textFocus()"
                v-on:blur="textBlur()"
@@ -85,6 +85,9 @@ export default{
             isTagShowAll: false,
         }
     },
+    props: [
+        "isFocus"
+    ],
     created: function(){
         bmark.getTagsAll( e => {
             this.tags = e;
@@ -131,7 +134,14 @@ export default{
         },
     },
     directives: {
-        inputFocus:{ bind: function(el, value){ setTimeout( ()=>{ el.focus(); }, 1); } }
+        isFocus:{
+            bind: function(el, binding){
+                setTimeout( ()=>{ el.focus(); }, 1);
+            },
+            componentUpdated: function(el, binding){
+                if( binding.value ){ el.focus(); }
+            }
+        },
     }
 }
 </script>

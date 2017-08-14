@@ -29,7 +29,7 @@ export default {
         document.addEventListener('keydown', this.keyCheck);
     },
     watch: {
-        tags: function(val){ this.selectedIndex = -1 }
+        tags: function(val){ this.selectedIndex = -1 },
     },
     methods: {
         detachTag: function(tag, index){
@@ -105,8 +105,8 @@ export default {
 }
 
 .remove_tag{
-    width: 15px;
-    height: 15px;
+    width: 16px;
+    height: 16px;
     font-size: 8pt;
     text-align: center;
     border-radius: 10px;
@@ -117,6 +117,7 @@ export default {
     color: gainsboro;
     background-color: white;
     cursor: pointer;
+    padding: 0;
     transition: all 300ms cubic-bezier(0.250, 0.250, 0.750, 0.750); /* linear */
 }
 .remove_tag:hover{
