@@ -5,7 +5,7 @@
             <find-component @find="find" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
-            <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" class="bmark_item" v-bind:key="item.id">
+            <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" v-selected="selectedIndex === index"  class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" :selecetd="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
@@ -140,6 +140,17 @@ export default {
         }
     },
     directives: {
+        selected: function(el, binding){
+            if( !binding.value ) return;
+            let rect = el.getBoundingClientRect();
+            let scrY = window.scrollY;
+            if( (rect.bottom + scrY) > (scrY + window.innerHeight) ){
+                window.scrollTo(0, rect.bottom + scrY - window.innerHeight);
+            }
+            else if( (rect.top + scrY) < scrY ){
+                window.scrollTo(0, (rect.top + scrY - 50));
+            }
+        },
     },
 }
 </script>
