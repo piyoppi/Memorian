@@ -73,8 +73,8 @@ export default class popup_controller{
     }
 
     findKeywordOrTag(query, callback){
-        if( query.query.substr(0, 3) === "t: " ){
-            query.query = query.query.substr(3);
+        if( query.query.substr(0, 2) === "t:" ){
+            query.query = query.query.substr(2);
             this.findUsingTag(query, callback);
         }
         else{

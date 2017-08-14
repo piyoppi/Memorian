@@ -9,7 +9,7 @@ input[type="text"]{
     margin: 0 10px;
     box-sizing: content-box;
 }
-input[type="button"]{
+.findbtn{
     background-image: url('../img/megane.png');
     background-size: 20px;
     background-repeat: no-repeat;
@@ -22,14 +22,32 @@ input[type="button"]{
     margin-top: 2px;
     border-style: none;
     position: absolute;
+    cursor: pointer;
 }
 .outer{
     position: relative;
 }
 
-.findtags{
-    
+.tagbtn{
+    background-image: url('../img/tag.png');
+    background-size: 19px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-color: transparent;
+    width: 30px;
+    height: 30px;
+    right: 35px;
+    top: 3px;
+    margin-top: 2px;
+    border-style: none;
+    position: absolute;
+    cursor: pointer;
 }
+
+.tagbtn:hover, .findbtn:hover{
+    background-color: gainsboro;
+}
+
 </style>
 
 <template>
@@ -40,7 +58,8 @@ input[type="button"]{
                v-on:focus="textFocus()"
                v-on:blur="textBlur()"
                >
-        <input type="button" value="" v-on:click="find()">
+        <input type="button" class="tagbtn" value="" v-on:click="showTagList()">
+        <input type="button" class="findbtn" value="" v-on:click="find()">
         <tag-list-component class="findtags" v-show="findTag.length>0" :keyEnable="isTaglistKeyEnable" :tags="findTag" @tagClick="tagClick"></tag-list-component>
                
     </div>
@@ -63,6 +82,7 @@ export default{
             tags: [],
             isTaglistKeyEnable: false,
             isFound: false,
+            isTagShowAll: false,
         }
     },
     created: function(){
@@ -73,7 +93,7 @@ export default{
     },
     computed: {
         findTag: function(){
-            return this.isFound ? [] : searcher.search(this.query);
+            return this.isTagShowAll ? this.tags : this.isFound ? [] : searcher.search(this.query);
         }
     },
     watch: {
@@ -84,6 +104,7 @@ export default{
             else{
                 this.$emit('lostFocus');
             }
+            this.isTagShowAll = false;
             this.isFound = false;
         }
     },
@@ -104,6 +125,9 @@ export default{
         textBlur: function(){
             this.isTaglistKeyEnable = false;
             this.$emit('lostFocus');
+        },
+        showTagList: function(){
+            this.isTagShowAll = true;
         },
     },
     directives: {
