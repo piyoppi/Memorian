@@ -11,11 +11,17 @@
         width: 20px;
         height: 20px;
     }
+    .btn_load{
+        background-image: url('../img/folder.png');
+        width: 20px;
+        height: 20px;
+    }
 </style>
 
 <template>
     <div>
         <button class="btn_save"></button>
+        <button class="btn_load"></button>
         <bookmark-list-component id="bmarklist" show_type="page"></bookmark-list-component>
     </div>
 </template>
@@ -47,6 +53,12 @@ export default {
             });
         },
         load: function(){
+            try{
+                BookmarkIO.load();
+            }
+            catch(e){
+                console.log(e);
+            }
         },
         keyCheck: function(e){
             switch(e.keyCode){
@@ -54,6 +66,11 @@ export default {
                     if( e.ctrlKey ) this.save();
                     e.preventDefault();
                     break;
+                case 76:
+                    if( e.ctrlKey ) this.load();
+                    e.preventDefault();
+                    break;
+
             }
         }
     }
