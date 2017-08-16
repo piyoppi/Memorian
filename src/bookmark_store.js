@@ -442,4 +442,5 @@ export default class bookmarkStore{
             callback(this.__allDatas.data);
         }
     }
+
 }

@@ -1,0 +1,130 @@
+0 info it worked if it ends with ok
+1 verbose cli [ 'C:\\Program Files (x86)\\nodejs\\node.exe',
+1 verbose cli   'C:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js',
+1 verbose cli   'i',
+1 verbose cli   '--verbose' ]
+2 info using npm@3.10.8
+3 info using node@v6.9.1
+4 silly loadCurrentTree Starting
+5 silly install loadCurrentTree
+6 silly install readLocalPackageData
+7 silly install normalizeTree
+8 silly loadCurrentTree Finishing
+9 silly loadIdealTree Starting
+10 silly install loadIdealTree
+11 silly cloneCurrentTree Starting
+12 silly install cloneCurrentTreeToIdealTree
+13 silly cloneCurrentTree Finishing
+14 silly loadShrinkwrap Starting
+15 silly install loadShrinkwrap
+16 silly loadShrinkwrap Finishing
+17 silly loadAllDepsIntoIdealTree Starting
+18 silly install loadAllDepsIntoIdealTree
+19 silly fetchOtherPackageData array_searcher@git+https://git@github.com/piyoppi/ArraySearcher.js.git
+20 silly cache add args [ 'array_searcher@git+https://git@github.com/piyoppi/ArraySearcher.js.git',
+20 silly cache add   null ]
+21 verbose cache add spec array_searcher@git+https://git@github.com/piyoppi/ArraySearcher.js.git
+22 silly cache add parsed spec Result {
+22 silly cache add   raw: 'array_searcher@git+https://git@github.com/piyoppi/ArraySearcher.js.git',
+22 silly cache add   scope: null,
+22 silly cache add   escapedName: 'array_searcher',
+22 silly cache add   name: 'array_searcher',
+22 silly cache add   rawSpec: 'git+https://git@github.com/piyoppi/ArraySearcher.js.git',
+22 silly cache add   spec: 'git+https://git@github.com/piyoppi/ArraySearcher.js.git',
+22 silly cache add   type: 'hosted',
+22 silly cache add   hosted:
+22 silly cache add    { type: 'github',
+22 silly cache add      ssh: 'git@github.com:piyoppi/ArraySearcher.js.git',
+22 silly cache add      sshUrl: 'git+ssh://git@github.com/piyoppi/ArraySearcher.js.git',
+22 silly cache add      httpsUrl: 'git+https://git@github.com/piyoppi/ArraySearcher.js.git',
+22 silly cache add      gitUrl: 'git://git@github.com/piyoppi/ArraySearcher.js.git',
+22 silly cache add      shortcut: 'github:piyoppi/ArraySearcher.js',
+22 silly cache add      directUrl: 'https://git@raw.githubusercontent.com/piyoppi/ArraySearcher.js/master/package.json' } }
+23 verbose addRemoteGit caching git+https://git@github.com/piyoppi/ArraySearcher.js.git
+24 verbose addRemoteGit git+https://git@github.com/piyoppi/ArraySearcher.js.git is a repository hosted by github
+25 silly tryClone cloning git+https://git@github.com/piyoppi/ArraySearcher.js.git via git+https://git@github.com/piyoppi/ArraySearcher.js.git
+26 verbose tryClone git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e not in flight; caching
+27 verbose correctMkdir C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes correctMkdir not in flight; initializing
+28 info git [ 'config', '--get', 'remote.origin.url' ]
+29 silly validateExistingRemote git+https://git@github.com/piyoppi/ArraySearcher.js.git remote.origin.url: https://git@github.com/piyoppi/ArraySearcher.js.git
+30 verbose validateExistingRemote git+https://git@github.com/piyoppi/ArraySearcher.js.git is updating existing cached remote C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e
+31 info git [ 'fetch', '-a', 'origin' ]
+32 verbose updateRemote git fetch -a origin (https://git@github.com/piyoppi/ArraySearcher.js.git)
+33 verbose setPermissions git+https://git@github.com/piyoppi/ArraySearcher.js.git skipping chownr on Windows
+34 verbose resolveHead git+https://git@github.com/piyoppi/ArraySearcher.js.git original treeish: master
+35 info git [ 'rev-list', '-n1', 'master' ]
+36 silly resolveHead git+https://git@github.com/piyoppi/ArraySearcher.js.git resolved treeish: f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+37 verbose resolveHead git+https://git@github.com/piyoppi/ArraySearcher.js.git resolved Git URL: git+https://git@github.com/piyoppi/ArraySearcher.js.git#f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+38 silly resolveHead Git working directory: C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+39 info git [ 'clone',
+39 info git   'C:\\Users\\sho-hei\\AppData\\Roaming\\npm-cache\\_git-remotes\\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e',
+39 info git   'C:\\cygwin64\\tmp\\npm-5320-b48f5c40\\git-cache-a448974f\\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8' ]
+40 error git clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8: Cloning into 'C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8'...
+40 error git clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8: fatal: '/cygdrive/c/Users/sho-hei/AppData/Roaming/npm-cache/_git-remotes/git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e/C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e' does not appear to be a git repository
+40 error git clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8: fatal: Could not read from remote repository.
+40 error git clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8:
+40 error git clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8: Please make sure you have the correct access rights
+40 error git clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8: and the repository exists.
+41 silly fetchPackageMetaData Error: Command failed: git -c core.longpaths=true clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+41 silly fetchPackageMetaData Cloning into 'C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8'...
+41 silly fetchPackageMetaData fatal: '/cygdrive/c/Users/sho-hei/AppData/Roaming/npm-cache/_git-remotes/git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e/C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e' does not appear to be a git repository
+41 silly fetchPackageMetaData fatal: Could not read from remote repository.
+41 silly fetchPackageMetaData
+41 silly fetchPackageMetaData Please make sure you have the correct access rights
+41 silly fetchPackageMetaData and the repository exists.
+41 silly fetchPackageMetaData
+41 silly fetchPackageMetaData     at ChildProcess.exithandler (child_process.js:206:12)
+41 silly fetchPackageMetaData     at emitTwo (events.js:106:13)
+41 silly fetchPackageMetaData     at ChildProcess.emit (events.js:191:7)
+41 silly fetchPackageMetaData     at maybeClose (internal/child_process.js:877:16)
+41 silly fetchPackageMetaData     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
+41 silly fetchPackageMetaData  error for array_searcher@git+https://git@github.com/piyoppi/ArraySearcher.js.git { Error: Command failed: git -c core.longpaths=true clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+41 silly fetchPackageMetaData Cloning into 'C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8'...
+41 silly fetchPackageMetaData fatal: '/cygdrive/c/Users/sho-hei/AppData/Roaming/npm-cache/_git-remotes/git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e/C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e' does not appear to be a git repository
+41 silly fetchPackageMetaData fatal: Could not read from remote repository.
+41 silly fetchPackageMetaData
+41 silly fetchPackageMetaData Please make sure you have the correct access rights
+41 silly fetchPackageMetaData and the repository exists.
+41 silly fetchPackageMetaData
+41 silly fetchPackageMetaData     at ChildProcess.exithandler (child_process.js:206:12)
+41 silly fetchPackageMetaData     at emitTwo (events.js:106:13)
+41 silly fetchPackageMetaData     at ChildProcess.emit (events.js:191:7)
+41 silly fetchPackageMetaData     at maybeClose (internal/child_process.js:877:16)
+41 silly fetchPackageMetaData     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
+41 silly fetchPackageMetaData   killed: false,
+41 silly fetchPackageMetaData   code: 128,
+41 silly fetchPackageMetaData   signal: null,
+41 silly fetchPackageMetaData   cmd: 'git -c core.longpaths=true clone C:\\Users\\sho-hei\\AppData\\Roaming\\npm-cache\\_git-remotes\\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\\cygwin64\\tmp\\npm-5320-b48f5c40\\git-cache-a448974f\\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8' }
+42 silly rollbackFailedOptional Starting
+43 silly rollbackFailedOptional Finishing
+44 silly runTopLevelLifecycles Finishing
+45 silly install printInstalled
+46 verbose stack Error: Command failed: git -c core.longpaths=true clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+46 verbose stack Cloning into 'C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8'...
+46 verbose stack fatal: '/cygdrive/c/Users/sho-hei/AppData/Roaming/npm-cache/_git-remotes/git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e/C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e' does not appear to be a git repository
+46 verbose stack fatal: Could not read from remote repository.
+46 verbose stack
+46 verbose stack Please make sure you have the correct access rights
+46 verbose stack and the repository exists.
+46 verbose stack
+46 verbose stack     at ChildProcess.exithandler (child_process.js:206:12)
+46 verbose stack     at emitTwo (events.js:106:13)
+46 verbose stack     at ChildProcess.emit (events.js:191:7)
+46 verbose stack     at maybeClose (internal/child_process.js:877:16)
+46 verbose stack     at Process.ChildProcess._handle.onexit (internal/child_process.js:226:5)
+47 verbose cwd C:\cygwin64\home\sho-hei\prog\chrome_extension_test
+48 error Windows_NT 10.0.14393
+49 error argv "C:\\Program Files (x86)\\nodejs\\node.exe" "C:\\Program Files (x86)\\nodejs\\node_modules\\npm\\bin\\npm-cli.js" "i" "--verbose"
+50 error node v6.9.1
+51 error npm  v3.10.8
+52 error code 128
+53 error Command failed: git -c core.longpaths=true clone C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8
+53 error Cloning into 'C:\cygwin64\tmp\npm-5320-b48f5c40\git-cache-a448974f\f39242c47c353f7ab58ef571cd1ee8f3575bf0d8'...
+53 error fatal: '/cygdrive/c/Users/sho-hei/AppData/Roaming/npm-cache/_git-remotes/git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e/C:\Users\sho-hei\AppData\Roaming\npm-cache\_git-remotes\git-https-git-github-com-piyoppi-ArraySearcher-js-git-ea55203e' does not appear to be a git repository
+53 error fatal: Could not read from remote repository.
+53 error
+53 error Please make sure you have the correct access rights
+53 error and the repository exists.
+54 error If you need help, you may report this error at:
+54 error     <https://github.com/npm/npm/issues>
+55 verbose exit [ 1, true ]
