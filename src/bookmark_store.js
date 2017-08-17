@@ -16,18 +16,24 @@ export default class bookmarkStore{
     }
 
     getKeyList(){
-        let transaction = this._db.transaction(["bookmarks"], "readwrite");
-        let objectStore = transaction.objectStore("bookmarks");
-        objectStore.openCursor().onsuccess = e => {
-            let cursor = e.target.result;
-            if( cursor ){
-                this.__keyList.push( cursor.key );
-                cursor.continue();
+        return new Promise( (resolve, reject) => {
+            let transaction = this._db.transaction(["bookmarks"], "readwrite");
+            let objectStore = transaction.objectStore("bookmarks");
+            this.__keylist = [];
+            objectStore.openCursor().onsuccess = e => {
+                let cursor = e.target.result;
+                if( cursor ){
+                    this.__keyList.push( cursor.key );
+                    cursor.continue();
+                }
+                else{
+                    console.log( this.__keylist );
+                    this.__keyList.sort( (a, b)=>b-a );
+                    console.log( this.__keylist );
+                    resolve(this.__keylist);
+                }
             }
-            else{
-                this.__keyList.sort( (a, b)=>b-a );
-            }
-        }
+        });
     }
 
     getBookmarkCount(){
@@ -43,7 +49,7 @@ export default class bookmarkStore{
         request.onsuccess = (e) => {
             this._db = e.target.result;
             this.getBookmarkCount();
-            this.getKeyList();
+            this.getKeyList().then();
         }
         request.onerror = () => {};
         request.onupgradeneeded = (e) => { 
@@ -323,16 +329,16 @@ export default class bookmarkStore{
             return Promise.resolve([]);
         }
 
-        let transaction = this._db.transaction(["bookmarks"], "readwrite");
-        let objectStore = transaction.objectStore("bookmarks");
-        let data = [];
-        let readcount = 0;
-        let keyListIdxOffset = ofs + len;
-        if( this.__keyList.length <= keyListIdxOffset ) keyListIdxOffset = this.__keyList.length-1;
-        let offset = this.__keyList[keyListIdxOffset];
-        let length = this.__keyList[ofs];
-
         return new Promise( (resolve, reject) => {
+            let transaction = this._db.transaction(["bookmarks"], "readwrite");
+            let objectStore = transaction.objectStore("bookmarks");
+            let data = [];
+            let readcount = 0;
+            let keyListIdxOffset = ofs + len;
+            if( this.__keyList.length <= keyListIdxOffset ) keyListIdxOffset = this.__keyList.length-1;
+            let offset = this.__keyList[keyListIdxOffset];
+            let length = this.__keyList[ofs];
+
             objectStore.openCursor(IDBKeyRange.bound(offset, length), "prev").onsuccess = e => {
                 var cursor = e.target.result;
                 if( cursor ){
@@ -475,7 +481,7 @@ export default class bookmarkStore{
                 if( isEqualBookmark ) dupBookmark = regBookmark;
                 return isEqualBookmark;
             });
-            promise.resolve(dupBookmark);
+            Promise.resolve(dupBookmark);
         });
     }
 
@@ -511,27 +517,35 @@ export default class bookmarkStore{
 
     insertBookmarks(data){
         let correspondedTags;
-        if( data.tags ) correspondedTags = this.insertTags(data.tags);    
+        if( data.tag ) correspondedTags = this.insertTags(data.tag);    
 
-        data.datas.forEach( bookmark => {
-            this.getDuplicateBookmark(bookmark).then( dupBookmark => {
-                if( dupBookmark && (JSON.stringify(bookmark) == JSON.stringify(dupBookmark)) ){
-                    return Promise.reject(bookmark);
-                }
-                else{
-                    return Promise.resolve(bookmark);
-                }
-            })
-            .then( setBookmark => {
-                let transaction = this._db.transaction(["bookmarks"], "readwrite");
-                let objectStore = transaction.objectStore("bookmarks");
-                delete bookmark.id;
-                let request = objectStore.add(setBookmark);
-                request.onsuccess = e => Promise.resolve(setBookmark);
-                request.onerror = e => Promise.reject(setBookmark);
-            })
-            .then( setBookmark => this.replaceTagID(setBookmark) );
-        });
+        return new Promise( (resolve, reject) => {
+            let cntProc = 0;
+            data.bookmark.forEach( bookmark => {
+                this.getDuplicateBookmark(bookmark).then( dupBookmark => {
+                    if( dupBookmark && (JSON.stringify(bookmark) == JSON.stringify(dupBookmark)) ){
+                        return Promise.reject(bookmark);
+                    }
+                    else{
+                        return Promise.resolve(bookmark);
+                    }
+                })
+                .then( setBookmark => new Promise( (resolve2, reject2) =>{
+                    let transaction = this._db.transaction(["bookmarks"], "readwrite");
+                    let objectStore = transaction.objectStore("bookmarks");
+                    delete setBookmark.id;
+                    delete setBookmark.key;
+                    let request = objectStore.add(setBookmark);
+                    request.onsuccess = e => { this.bookmarkCount++; resolve2(setBookmark); };
+                    request.onerror = e => reject2(setBookmark);
+                }))
+                .then( setBookmark => this.replaceTagID(setBookmark) )
+                .then( e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; resolve(true) }})
+                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; resolve(true) }});
+            });
+        })
+        .then( e => this.getKeyList() );
+
 
     }
 }

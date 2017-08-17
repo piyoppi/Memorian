@@ -5,12 +5,22 @@ export default class popup_controller{
 
     constructor(){
         this._callback_buffer = {};
+        this.onInsertedItem = null;
 
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
-                if( request.key in this._callback_buffer ){
-                    this._callback_buffer[request.key](request.data);
-                    delete this._callback_buffer[request.key];
+                switch( request.key ){
+                    case "insertedBookmarks":
+                        if( this.onInsertedItem ) this.onInsertedItem();
+                        break;
+
+                    default:
+                        if( request.key in this._callback_buffer ){
+                            this._callback_buffer[request.key](request.data);
+                            delete this._callback_buffer[request.key];
+                        }
+                        break;
+
                 }
             }
         );

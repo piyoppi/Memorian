@@ -56,6 +56,7 @@ export default {
     },
     created: function(){
         bmark.get_bookmarks_request(0, getDataAmount, e => this.bookmarkList = e); 
+        bmark.onInsertedItem = this.insertedBookmark;
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
             if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
@@ -77,6 +78,9 @@ export default {
         },
         removedItem: function(item, index){
             this.bookmarkList.splice(index, 1);
+        },
+        insertedBookmark: function(){
+            bmark.get_bookmarks_request(0, getDataAmount, e => {console.log(e); this.bookmarkList = e; }); 
         },
         paginate: function(){
             bmark.findKeywordOrTag({query: this.query, offset: this.bookmarkList.length, length: getDataAmount}, e=>{

@@ -48,7 +48,10 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "insertBookmarks":
-                    bStore.insertBookmarks(request.data).then( e => { retValue({data: e, key: request.key}) } );
+                    bStore.insertBookmarks(request.data).then( e => {
+                        retValue({key: "insertedBookmarks"});
+                        retValue({data: e, key: request.key});
+                    } );
                     break;
 
                 case "attachTag":
