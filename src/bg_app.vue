@@ -20,8 +20,8 @@
 
 <template>
     <div>
-        <button class="btn_save"></button>
-        <button class="btn_load"></button>
+        <button class="btn_save" v-on:click="save"></button>
+        <button class="btn_load" v-on:click="load"></button>
         <bookmark-list-component id="bmarklist" show_type="page"></bookmark-list-component>
     </div>
 </template>
