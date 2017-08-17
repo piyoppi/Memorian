@@ -7,19 +7,19 @@ export default class bookmarkStore{
     constructor(){
         this._dataVersion = 0;
         this._db = null;
-        this.InitializeDatabase();
 
         this.__allDatas = { version: -1, data: null};
         this.__findResults = {query: "", version: -1, data: null};
         this.__keyList = [];
 
+        this.InitializeDatabase();
     }
 
     getKeyList(){
         return new Promise( (resolve, reject) => {
             let transaction = this._db.transaction(["bookmarks"], "readwrite");
             let objectStore = transaction.objectStore("bookmarks");
-            this.__keylist = [];
+            this.__keyList.length = 0;
             objectStore.openCursor().onsuccess = e => {
                 let cursor = e.target.result;
                 if( cursor ){
@@ -27,10 +27,9 @@ export default class bookmarkStore{
                     cursor.continue();
                 }
                 else{
-                    console.log( this.__keylist );
                     this.__keyList.sort( (a, b)=>b-a );
-                    console.log( this.__keylist );
-                    resolve(this.__keylist);
+                    console.log( this.__keyList );
+                    resolve(this.__keyList);
                 }
             }
         });
