@@ -54,10 +54,12 @@ export default {
         },
         load: function(){
             try{
-                BookmarkIO.load();
+                BookmarkIO.load().then( data => {
+                    bmark.insertBookmarks(data, e=>{});
+                });
             }
             catch(e){
-                console.log(e);
+                alert("ファイルの読み込みに失敗しました");
             }
         },
         keyCheck: function(e){

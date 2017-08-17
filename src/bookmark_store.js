@@ -1,8 +1,10 @@
 import simpleSearcher from './simple_searcher.js'
 
 export default class bookmarkStore{
-    constructor(param){
-        this.dbVersion = param.version || 1;
+
+    static DB_VERSION(){ return 1 }
+
+    constructor(){
         this._dataVersion = 0;
         this._db = null;
         this.InitializeDatabase();
@@ -37,7 +39,7 @@ export default class bookmarkStore{
     }
 
     InitializeDatabase(){
-        var request = window.indexedDB.open("Bookmarkers", this.dbVersion);
+        var request = window.indexedDB.open("Bookmarkers", this.DB_VERSION);
         request.onsuccess = (e) => {
             this._db = e.target.result;
             this.getBookmarkCount();
@@ -187,9 +189,9 @@ export default class bookmarkStore{
         return new Promise( (resolve, reject) => {
             let transaction = this._db.transaction(["tags"], "readwrite");
             let objectStore = transaction.objectStore("tags");
-            var requestUpdate = objectStore.put(tag);
-            requestUpdate.onerror = e => reject(e);
-            requestUpdate.onsuccess = e => resolve(e);
+            let requestUpdate = objectStore.put(tag);
+            requestUpdate.onerror = e => reject({missedTag: tag, err: e});
+            requestUpdate.onsuccess = e => resolve(tag);
         });
     }
 
@@ -420,7 +422,7 @@ export default class bookmarkStore{
         }
         let searcher = new simpleSearcher();
         if( (query.query !== this.__findResults.query) || (this._dataVersion !== this.__findResults.version ) ){
-            this.getAllBookmarks(e=>{
+            this.getAllBookmarks.then(e=>{
                 let data = searcher.find(e, query.query, ["text_for_finding"]);
                 this.__findResults = { query: query.query, version: this._dataVersion, data: data };
                 callback( data.slice(query.offset, query.length ) );
@@ -431,16 +433,104 @@ export default class bookmarkStore{
         }
     }
 
-    getAllBookmarks(callback){
-        if( this.__allDatas.version !== this._dataVersion ){
-            this.getBookmarks(0, this.bookmarkCount, (data)=>{
-                this.__allDatas = { version: this._dataVersion, data: data };
-                callback(data)
-            });
-        }
-        else{
-            callback(this.__allDatas.data);
-        }
+    getAllBookmarks(){
+        return new Promise( (resolve, reject) => {
+            if( this.__allDatas.version !== this._dataVersion ){
+                this.getBookmarks(0, this.bookmarkCount, (data)=>{
+                    this.__allDatas = { version: this._dataVersion, data: data };
+                    Promise.resolve(data)
+                });
+            }
+            else{
+                Promise.resolve(this.__allDatas.data);
+            }
+        });
     }
 
+    /*  --------------------------------------------------------------------------------------------------------
+     *  Bookmarks / Tags Input / Output
+     */
+
+    insertTags(tags){
+        let correspondedTags = {};
+        tags.forEach( tag => {
+            let registeredTag = this.getTag(tag.tagName);
+            if( registeredTag ){
+                correspondedTags[tag.id] = {old: tag, tag: registeredTag};
+            }
+            else{
+                this.addTag(tag.tagName).then( addTag => correspondedTags[tag.id] = {old: tag, tag: tag} );
+            }
+        });
+
+        return correspondedTags;
+    }
+
+    getDuplicateBookmark(bookmark){
+        return this.getAllBookmarks().then( bookmarks => {
+            let dupBookmark = null;
+            bookmarks.some( regBookmark => {
+                let isEqualBookmark = regBookmark.text_for_dupcheck == bookmark.text_for_dupcheck;
+                if( isEqualBookmark ) dupBookmark = regBookmark;
+                return isEqualBookmark;
+            });
+            promise.resolve(dupBookmark);
+        });
+    }
+
+    replaceTagID(registeredBookmark, tagList){
+        if( registeredBookmark.tagIds.length == 0 ) return Promise.resolve(registeredBookmark);
+        let updateTagPromises = [];
+        registeredBookmark.tagIds.forEach( id => {
+            let setTagInfo = taglist[id];
+            if( !setTagInfo ) return;
+            setTagInfo.contentIDs.push(registeredBookmark.id);
+            updateTagPromises.push(this.updateTag(setTagInfo));
+        });
+
+        return new Promise( (resolve, reject) => {
+            let setTagIds = [];
+            let cntProc = 0;
+            updateTagPromises.forEach( item => {
+                item.then( tag => {
+                    setTagIds.push( tag.id );
+                    if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }
+                })
+                .catch( e => {
+                    if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }
+                });
+            });
+        })
+        .then( tagIds => {
+            registeredBookmark.tagIds = registeredBookmark.tagIds.concat(tagIds);
+            return this.updateBookmarkData(registeredBookmark);
+        })
+        .then( e => Promise.resolve(registeredBookmark) );
+    }
+
+    insertBookmarks(data){
+        let correspondedTags;
+        if( data.tags ) correspondedTags = this.insertTags(data.tags);    
+
+        data.datas.forEach( bookmark => {
+            this.getDuplicateBookmark(bookmark).then( dupBookmark => {
+                if( dupBookmark && (JSON.stringify(bookmark) == JSON.stringify(dupBookmark)) ){
+                    return Promise.reject(bookmark);
+                }
+                else{
+                    return Promise.resolve(bookmark);
+                }
+            })
+            .then( setBookmark => {
+                let transaction = this._db.transaction(["bookmarks"], "readwrite");
+                let objectStore = transaction.objectStore("bookmarks");
+                delete bookmark.id;
+                let request = objectStore.add(setBookmark);
+                request.onsuccess = e => Promise.resolve(setBookmark);
+                request.onerror = e => Promise.reject(setBookmark);
+            })
+            .then( setBookmark => this.replaceTagID(setBookmark) );
+        });
+
+    }
 }

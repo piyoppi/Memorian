@@ -9,20 +9,20 @@ export default class bookmarkIO{
     }
 
     static load(){
-        let elemInput = document.createElement("input");
-        elemInput.type = "file";
-        elemInput.onchange = (e) => {
-            if( elemInput.files.length < 1 ) throw "LoadFileError";
-            let reader = new FileReader();
-            reader.onload = (evt) => {
-                let dataJSON = ( evt.target.result );
-                console.log(dataJSON);
-                let data = JSON.parse(dataJSON);
-                console.log(data);
+        return new Promise( (resolve, reject) => {
+            let elemInput = document.createElement("input");
+            elemInput.type = "file";
+            elemInput.onchange = (e) => {
+                if( elemInput.files.length < 1 ) throw "LoadFileError";
+                let reader = new FileReader();
+                reader.onload = (evt) => {
+                    let dataJSON = evt.target.result;
+                    resolve(JSON.parse(dataJSON));
+                };
+                reader.onerror = (evt) => { reject(evt); };
+                reader.readAsText(elemInput.files[0]);
             };
-            reader.onerror = (evt) => { console.log("err"); };
-            reader.readAsText(elemInput.files[0]);
-        };
-        elemInput.click();
+            elemInput.click();
+        });
     }
 }

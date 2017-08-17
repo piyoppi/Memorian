@@ -1,6 +1,6 @@
 import bookmarkStore from './bookmark_store.js'
 
-var bStore = new bookmarkStore({version: "2.3"});
+var bStore = new bookmarkStore();
 
 function contextMenu_Click(info, tab){
     chrome.tabs.sendMessage(tab.id, {hoge: "text_memo"}, function(response) {
@@ -44,7 +44,11 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "find":
-                    bStore.find(request.query, (e)=>{ retValue({data: e, key: request.key}) });
+                    bStore.find(request.query, e => { retValue({data: e, key: request.key}) });
+                    break;
+
+                case "insertBookmarks":
+                    bStore.insertBookmarks(request.data).then( e => { retValue({data: e, key: request.key}) } );
                     break;
 
                 case "attachTag":
@@ -62,15 +66,15 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "detachTag":
-                    bStore.detachTagFromDataKey(request.datakey, request.tagKey, (e)=>{ retValue({data: e, key: request.key}) });
+                    bStore.detachTagFromDataKey(request.datakey, request.tagKey, e=>{ retValue({data: e, key: request.key}) });
                     break;
 
                 case "getTagsAll":
-                    bStore.getTagsAll().then((e) => retValue({data: e, key: request.key}));
+                    bStore.getTagsAll().then(e => retValue({data: e, key: request.key}));
                     break;
 
                 case "getBookmarksAll":
-                    bStore.getAllBookmarks((e) => retValue({data: e, key: request.key}));
+                    bStore.getAllBookmarks.then(e => retValue({data: e, key: request.key}));
                     break;
 
                 case "showBookmarks":

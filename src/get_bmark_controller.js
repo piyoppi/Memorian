@@ -32,6 +32,12 @@ export default class popup_controller{
         chrome.runtime.sendMessage({id: "getBookmarksAll", key: key}, (e)=>{});
     }
 
+    insertBookmarks(data, callback){
+        let key = this.keygen();
+        this._callback_buffer[ key ] = callback;
+        chrome.runtime.sendMessage({id: "insertBookmarks", data: data, key: key}, (e)=>{});
+    }
+
     removeItem(key){
         chrome.runtime.sendMessage({id: "remove_item", key: key}, (e)=>{});
     }
