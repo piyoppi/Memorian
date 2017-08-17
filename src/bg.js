@@ -28,7 +28,7 @@ chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
             switch( request.id ){
                 case "get_bookmarks":
-                    bStore.getBookmarks( request.offset, request.length, (e)=>{ retValue({data: e, key: request.key}) });
+                    bStore.getBookmarks( request.offset, request.length).then( e => { retValue({data: e, key: request.key}) });
                     break;
 
                 case "remove_item":
@@ -74,7 +74,7 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "getBookmarksAll":
-                    bStore.getAllBookmarks.then(e => retValue({data: e, key: request.key}));
+                    bStore.getAllBookmarks().then(e => {console.log(e);retValue({data: e, key: request.key});});
                     break;
 
                 case "showBookmarks":

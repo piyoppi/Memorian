@@ -318,10 +318,9 @@ export default class bookmarkStore{
         });
     }
 
-    getBookmarks(ofs, len, callback){
+    getBookmarks(ofs, len){
         if( ofs >= this.__keyList.length ){
-            callback([]);
-            return;    
+            return Promise.resolve([]);
         }
 
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
@@ -333,24 +332,26 @@ export default class bookmarkStore{
         let offset = this.__keyList[keyListIdxOffset];
         let length = this.__keyList[ofs];
 
-        objectStore.openCursor(IDBKeyRange.bound(offset, length), "prev").onsuccess = e => {
-            var cursor = e.target.result;
-            if( cursor ){
-                let ret_val = cursor.value;
-                ret_val.key = cursor.key;
-                data.push( ret_val );
-                readcount++;
-                if( (len !== 0) && (len === readcount ) ){
-                    this.attachTagDataToBookmarkDatas(data).then( data => callback(data) );
+        return new Promise( (resolve, reject) => {
+            objectStore.openCursor(IDBKeyRange.bound(offset, length), "prev").onsuccess = e => {
+                var cursor = e.target.result;
+                if( cursor ){
+                    let ret_val = cursor.value;
+                    ret_val.key = cursor.key;
+                    data.push( ret_val );
+                    readcount++;
+                    if( (len !== 0) && (len === readcount ) ){
+                        this.attachTagDataToBookmarkDatas(data).then( data => resolve(data) );
+                    }
+                    else{
+                        cursor.continue();
+                    }
                 }
                 else{
-                    cursor.continue();
+                    this.attachTagDataToBookmarkDatas(data).then( data => resolve(data) );
                 }
             }
-            else{
-                this.attachTagDataToBookmarkDatas(data).then( data => callback(data) );
-            }
-        }
+        });
 
     }
 
@@ -417,7 +418,7 @@ export default class bookmarkStore{
 
     find(query, callback){
         if( !query || query.query === "" ){
-            this.getBookmarks(query.offset, query.length, callback);
+            this.getBookmarks(query.offset, query.length).then( data => callback(data) );
             return;
         }
         let searcher = new simpleSearcher();
@@ -436,13 +437,13 @@ export default class bookmarkStore{
     getAllBookmarks(){
         return new Promise( (resolve, reject) => {
             if( this.__allDatas.version !== this._dataVersion ){
-                this.getBookmarks(0, this.bookmarkCount, (data)=>{
+                this.getBookmarks(0, this.bookmarkCount).then( (data)=>{
                     this.__allDatas = { version: this._dataVersion, data: data };
-                    Promise.resolve(data)
+                    resolve( data );
                 });
             }
             else{
-                Promise.resolve(this.__allDatas.data);
+                resolve(this.__allDatas.data);
             }
         });
     }

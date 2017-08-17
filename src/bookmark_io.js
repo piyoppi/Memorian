@@ -6,6 +6,7 @@ export default class bookmarkIO{
         buffer_a.href = window.URL.createObjectURL(blob);
         buffer_a.download = "memorian_data.txt";
         buffer_a.click();
+        console.log("save");
     }
 
     static load(){

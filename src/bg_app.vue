@@ -47,7 +47,9 @@ export default {
     methods: {
         save: function(){
             bmark.getTagsAll( tagData => {
+                console.log(tagData);
                 bmark.getBookmarksAll( bmarkData => {
+                    console.log(bmarkData);
                     BookmarkIO.save({tag: tagData, bookmark: bmarkData});
                 });
             });
