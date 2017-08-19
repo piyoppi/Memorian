@@ -104,13 +104,14 @@ export default class bookmarkStore{
             return Promise.all(promisesBmark).then( results => {
                 let promisesUpdate = [];
                 results.forEach( bookmark => {
+                    if( !bookmark ) return;
                     let idx = bookmark.tagIds.indexOf(tagKey);
                     if( idx >= 0 ){
                         bookmark.tagIds.splice(idx, 1);
                         promisesUpdate.push(this.updateBookmarkData(bookmark));
                     }
-                    return Promise.all(promisesUpdate).then;
                 });
+                return Promise.all(promisesUpdate).then;
             });
         });
     }
@@ -300,8 +301,11 @@ export default class bookmarkStore{
             let transaction = this._db.transaction(["bookmarks"], "readwrite");
             let objectStore = transaction.objectStore("bookmarks");
             let response = objectStore.get(key);
-            response.onsuccess = e => this.attachTagDataToBookmarkData(e.target.result).then( data => resolve(data))
+            response.onsuccess = e => {
+                if( !e.target.result ) return resolve(null);
+                this.attachTagDataToBookmarkData(e.target.result).then( data => resolve(data))
                                           .catch( e => reject(e) );
+            };
             response.onerror = e => reject(e);
         });
     }
@@ -514,9 +518,11 @@ export default class bookmarkStore{
             let setTagIds = [];
             let cntProc = 0;
             updateTagPromises.forEach( item => {
-                item.then( tag => setTagIds.push( tag.id ))
-                .catch( e => {})
-                .then( e => {if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }});
+                item.then( tag => {
+                    setTagIds.push( tag.id );
+                    if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }
+                })
+                .catch( e => {if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }});
             });
         })
         .then( tagIds => {
