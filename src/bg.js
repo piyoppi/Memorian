@@ -9,8 +9,7 @@ function contextMenu_Click(info, tab){
 
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
-        bStore.addContentIntoBookmarkData(response).then( e => {
-        })
+        bStore.addContentIntoBookmarkData(response).then( e => {})
         .catch( e=>{
             bStore.setBookmarkData(response);
         });

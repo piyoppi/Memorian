@@ -298,6 +298,7 @@ export default class bookmarkStore{
                 if( !updateData ){ reject(e); return; }
                 updateData.contents.push(data.content);
                 updateData.text_for_finding += this.genTextForFinding(data) + "\n";
+                updateData.modifiedAt = this.createDateInfoNow();
                 var requestUpdate = objectStore.put(updateData);
                 requestUpdate.onerror = e => reject(e);
                 requestUpdate.onsuccess = e => resolve(e);
