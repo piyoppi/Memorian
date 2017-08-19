@@ -402,6 +402,7 @@ export default class bookmarkStore{
                 tags = tags.filter( tag => tag );
                 let promises = [], bmarks = [], cntProc = 0;
                 tags.forEach( tag => promises = promises.concat(this.findBookmarkUsingTagPromises(tag)));
+                if( promises.length == 0 ) return Promise.reject();
                 return new Promise( (resolve, reject) => {
                     promises.forEach( promise => {
                         promise.then( bmark => bmarks.push(bmark) )
@@ -421,14 +422,14 @@ export default class bookmarkStore{
                     }
                 })
                 return Promise.resolve(retBookmarks);
-            });
+            })
+            .catch( e => Promise.resolve([]) );
     }
 
     findBookmarkUsingTagPromises(tag){
         if( !tag ) return null;
         let bmarks = [];
         tag.contentIDs.forEach( contentID => bmarks.push(this.getBookmark(contentID)));
-        //tag.contentIDs.forEach( contentID => this.getBookmark(contentID).then(bmark => bmarks.push(bmark)).catch(e => {}));
         return bmarks;
     }
 
