@@ -243,6 +243,12 @@ export default class bookmarkStore{
         });
     }
 
+    createDateInfoNow(){
+        let retDate = new Date();
+        let dateStr = retDate.toLocaleDateString() + " " + retDate.toTimeString().split(' ')[0];
+        return { JSON: retDate.toJSON(), Str: dateStr, Int: Date.now() }
+    }
+
     setBookmarkData(data){
         let transaction = this._db.transaction(["bookmarks"], "readwrite");
         let objectStore = transaction.objectStore("bookmarks");
@@ -256,7 +262,12 @@ export default class bookmarkStore{
             captions: data.captions,
             text_for_finding: textForFinding + "\n",
             text_for_dupcheck: textForDuplicateCheck,
-            tagIds: []
+            tagIds: [],
+            clickCount: 0,
+            showCount: 0,
+            createdAt: this.createDateInfoNow(),
+            modifiedAt: null,
+            lastClickAt: null,
         };
         let request = objectStore.add(addData);
         request.onsuccess = e => { this.__keyList.unshift(e.target.result); };
