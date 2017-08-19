@@ -122,13 +122,6 @@ export default class bmark_parser{
             checkElement = checkElement.parentNode;
         }
         return selElement;
-
-        //if( this._chk_selection_rules(selection_elem) ){
-        //    return selection_elem;
-        //}
-        //else{
-        //    return this.get_selection_element(selection_elem.parentNode);
-        //}
     }
 
     _chk_selection_rules(elem){
