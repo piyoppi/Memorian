@@ -482,7 +482,7 @@ export default class bookmarkStore{
                     }
                     else{
                         this.addTag(tag.tagName).then( addTag => {
-                            correspondedTags[tag.id] = {old: tag, tag: tag}
+                            correspondedTags[tag.id] = {old: tag, tag: addTag}
                             if( ++cntProc == tags.length ) resolve(correspondedTags);
                         });
                     }
