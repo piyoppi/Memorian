@@ -5,7 +5,7 @@
             <find-component :isFocus="selectedIndex<0" @find="find" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
-            <li v-for="(item, index) in bookmarkList" v-bind:class="{ bmarkselected: (selectedIndex === index) }" v-selected="selectedIndex === index"  class="bmark_item" v-bind:key="item.id">
+            <li v-for="(item, index) in bookmarkList" v-on:click = "selectedIndex = index" v-bind:class="{ bmarkselected: (selectedIndex === index) }" v-selected="selectedIndex === index"  class="bmark_item" v-bind:key="item.id">
                 <bookmark-item-component :item="item" :index="index" :selected="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
                 <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>

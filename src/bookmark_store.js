@@ -300,7 +300,8 @@ export default class bookmarkStore{
             let transaction = this._db.transaction(["bookmarks"], "readwrite");
             let objectStore = transaction.objectStore("bookmarks");
             let response = objectStore.get(key);
-            response.onsuccess = e => this.attachTagDataToBookmarkData(e.target.result).then( data => resolve(data) );
+            response.onsuccess = e => this.attachTagDataToBookmarkData(e.target.result).then( data => resolve(data))
+                                          .catch( e => reject(e) );
             response.onerror = e => reject(e);
         });
     }
@@ -312,6 +313,7 @@ export default class bookmarkStore{
     }
 
     attachTagDataToBookmarkData(bookmark){
+        if( !bookmark ) return Promise.reject();
         let promises = [];
         bookmark.tags = [];
         bookmark.tagIds.forEach( tagId => promises.push(this.getTagFromKey(tagId)) );
@@ -391,18 +393,22 @@ export default class bookmarkStore{
     findUsingTagFromQueryString(query){
         let tagStrs = query.query.toLowerCase().replace(/ |　/g, " ").split(" ");
 
-        let findTagPromises = [];
         return Promise.all(tagStrs.map( tagStr => this.getTag(tagStr) ))
             .then( tags =>{
                 tags = tags.filter( tag => tag );
-                let promises = [tags];
+                let promises = [], bmarks = [], cntProc = 0;
                 tags.forEach( tag => promises = promises.concat(this.findBookmarkUsingTagPromises(tag)));
-                return Promise.all( promises ) 
+                return new Promise( (resolve, reject) => {
+                    promises.forEach( promise => {
+                        promise.then( bmark => bmarks.push(bmark) )
+                        .catch( e => {} )
+                        .then( e => {if( ++cntProc == promises.length ) resolve( [tags].concat(bmarks) )} );
+                    });
+                });
             })
             .then( params => {
                 let tags = params.splice(0, 1)[0];
-                let retBookmarks = [];
-                let registryBookmarkIDs = [];
+                let retBookmarks = [], registryBookmarkIDs = [];
                 params.forEach( bookmark => {
                     if( !bookmark ) return;
                     if( (!tags.some( tag => bookmark.tagIds.indexOf(tag.id) < 0)) && (registryBookmarkIDs.indexOf(bookmark.id) < 0) ){
@@ -418,6 +424,7 @@ export default class bookmarkStore{
         if( !tag ) return null;
         let bmarks = [];
         tag.contentIDs.forEach( contentID => bmarks.push(this.getBookmark(contentID)));
+        //tag.contentIDs.forEach( contentID => this.getBookmark(contentID).then(bmark => bmarks.push(bmark)).catch(e => {}));
         return bmarks;
     }
 
@@ -428,7 +435,7 @@ export default class bookmarkStore{
         }
         let searcher = new simpleSearcher();
         if( (query.query !== this.__findResults.query) || (this._dataVersion !== this.__findResults.version ) ){
-            this.getAllBookmarks.then(e=>{
+            this.getAllBookmarks().then(e=>{
                 let data = searcher.find(e, query.query, ["text_for_finding"]);
                 this.__findResults = { query: query.query, version: this._dataVersion, data: data };
                 callback( data.slice(query.offset, query.length ) );
@@ -458,18 +465,26 @@ export default class bookmarkStore{
      */
 
     insertTags(tags){
-        let correspondedTags = {};
-        tags.forEach( tag => {
-            let registeredTag = this.getTag(tag.tagName);
-            if( registeredTag ){
-                correspondedTags[tag.id] = {old: tag, tag: registeredTag};
-            }
-            else{
-                this.addTag(tag.tagName).then( addTag => correspondedTags[tag.id] = {old: tag, tag: tag} );
-            }
-        });
+        if( !tags || tags.length == 0 ) return Promise.resolve({});
+        return new Promise( (resolve, reject) => {
+            let correspondedTags = {};
+            let cntProc = 0;
 
-        return correspondedTags;
+            tags.forEach( tag => {
+                this.getTag(tag.tagName).then(registeredTag => {
+                    if( registeredTag ){
+                        correspondedTags[tag.id] = {old: tag, tag: registeredTag};
+                        if( ++cntProc == tags.length ) resolve(correspondedTags);
+                    }
+                    else{
+                        this.addTag(tag.tagName).then( addTag => {
+                            correspondedTags[tag.id] = {old: tag, tag: tag}
+                            if( ++cntProc == tags.length ) resolve(correspondedTags);
+                        });
+                    }
+                });
+            });
+        });
     }
 
     getDuplicateBookmark(bookmark){
@@ -486,39 +501,36 @@ export default class bookmarkStore{
 
     replaceTagID(registeredBookmark, tagList){
         if( registeredBookmark.tagIds.length == 0 ) return Promise.resolve(registeredBookmark);
+        if( !tagList ) return Promise.resolve();
         let updateTagPromises = [];
         registeredBookmark.tagIds.forEach( id => {
-            let setTagInfo = taglist[id];
+            let setTagInfo = tagList[id];
             if( !setTagInfo ) return;
-            setTagInfo.contentIDs.push(registeredBookmark.id);
-            updateTagPromises.push(this.updateTag(setTagInfo));
+            setTagInfo.tag.contentIDs.push(registeredBookmark.id);
+            updateTagPromises.push(this.updateTag(setTagInfo.tag));
         });
 
         return new Promise( (resolve, reject) => {
             let setTagIds = [];
             let cntProc = 0;
             updateTagPromises.forEach( item => {
-                item.then( tag => {
-                    setTagIds.push( tag.id );
-                    if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }
-                })
-                .catch( e => {
-                    if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }
-                });
+                item.then( tag => setTagIds.push( tag.id ))
+                .catch( e => {})
+                .then( e => {if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }});
             });
         })
         .then( tagIds => {
-            registeredBookmark.tagIds = registeredBookmark.tagIds.concat(tagIds);
+            registeredBookmark.tagIds = tagIds;
             return this.updateBookmarkData(registeredBookmark);
         })
         .then( e => Promise.resolve(registeredBookmark) );
     }
 
     insertBookmarks(data){
-        let correspondedTags;
-        if( data.tag ) correspondedTags = this.insertTags(data.tag);    
+        let correspondedTags = null;
 
-        return new Promise( (resolve, reject) => {
+        return this.insertTags(data.tag).then( tagInfos => { correspondedTags = tagInfos; return Promise.resolve() } )
+        .then( e => new Promise((resolve, reject) => {
             let cntProc = 0;
             data.bookmark.forEach( bookmark => {
                 this.getDuplicateBookmark(bookmark).then( dupBookmark => {
@@ -535,16 +547,18 @@ export default class bookmarkStore{
                     delete setBookmark.id;
                     delete setBookmark.key;
                     let request = objectStore.add(setBookmark);
-                    request.onsuccess = e => { this.bookmarkCount++; resolve2(setBookmark); };
+                    request.onsuccess = e => { 
+                        this.bookmarkCount++;
+                        setBookmark.id = e.target.result;
+                        resolve2(setBookmark);
+                    };
                     request.onerror = e => reject2(setBookmark);
                 }))
-                .then( setBookmark => this.replaceTagID(setBookmark) )
-                .then( e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; resolve(true) }})
-                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; resolve(true) }});
+                .then( setBookmark => this.replaceTagID(setBookmark, correspondedTags) )
+                .catch(e => {})
+                .then( e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; return resolve(true) }});
             });
-        })
+        }))
         .then( e => this.getKeyList() );
-
-
     }
 }

@@ -67,12 +67,16 @@ export default {
         keyCheck: function(e){
             switch(e.keyCode){
                 case 83:
-                    if( e.ctrlKey ) this.save();
-                    e.preventDefault();
+                    if( e.ctrlKey ){
+                        this.save();
+                        e.preventDefault();
+                    }
                     break;
                 case 76:
-                    if( e.ctrlKey ) this.load();
-                    e.preventDefault();
+                    if( e.ctrlKey ){
+                        this.load();
+                        e.preventDefault();
+                    }
                     break;
 
             }
