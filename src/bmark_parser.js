@@ -5,11 +5,11 @@ export default class bmark_parser{
     constructor(){
         this._selection_rules = {
             div: {rules: [ { method: this.keep_len, param: {length: 30}, conbination: "or" } ],},
-            code: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
-            pre: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
-            figure: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
-            table: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ],},
-            other: {rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ],}
+            code: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ], replaceableElem: ['div', 'span'],},
+            pre: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ], replaceableElem: ['div', 'span'],},
+            figure: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ], },
+            table: {rules: [ { method: this.keep_len, param: {length: 0}, conbination: "or" } ], replaceableElem: ['tr', 'td', 'th'],},
+            other: {rules: [ { method: this.keep_len, param: {length: 70}, conbination: "or" } ], }
         }
 
         this._element_rules = [
@@ -100,22 +100,39 @@ export default class bmark_parser{
     //----------------------------------------------------------------------------
 
     parse(selection_elem){
-        console.log(selection_elem);
         return this.get_selection_element(selection_elem);
     }
 
+    getSelectionRules(elem){
+        return this._selection_rules[elem.tagName.toLowerCase()] || this._selection_rules.other;
+    }
+
     get_selection_element(selection_elem){
-        if( this._chk_selection_rules(selection_elem) ){
-            return selection_elem;
+        let selElement = null;
+        let checkElement = selection_elem;
+        while(true){
+            if( !checkElement || checkElement === document.body ) break;
+            if( this._chk_selection_rules(checkElement) ){
+                let rules = this.getSelectionRules(checkElement);
+                if( !selElement ||
+                    (rules.replaceableElem && rules.replaceableElem.includes(selElement.tagName.toLowerCase())) ){
+                    selElement = checkElement;
+                }
+            }
+            checkElement = checkElement.parentNode;
         }
-        else{
-            return this.get_selection_element(selection_elem.parentNode);
-        }
+        return selElement;
+
+        //if( this._chk_selection_rules(selection_elem) ){
+        //    return selection_elem;
+        //}
+        //else{
+        //    return this.get_selection_element(selection_elem.parentNode);
+        //}
     }
 
     _chk_selection_rules(elem){
-        let rule = this._selection_rules[elem.tagName.toLowerCase()];
-        if( !rule ) rule = this._selection_rules.other;
+        let rule = this.getSelectionRules(elem);
 
         let is_valid = false;
         rule.rules.forEach( (val) => { 
