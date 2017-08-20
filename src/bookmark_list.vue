@@ -160,6 +160,7 @@ export default {
                 case 84:
                     if( !bmarkItem ) return;
                     if( e.ctrlKey ) this.showTagList(bmarkItem);
+                    e.preventDefault();
                     break;
 
                 case 40:
@@ -200,8 +201,9 @@ export default {
     directives: {
         selected: {
             update: function(el, binding){
-                if( !binding.value ) return;
+                if( !binding.value || binding.oldValue == binding.value ) return;
                 let rect = el.getBoundingClientRect();
+                console.log(rect);
                 let scrY = window.scrollY;
                 if( (rect.bottom + scrY) > (scrY + window.innerHeight) ){
                     window.scrollTo(0, rect.bottom + scrY - window.innerHeight);
