@@ -38,8 +38,8 @@ export default {
     ],
     created: function(){
         bmark.getTagsAll( e => {
+            this.initializeTagSearch();
             this.tags = e;
-            searcher.setHash(this.tags, ["tagName"]);
         } );
     },
     computed: {
@@ -53,6 +53,9 @@ export default {
         },
     },
     methods: {
+        initializeTagSearch: function(){
+            searcher.setHash(this.tags, ["tagName"]);
+        },
         tagUnselected: function(){
             this.isActiveTagList = false;
         },
@@ -74,6 +77,7 @@ export default {
                 if( !tag ) return;
                 this.tags.push(tag);
                 this.bookmarkItem.tags.push(tag);
+                this.initializeTagSearch();
             });
         },
     },
