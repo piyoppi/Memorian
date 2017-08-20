@@ -27,6 +27,7 @@ chrome.runtime.onMessage.addListener(
         function(request, sender, sendResponse) {
             switch( request.id ){
                 case "get_bookmarks":
+                    console.log(`get ${request.offset}  ${request.length}`); 
                     bStore.getBookmarks( request.offset, request.length).then( e => { retValue({data: e, key: request.key}) });
                     break;
 
@@ -43,6 +44,7 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "find":
+                    console.log(`find ${request.offset}  ${request.length}`); 
                     bStore.find(request.query, e => { retValue({data: e, key: request.key}) });
                     break;
 

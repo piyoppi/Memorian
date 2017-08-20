@@ -2,7 +2,7 @@
 <template>
     <div id="outer">
         <div id="header">
-            <find-component :isFocus="selectedIndex<0" @find="find" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
+            <find-component :isFocus="selectedIndex<0" @find="findStart" @focused="findComponentFocused" @lostFocus="findComponentLostFocused" id="findset"></find-component>
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-on:click = "selectedIndex = index" v-bind:class="{ bmarkselected: (selectedIndex === index) }" v-selected="selectedIndex === index"  class="bmark_item" v-bind:key="item.id">
@@ -51,10 +51,11 @@ export default {
             showTagKey: -1,
             selectedIndex: -1,
             keyCheckEnable: true,
+            isFinding: false,
         }
     },
     created: function(){
-        bmark.get_bookmarks_request(0, getDataAmount, e => this.bookmarkList = e); 
+        this.find("", 0, getDataAmount);
         bmark.onInsertedItem = this.insertedBookmark;
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
@@ -70,10 +71,20 @@ export default {
         findComponentLostFocused: function(){
             this.keyCheckEnable = true;
         },
-        find: function(query){
+        findStart: function(query){
             this.isStopScroll = false;
             this.query = query;
-            bmark.findKeywordOrTag({query: query, offset: 0, length: getDataAmount}, e=>{ this.bookmarkList = e; console.log(e); });
+            this.bookmarkList = [];
+            this.find(query, 0, getDataAmount);
+        },
+        find: function(query, offset, length){
+            if( this.isFinding ) return;
+            this.isFinding = true;
+            bmark.findKeywordOrTag({query: this.query, offset: offset, length: length}, e=>{
+                this.isFinding = false;
+                this.bookmarkList = this.bookmarkList.concat(e);
+                if( e.length < getDataAmount ) this.isStopScroll = true;
+            });
         },
         removedItem: function(item, index){
             this.bookmarkList.splice(index, 1);
@@ -82,10 +93,7 @@ export default {
             bmark.get_bookmarks_request(0, getDataAmount, e => {console.log(e); this.bookmarkList = e; }); 
         },
         paginate: function(){
-            bmark.findKeywordOrTag({query: this.query, offset: this.bookmarkList.length, length: getDataAmount}, e=>{
-                this.bookmarkList = this.bookmarkList.concat(e);
-                if( e.length < getDataAmount ) this.isStopScroll = true;
-            });
+            this.find(this.query, this.bookmarkList.length, getDataAmount);
         },
         leave_bmark: function(el, done){
             Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});

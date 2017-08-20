@@ -95,12 +95,15 @@ export default class popup_controller{
     }
 
     findKeywordOrTag(query, callback){
-        if( query.query.substr(0, 2) === "t:" ){
+        if( query.query === "" ){
+            this.get_bookmarks_request(query.offset, query.length, callback);
+        }
+        else if( query.query.substr(0, 2) === "t:" ){
             query.query = query.query.substr(2);
             this.findUsingTag(query, callback);
         }
         else{
-            this.find(query, callback)
+            this.find(query, callback);
         }
     }
 
