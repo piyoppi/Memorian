@@ -96,13 +96,24 @@ export default {
             this.find(this.query, this.bookmarkList.length, getDataAmount);
         },
         leave_bmark: function(el, done){
-            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
+            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none", complete: done});
         },
         transitionLeaveTags: function(el, done){
-            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
+            Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none", complete: done});
         },
         transitionShowTags: function(el, done){
-            Velocity(el, {maxHeight: el.clientHeight + 500 + "px"}, {duration: 600}, {complete: done});
+            let rect = el.getBoundingClientRect();
+            let duration = ( (rect.bottom + window.scrollY) > (window.scrollY + window.innerHeight) ) ? 100 : 600;
+
+            Velocity(el, {maxHeight: el.clientHeight + 500 + "px"}, {duration: duration, complete: function(){
+                    let rectAfter = el.getBoundingClientRect();
+                    if( (rectAfter.bottom + window.scrollY) > (window.scrollY + window.innerHeight) ){
+                        setTimeout(()=>{window.scrollTo(0, rectAfter.bottom + window.scrollY - window.innerHeight)}, 10);
+                    }
+                    done();
+                }
+            });
+
         },
         showTagList: function(item){
             this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
@@ -187,16 +198,18 @@ export default {
         }
     },
     directives: {
-        selected: function(el, binding){
-            if( !binding.value ) return;
-            let rect = el.getBoundingClientRect();
-            let scrY = window.scrollY;
-            if( (rect.bottom + scrY) > (scrY + window.innerHeight) ){
-                window.scrollTo(0, rect.bottom + scrY - window.innerHeight);
-            }
-            else if( (rect.top + scrY) < scrY ){
-                window.scrollTo(0, (rect.top + scrY - 50));
-            }
+        selected: {
+            update: function(el, binding){
+                if( !binding.value ) return;
+                let rect = el.getBoundingClientRect();
+                let scrY = window.scrollY;
+                if( (rect.bottom + scrY) > (scrY + window.innerHeight) ){
+                    window.scrollTo(0, rect.bottom + scrY - window.innerHeight);
+                }
+                else if( (rect.top + scrY) < scrY ){
+                    window.scrollTo(0, (rect.top + scrY - 50));
+                }
+            },
         },
     },
 }

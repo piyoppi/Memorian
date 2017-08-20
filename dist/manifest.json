@@ -17,7 +17,7 @@
     },
     "browser_action": {
         "default_icon": "icon16.png",
-        "default_title": "sample",
+        "default_title": "Memorian",
         "default_popup": "html/popup.html"
     },
     "permissions": ["tabs", "contextMenus", "storage"],
