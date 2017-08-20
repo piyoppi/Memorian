@@ -69,6 +69,7 @@ export default {
             if( !this.isActiveTagList ) this.addTag();
         },
         addTag: function(){
+            if( this.tagInput == "" ) return;
             bmark.attachTag(this.bookmarkItem.id, this.tagInput, tag=>{
                 if( !tag ) return;
                 this.tags.push(tag);
