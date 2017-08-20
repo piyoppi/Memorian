@@ -268,6 +268,7 @@ export default class bookmarkStore{
             createdAt: this.createDateInfoNow(),
             modifiedAt: null,
             lastClickAt: null,
+            note: "",
         };
         let request = objectStore.add(addData);
         request.onsuccess = e => { this.__keyList.unshift(e.target.result); };
