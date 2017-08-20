@@ -11,7 +11,7 @@
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
                     <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
                 </div>
-                <transition name="tagsel" v-on:leave="leave_taglist" v-on:enter="show_taglist" v-bind:css="false">
+                <transition name="tagsel" v-on:leave="transitionLeaveTags" v-on:enter="transitionShowTags" v-bind:css="false">
                     <div class="tagselect_group" v-if="showTagKey == item.id" >
                         <tag-select-component :bookmarkItem="item" v-bind:key="index"></tag-select-component>
                     </div>
@@ -24,14 +24,13 @@
 <script>
 import GetBmark from './get_bmark_controller.js'
 import Velocity from 'velocity-animate'
-
-let bmark = new GetBmark();
 import FindComponent from './findset.vue'
 import BookmarkItemComponent from './bookmark_item.vue'
 import TagSelectComponent from './addtag_ui.vue'
 import TagListComponent from './taglist.vue'
 import JumpLink from './jump_link.js'
 
+let bmark = new GetBmark();
 let getDataAmount = 5;
 
 export default {
@@ -91,10 +90,10 @@ export default {
         leave_bmark: function(el, done){
             Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
         },
-        leave_taglist: function(el, done){
+        transitionLeaveTags: function(el, done){
             Velocity(el, {height: "0px", opacity: 0}, {duration: 400, display: "none"}, {complete: done});
         },
-        show_taglist: function(el, done){
+        transitionShowTags: function(el, done){
             Velocity(el, {maxHeight: el.clientHeight + 500 + "px"}, {duration: 600}, {complete: done});
         },
         showTagList: function(item){
@@ -110,26 +109,61 @@ export default {
             if( !this.keyCheckEnable ) return;
             let bmarkItem = this.bookmarkList[this.selectedIndex];
             switch(e.keyCode){
+
+                case 9:
+                    /*Tab key*/
+                    if( this.showTagKey > -1 ) return;
+                    if(e.shiftKey){
+                        this.selectPrevItem();
+                    }
+                    else{
+                        this.selectNextItem();
+                    }
+                    e.preventDefault();
+                    break;
+
+                case 74:
+                    if( this.showTagKey > -1 ) return;
+                    if( this.selectedIndex >= 0 ){
+                        this.selectNextItem();
+                        if( this.selectedIndex == -1 ) this.selectedIndex = 0;
+                    }
+                    break;
+
+                case 75:
+                    if( this.showTagKey > -1 ) return;
+                    if( this.selectedIndex >= 0 ){
+                        this.selectPrevItem();
+                        if( this.selectedIndex == -1 ) this.selectedIndex = this.bookmarkList.length-1;
+                    }
+                    break;
+
+                case 84:
+                    if( !bmarkItem ) return;
+                    if( e.ctrlKey ) this.showTagList(bmarkItem);
+                    break;
+
                 case 40:
+                    if( this.showTagKey > -1 ) return;
                     this.selectNextItem();
                     e.preventDefault();
                     break;
 
                 case 38:
+                    if( this.showTagKey > -1 ) return;
                     this.selectPrevItem();
                     e.preventDefault();
                     break;
 
-                case 9:                                 //tab
-                    break;
-
                 case 46:                                //delete
+                    if( !bmarkItem ) return;
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
                     bmark.removeItem(bmarkItem);
                     this.removedItem(bmarkItem, this.selectedIndex);
                     break;
 
                 case 13:
+                    if( !bmarkItem ) return;
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
                     let link_info = bmarkItem.captions.h6 || bmarkItem.captions.h5 || bmarkItem.captions.h4 ||
                                     bmarkItem.captions.h3 || bmarkItem.captions.h2 || bmarkItem.captions.h1;

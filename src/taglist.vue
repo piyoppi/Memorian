@@ -1,6 +1,6 @@
 <template>
     <ul class="taglist">
-        <li v-for="(tag, index) in tags" class="tags" v-bind:class="{ tagselected: (selectedIndex == index) }" v-on:keyup.tab="selectNextItem" v-on:click.self="tagClick(tag, index)">
+        <li v-for="(tag, index) in tags" class="tags" v-bind:class="{ tagselected: (selectedIndex == index) }" v-on:click.self="tagClick(tag, index)">
             {{ tag.tagName }}
             <button class="remove_tag" v-show="item || tagRemoveEnable" v-on:click="detachTag(tag, index)">x</button>
         </li>
@@ -30,6 +30,14 @@ export default {
     },
     watch: {
         tags: function(val){ this.selectedIndex = -1 },
+        selectedIndex: function(val){
+            if( val < 0 ){
+                this.$emit('unselected');
+            }
+            else{
+                this.$emit('selectedChanged', this.selectedIndex);
+            }
+    }
     },
     methods: {
         detachTag: function(tag, index){
@@ -46,23 +54,34 @@ export default {
             this.$emit('tagClick', tag);
         },
         selectNextItem: function(){
-            selectedIndex++;
+            this.selectedIndex = ( this.selectedIndex < this.tags.length-1 ) ? (this.selectedIndex+1) : -1;
+        },
+        selectPrevItem: function(){
+            this.selectedIndex = ( this.selectedIndex >= 0 ) ? (this.selectedIndex-1) : (this.tags.length-1);
         },
         keyCheck: function(e){
             if( (!this.keyEnable) || (this.tags.length === 0) ) return;
             switch(e.keyCode){
                 case 9:
                     if(e.shiftKey){
-                        this.selectedIndex = ( this.selectedIndex >= 0 ) ? (this.selectedIndex-1) : (this.tags.length-1);
+                        this.selectPrevItem();
                     }
                     else{
-                        this.selectedIndex = ( this.selectedIndex < this.tags.length-1 ) ? (this.selectedIndex+1) : -1;
+                        this.selectNextItem();
                     }
                     console.log(this.tags.length);
                     e.preventDefault();
                     break;
                 case 13:
                     if( (this.selectedIndex >= 0) && (this.selectedIndex < this.tags.length) ) this.$emit('tagClick', this.tags[this.selectedIndex] );
+                    break;
+
+                case 40:
+                    this.selectPrevItem();
+                    break;
+
+                case 38:
+                    this.selectNextItem();
                     break;
             }
         }

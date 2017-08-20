@@ -4,12 +4,12 @@
         <input class="taginput" type="text"
                v-inputFocus
                v-model="tagInput"
-               v-on:keyup.enter="addTag"
+               v-on:keyup.enter="addTagFromEnterKey"
                v-on:focus="isTaglistKeyEnable = true"
                v-on:blur="isTaglistKeyEnable = false"
                ></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
-        <tag-list-component class="taglist" :tagRemoveEnable="true" :keyEnable="isTaglistKeyEnable" :tags="getTagList" @tagClick="selectTag"></tag-list-component>
+        <tag-list-component class="taglist" :tagRemoveEnable="true" :keyEnable="isTaglistKeyEnable" :tags="getTagList" @unselected="tagUnselected" @selectedChanged="tagSelectedChanged" @tagClick="selectTag"></tag-list-component>
     </div>
 </template>
 
@@ -30,6 +30,7 @@ export default {
             tagInput: "",
             tags: [],
             isTaglistKeyEnable: false,
+            isActiveTagList: false,
         }
     },
     props: [
@@ -52,11 +53,20 @@ export default {
         },
     },
     methods: {
+        tagUnselected: function(){
+            this.isActiveTagList = false;
+        },
+        tagSelectedChanged: function(index){
+            this.isActiveTagList = true;
+        },
         selectTag: function(tag){
             bmark.attachTag(this.bookmarkItem.id, tag.tagName, e=>{
                 if( !tag ) return;
                 this.bookmarkItem.tags.push(tag);
             });
+        },
+        addTagFromEnterKey: function(){
+            if( !this.isActiveTagList ) this.addTag();
         },
         addTag: function(){
             bmark.attachTag(this.bookmarkItem.id, this.tagInput, tag=>{
