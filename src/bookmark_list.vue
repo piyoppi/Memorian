@@ -175,7 +175,8 @@ export default {
                     e.preventDefault();
                     break;
 
-                case 46:                                //delete
+                case 46:
+                    /*Delete key*/
                     if( !bmarkItem ) return;
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
                     bmark.removeItem(bmarkItem);
@@ -183,7 +184,8 @@ export default {
                     break;
 
                 case 13:
-                    if( !bmarkItem ) return;
+                    /*Enter key*/
+                    if( !bmarkItem || !(this.showTagKey < 0) ) return;
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
                     let link_info = bmarkItem.captions.h6 || bmarkItem.captions.h5 || bmarkItem.captions.h4 ||
                                     bmarkItem.captions.h3 || bmarkItem.captions.h2 || bmarkItem.captions.h1;
