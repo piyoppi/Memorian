@@ -35,15 +35,19 @@ function find_element_fromcurpos(){
     });
     header_tag_text = header_tag_text.substr(0, header_tag_text.length-3);
 
-    app.show(block_elem.innerText, 2500);
 
     return {
         content: block_elem.innerText,
         title: document.title,
         url: window.location.href,
         header_tag_text: header_tag_text,
-        captions: send_additional_info
+        captions: send_additional_info,
+        selectionText: window.getSelection().toString()
     };
+}
+
+function showRegisteredContent(text){
+    app.show(text, 2500);
 }
 
 function handler_mousemove(e){
@@ -63,6 +67,10 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
     switch( request.id ){
         case "element_memo":
             sendResponse(find_element_fromcurpos());
+            break;
+
+        case "registered_item":
+            showRegisteredContent(request.content);
             break;
 
         case "jump_link":

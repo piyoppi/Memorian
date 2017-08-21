@@ -1,9 +1,18 @@
 import bookmarkStore from './bookmark_store.js'
 
+var selectionLengthThreshold = 20;
 var bStore = new bookmarkStore();
 
 function contextMenu_Click(info, tab){
-    chrome.tabs.sendMessage(tab.id, {hoge: "text_memo"}, function(response) {
+    chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
+        if( response.selectionText.length > selectionLengthThreshold ){
+            response.content = response.selectionText;
+        }
+        bStore.addContentIntoBookmarkData(response).then( e => {})
+        .catch( e=>{
+            bStore.setBookmarkData(response);
+        });
+        chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
     });
 }
 
@@ -13,6 +22,7 @@ function mnu_ElementMemo_click(info, tab){
         .catch( e=>{
             bStore.setBookmarkData(response);
         });
+        chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
     });
 }
 
