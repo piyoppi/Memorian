@@ -59,7 +59,7 @@ export default {
         bmark.onInsertedItem = this.insertedBookmark;
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
-            if( document.documentElement.clientHeight - window.innerHeight - window.scrollY < 10 ) this.paginate();
+            if( this.isNeedPaginate() ) this.paginate();
         }, false);
         document.addEventListener('keydown', this.keyCheck);
     },
@@ -77,13 +77,21 @@ export default {
             this.bookmarkList = [];
             this.find(query, 0, getDataAmount);
         },
+        isNeedPaginate: function(){
+            return ((document.documentElement.clientHeight - window.innerHeight - window.scrollY) < 10);
+        },
         find: function(query, offset, length){
             if( this.isFinding ) return;
             this.isFinding = true;
             bmark.findKeywordOrTag({query: this.query, offset: offset, length: length}, e=>{
                 this.isFinding = false;
                 this.bookmarkList = this.bookmarkList.concat(e);
-                if( e.length < getDataAmount ) this.isStopScroll = true;
+                if( e.length < getDataAmount ){
+                    this.isStopScroll = true;
+                }
+                else{
+                    setTimeout(()=>{if( this.isNeedPaginate() ) this.paginate();}, 500);
+                }
             });
         },
         removedItem: function(item, index){
