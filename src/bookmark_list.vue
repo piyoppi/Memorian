@@ -157,10 +157,13 @@ export default {
                     }
                     break;
 
-                case 84:
+                case 80:
+                    /*'p' key*/
                     if( !bmarkItem ) return;
-                    if( e.ctrlKey ) this.showTagList(bmarkItem);
-                    e.preventDefault();
+                    if( e.ctrlKey ){
+                        this.showTagList(bmarkItem);
+                        e.preventDefault();
+                    }
                     break;
 
                 case 40:
