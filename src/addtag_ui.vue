@@ -38,8 +38,8 @@ export default {
     ],
     created: function(){
         bmark.getTagsAll( e => {
-            this.initializeTagSearch();
             this.tags = e;
+            this.initializeTagSearch();
         } );
     },
     computed: {
