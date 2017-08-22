@@ -9,7 +9,14 @@
                v-on:blur="isTaglistKeyEnable = false"
                ></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
-        <tag-list-component class="taglist" :tagRemoveEnable="true" :keyEnable="isTaglistKeyEnable" :tags="getTagList" @unselected="tagUnselected" @selectedChanged="tagSelectedChanged" @tagClick="selectTag"></tag-list-component>
+        <tag-list-component class="taglist"
+                            :tagRemoveEnable="true"
+                            :keyEnable="isTaglistKeyEnable"
+                            :tags="getTagList"
+                            @unselected="tagUnselected"
+                            @selectedChanged="tagSelectedChanged"
+                            @tagRemoved="tagRemoved"
+                            @tagClick="selectTag"></tag-list-component>
     </div>
 </template>
 
@@ -29,6 +36,7 @@ export default {
         return{
             tagInput: "",
             tags: [],
+            foundTags: [],
             isTaglistKeyEnable: false,
             isActiveTagList: false,
         }
@@ -48,13 +56,19 @@ export default {
                 return this.tags;
             }
             else{
-                return searcher.search(this.tagInput);
+                this.foundTags = searcher.search(this.tagInput);
+                return this.foundTags;
             }
         },
     },
     methods: {
         initializeTagSearch: function(){
             searcher.setHash(this.tags, ["tagName"]);
+        },
+        tagRemoved: function(tag){
+            let idx = this.tags.findIndex( item => item.id == tag.id );
+            if( idx >= 0 ) this.tags.splice( idx, 1 );
+            this.initializeTagSearch();
         },
         tagUnselected: function(){
             this.isActiveTagList = false;

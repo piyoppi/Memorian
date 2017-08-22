@@ -42,7 +42,8 @@ export default {
     methods: {
         detachTag: function(tag, index){
             if( this.tagRemoveEnable ){
-                bmark.removeTag(tag.id, e=>{this.tags.push(e);});
+                bmark.removeTag(tag.id, e=>{});
+                this.$emit('tagRemoved', tag);
                 this.tags.splice(index, 1);
             }
             else if(this.item){
