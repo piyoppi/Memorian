@@ -119,19 +119,19 @@ export default class bookmarkStore{
     getOrCreateTag(tagName){
         return this.getTag(tagName).then( e => {
             if( e ){
-                return Promise.resolve(e);
+                return Promise.resolve({tag: e, isAddTag: false});
             }
             else{
-                return this.addTag(tagName).then( e => Promise.resolve(e) );
+                return this.addTag(tagName).then( e => Promise.resolve({tag: e, isAddTag: true}) );
             }
         } )
     }
 
     attachTagFromDataKey(datakey, tagName){
-        return this.addBookmarkKeyIntoTag(datakey, tagName).then( tag => 
+        return this.addBookmarkKeyIntoTag(datakey, tagName).then( taginfo => 
                 this.getBookmark(datakey).then( data => {
-                    this.addTagKeyIntoBookmark(data, tag.id);
-                    return Promise.resolve(tag);
+                    this.addTagKeyIntoBookmark(data, taginfo.tag.id);
+                    return Promise.resolve(taginfo);
                 })
         );
     }
@@ -167,14 +167,14 @@ export default class bookmarkStore{
     }
 
     addBookmarkKeyIntoTag(dataKey, tagName){
-        return this.getOrCreateTag(tagName).then( tag => {
-            if( !this.checkDuplicateTag(dataKey, tag) ) throw "TagDuplicateError";
-            tag.contentIDs.push(dataKey);
+        return this.getOrCreateTag(tagName).then( taginfo => {
+            if( !this.checkDuplicateTag(dataKey, taginfo.tag) ) throw "TagDuplicateError";
+            taginfo.tag.contentIDs.push(dataKey);
             return new Promise( (resolve, reject) => {
                 let transaction = this._db.transaction(["tags"], "readwrite");
                 let objectStore = transaction.objectStore("tags");
-                let request = objectStore.put(tag);
-                request.onsuccess = e => resolve(tag);
+                let request = objectStore.put(taginfo.tag);
+                request.onsuccess = e => resolve(taginfo);
                 request.onerror = e => reject(e);
             });
         });

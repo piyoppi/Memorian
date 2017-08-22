@@ -73,10 +73,10 @@ export default {
         },
         addTag: function(){
             if( this.tagInput == "" ) return;
-            bmark.attachTag(this.bookmarkItem.id, this.tagInput, tag=>{
-                if( !tag ) return;
-                this.tags.push(tag);
-                this.bookmarkItem.tags.push(tag);
+            bmark.attachTag(this.bookmarkItem.id, this.tagInput, taginfo=>{
+                if( !taginfo || !taginfo.tag ) return;
+                if( taginfo.isAddTag ) this.tags.push(taginfo.tag);
+                this.bookmarkItem.tags.push(taginfo.tag);
                 this.initializeTagSearch();
             });
         },
