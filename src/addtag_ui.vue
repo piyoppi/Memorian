@@ -69,6 +69,7 @@ export default {
             let idx = this.tags.findIndex( item => item.id == tag.id );
             if( idx >= 0 ) this.tags.splice( idx, 1 );
             this.initializeTagSearch();
+            this.$emit('tagRemoved', tag);
         },
         tagUnselected: function(){
             this.isActiveTagList = false;

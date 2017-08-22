@@ -13,7 +13,7 @@
                 </div>
                 <transition name="tagsel" v-on:leave="transitionLeaveTags" v-on:enter="transitionShowTags" v-bind:css="false">
                     <div class="tagselect_group" v-if="showTagKey == item.id" >
-                        <tag-select-component :bookmarkItem="item" v-bind:key="index"></tag-select-component>
+                        <tag-select-component :bookmarkItem="item" v-bind:key="index" @tagRemoved="tagRemoved"></tag-select-component>
                     </div>
                 </transition>
             </li>
@@ -125,6 +125,14 @@ export default {
         },
         showTagList: function(item){
             this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
+        },
+        tagRemoved: function(tag){
+            this.bookmarkList.forEach( bmark => {
+                let idxTagInfo = bmark.tags.findIndex( taginfo => taginfo.id == tag.id );
+                let idxTagId = bmark.tagIds.indexOf(tag.id);
+                if( idxTagInfo >= 0 ) bmark.tags.splice(idxTagInfo, 1);
+                if( idxTagId >= 0 ) bmark.tagIds.splice(idxTagId, 1);
+            });
         },
         selectNextItem: function(){
             this.selectedIndex = ( this.selectedIndex < (this.bookmarkList.length-1) ) ? (this.selectedIndex+1) : -1;
