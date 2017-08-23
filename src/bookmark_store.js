@@ -64,7 +64,7 @@ export default class bookmarkStore{
     }
 
     getTextForDuplicateCheck(data){
-        return data.title + data.header_tag_text + data.url;
+        return data.title + data.header_tag_text + data.url.replace(/#.*/, "");
     }
 
     genTextForFinding(data){
