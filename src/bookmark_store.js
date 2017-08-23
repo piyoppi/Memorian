@@ -299,6 +299,7 @@ export default class bookmarkStore{
                 if( !updateData ){ reject(e); return; }
                 updateData.contents.push(data.content);
                 updateData.text_for_finding += this.genTextForFinding(data) + "\n";
+                console.log(updateData.text_for_finding);
                 updateData.modifiedAt = this.createDateInfoNow();
                 var requestUpdate = objectStore.put(updateData);
                 requestUpdate.onerror = e => reject(e);
@@ -398,6 +399,7 @@ export default class bookmarkStore{
             let arrTextforFinding = updateData.text_for_finding.split("\n");
             arrTextforFinding.splice(index, 1);
             updateData.text_for_finding = arrTextforFinding.join("\n");
+            console.log(updateData.text_for_finding);
 
             let requestUpdate = objectStore.put(updateData);
             requestUpdate.onerror = e => { throw "Update was failed" };
@@ -408,7 +410,7 @@ export default class bookmarkStore{
     }
 
     findUsingTagFromQueryString(query){
-        let tagStrs = query.query.toLowerCase().replace(/ |　/g, " ").split(" ");
+        let tagStrs = query.query.replace(/ |　/g, " ").split(" ");
 
         return Promise.all(tagStrs.map( tagStr => this.getTag(tagStr) ))
             .then( tags =>{
