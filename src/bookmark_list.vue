@@ -98,6 +98,7 @@ export default {
             this.bookmarkList.splice(index, 1);
         },
         insertedBookmark: function(){
+            this.isStopScroll = false;
             bmark.get_bookmarks_request(0, getDataAmount, e => {console.log(e); this.bookmarkList = e; }); 
         },
         paginate: function(){
