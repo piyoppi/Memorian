@@ -396,6 +396,7 @@ export default class bookmarkStore{
         let objectStore = transaction.objectStore("bookmarks");
         objectStore.get(key).onsuccess = e=>{ 
             let updateData = e.target.result;
+            if( (index < 0) || (index >= updateData.contents.length) ){ throw "InvalidContentIndexError" }
             if( !updateData ){ throw "Update data is nothing"; return; }
             updateData.contents.splice(index, 1);
 
