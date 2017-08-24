@@ -140,6 +140,7 @@ export default class bookmarkStore{
 
     detachTagFromDataKey(dataKey, tagKey){
         this.getBookmark(dataKey).then( bookmark => {
+            if( !bookmark ) throw "BookmarkItemNoneException";
             let findTagIndex = bookmark.tagIds.indexOf(tagKey);
             if( findTagIndex >= 0 ){
                 bookmark.tagIds.splice(findTagIndex, 1);
@@ -150,13 +151,13 @@ export default class bookmarkStore{
             }
         })
         .then( e => this.getTagFromKey(tagKey) )
-            .then( tagData => {
-                let findDataIndex = tagData.contentIDs.indexOf(dataKey);
-                if( findDataIndex >= 0 ){
-                    tagData.contentIDs.splice(findDataIndex, 1);
-                    this.updateTag(tagData);
-                }
-            });
+        .then( tagData => {
+            let findDataIndex = tagData.contentIDs.indexOf(dataKey);
+            if( findDataIndex >= 0 ){
+                tagData.contentIDs.splice(findDataIndex, 1);
+                this.updateTag(tagData);
+            }
+        });
     }
 
     addTagKeyIntoBookmark(data, tagkey){
