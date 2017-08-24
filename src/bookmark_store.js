@@ -128,12 +128,13 @@ export default class bookmarkStore{
     }
 
     attachTagFromDataKey(datakey, tagName){
-        return this.addBookmarkKeyIntoTag(datakey, tagName).then( taginfo => 
-                this.getBookmark(datakey).then( data => {
-                    this.addTagKeyIntoBookmark(data, taginfo.tag.id);
-                    return Promise.resolve(taginfo);
-                })
-        );
+        return this.getBookmark(datakey).then( data => {
+            if( !data ) throw "NoDataError";
+            return this.addBookmarkKeyIntoTag(datakey, tagName).then( taginfo => {
+                this.addTagKeyIntoBookmark(data, taginfo.tag.id);
+                return Promise.resolve(taginfo);
+            })
+        });
     }
 
     detachTagFromDataKey(dataKey, tagKey){
