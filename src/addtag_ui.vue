@@ -93,6 +93,7 @@ export default {
                 if( taginfo.isAddTag ) this.tags.push(taginfo.tag);
                 this.bookmarkItem.tags.push(taginfo.tag);
                 this.initializeTagSearch();
+                this.tagInput = "";
             });
         },
     },
