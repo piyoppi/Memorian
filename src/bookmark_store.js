@@ -97,6 +97,7 @@ export default class bookmarkStore{
 
     detachTagFromAllBookmark(tagKey){
         return this.getTagFromKey(tagKey).then( tag => {
+            if( !tag ) throw "TagNoneException";
             let transaction = this._db.transaction(["tags"], "readwrite");
             let objectStore = transaction.objectStore("tags");
             let promisesBmark = [];
