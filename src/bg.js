@@ -42,11 +42,11 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "remove_item":
-                    bStore.removeBookmark(request.key);
+                    bStore.removeBookmark(request.dataKey);
                     break;
 
                 case "remove_code":
-                    bStore.removeCode(request.key, request.index);
+                    bStore.removeCode(request.dataKey, request.index);
                     break;
 
                 case "findUsingTag":

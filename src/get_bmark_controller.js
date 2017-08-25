@@ -6,6 +6,7 @@ export default class popup_controller{
     constructor(){
         this._callback_buffer = {};
         this.onInsertedItem = null;
+        this.id = this.keygen();
 
         chrome.runtime.onMessage.addListener(
             (request, sender, sendResponse) => {
@@ -16,7 +17,7 @@ export default class popup_controller{
 
                     default:
                         if( request.key in this._callback_buffer ){
-                            this._callback_buffer[request.key](request.data);
+                            if( this._callback_buffer[request.key].callback ) this._callback_buffer[request.key].callback(request.data);
                             delete this._callback_buffer[request.key];
                         }
                         break;
@@ -26,49 +27,54 @@ export default class popup_controller{
         );
     }
 
+    setCallback(callback = null){
+        let key = this.keygen();
+        this._callback_buffer[ key ] = {controllerID: this.id, callback: callback};
+        return key;
+    }
+
+
     keygen(){
         return String(Math.random() * 100000);
     }
 
     get_bookmarks_request(offset, len, callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "get_bookmarks", offset: offset, length: len, key: key}, (e)=>{});
     }
 
     getBookmarksAll(callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "getBookmarksAll", key: key}, (e)=>{});
     }
 
     insertBookmarks(data, callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "insertBookmarks", data: data, key: key}, (e)=>{});
     }
 
-    removeItem(key){
-        chrome.runtime.sendMessage({id: "remove_item", key: key}, (e)=>{});
+    removeItem(dataKey){
+        let key = this.setCallback();
+        chrome.runtime.sendMessage({id: "remove_item", key: key, dataKey: dataKey}, (e)=>{});
     }
 
-    removeCode(key, index){
-        chrome.runtime.sendMessage({id: "remove_code", key: key, index: index}, (e)=>{});
+    removeCode(dataKey, index){
+        let key = this.setCallback();
+        chrome.runtime.sendMessage({id: "remove_code", key: key, dataKey: dataKey, index: index}, (e)=>{});
     }
 
     attachTag(dataKey, tagName, callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName, key: key}, e=>{});
     }
 
     removeTag(tagKey){
+        let key = this.setCallback();
         chrome.runtime.sendMessage({id: "removeTag", tagKey: tagKey}, e=>{});
     }
 
     getTagsAll(callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "getTagsAll", key: key}, e=>{});
     }
 
@@ -79,18 +85,17 @@ export default class popup_controller{
     }
 
     detachTag(dataKey, tagKey){
+        let key = this.setCallback();
         chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagKey: tagKey}, e=>{});
     }
 
     findUsingTag(query, callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "findUsingTag", query: query, key: key}, (e)=>{});
     }
 
     find(query, callback){
-        let key = this.keygen();
-        this._callback_buffer[ key ] = callback;
+        let key = this.setCallback(callback);
         chrome.runtime.sendMessage({id: "find", query: query, key: key}, (e)=>{});
     }
 
