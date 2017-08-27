@@ -44,9 +44,10 @@ export default {
             if( !request.key ) return;
             switch( request.key ){
                 case "getUpdatedByBookmarkPopup":
-                console.log("getUpdatedByBookmarkPopup");
-                location.reload();
-                break;
+                case "getAddBookmark":
+                    console.log("getUpdatedByBookmarkPopup");
+                    location.reload();
+                    break;
             }
         });
     },

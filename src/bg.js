@@ -13,6 +13,7 @@ function contextMenu_Click(info, tab){
             bStore.setBookmarkData(response);
         });
         chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
+        sendEvent({key: "getAddBookmark"});
     });
 }
 
@@ -23,6 +24,7 @@ function mnu_ElementMemo_click(info, tab){
             bStore.setBookmarkData(response);
         });
         chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
+        sendEvent({key: "getAddBookmark"});
     });
 }
 
