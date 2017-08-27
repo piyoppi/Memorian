@@ -57,6 +57,7 @@ input[type="text"]{
                v-on:keyup.enter="find()"
                v-on:focus="textFocus()"
                v-on:blur="textBlur()"
+               v-on:click="textClick"
                >
         <input type="button" class="tagbtn" value="" v-on:click="showTagList()">
         <input type="button" class="findbtn" value="" v-on:click="find()">
@@ -123,6 +124,10 @@ export default{
         textFocus: function(){
             this.isTaglistKeyEnable = true;
             if( this.query !== "" ) this.$emit('focused');
+        },
+        textClick: function(){
+            this.isTaglistKeyEnable = true;
+            this.$emit('focused');
         },
         textBlur: function(){
             this.isTaglistKeyEnable = false;

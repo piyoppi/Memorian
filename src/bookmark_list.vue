@@ -84,6 +84,7 @@ export default {
         findComponentFocused: function(){
             this.keyCheckEnable = false;
             this.selectedIndex = -1;
+            console.log("selsel");
         },
         findComponentLostFocused: function(){
             this.keyCheckEnable = true;
