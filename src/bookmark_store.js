@@ -542,6 +542,7 @@ export default class bookmarkStore{
         });
 
         return new Promise( (resolve, reject) => {
+            if( updateTagPromises.length === 0 ) resolve([]);
             let setTagIds = [];
             let cntProc = 0;
             updateTagPromises.forEach( item => {
