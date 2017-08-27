@@ -52,7 +52,7 @@ export default {
             getBmark.jump_link(item, tag);
         },
         removeCode: function(item, contentIndex, index){
-            getBmark.removeCode(item.key, contentIndex, ()=>{
+            getBmark.removeCode(item.id, contentIndex, ()=>{
                 this.$emit('updatedBookmark');
             });
             item.contents.splice(contentIndex, 1);
@@ -61,7 +61,7 @@ export default {
             }
         },
         removeItem: function(item, index){
-            getBmark.removeItem(item.key, ()=>{
+            getBmark.removeItem(item.id, ()=>{
                 this.$emit('removed_bookmark', item, index);
                 this.$emit('updatedBookmark');
             });

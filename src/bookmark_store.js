@@ -526,7 +526,7 @@ export default class bookmarkStore{
                 if( isEqualBookmark ) dupBookmark = regBookmark;
                 return isEqualBookmark;
             });
-            Promise.resolve(dupBookmark);
+            return Promise.resolve(dupBookmark);
         });
     }
 
@@ -548,9 +548,9 @@ export default class bookmarkStore{
             updateTagPromises.forEach( item => {
                 item.then( tag => {
                     setTagIds.push( tag.id );
-                    if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }
+                    if( ++cntProc == updateTagPromises.length ){ resolve(setTagIds); }
                 })
-                .catch( e => {if( ++cntProc == registeredBookmark.tagIds.length ){ resolve(setTagIds); }});
+                .catch( e => { if( ++cntProc == updateTagPromises.length ){ resolve(setTagIds); }});
             });
         })
         .then( tagIds => {
@@ -568,19 +568,21 @@ export default class bookmarkStore{
             let cntProc = 0;
             data.bookmark.forEach( bookmark => {
                 this.getDuplicateBookmark(bookmark).then( dupBookmark => {
-                    if( dupBookmark && (JSON.stringify(bookmark) == JSON.stringify(dupBookmark)) ){
+                    if( dupBookmark ){
+                        //if(JSON.stringify(bookmark) == JSON.stringify(dupBookmark)){
+                        //}
+                        //else{
+                        //}
                         return Promise.reject(bookmark);
                     }
                     else{
                         return Promise.resolve(bookmark);
                     }
                 })
-                .then( setBookmark => new Promise( (resolve2, reject2) =>{
-                    let transaction = this._db.transaction(["bookmarks"], "readwrite");
-                    let objectStore = transaction.objectStore("bookmarks");
+                .then( setBookmark => new Promise( (resolve2, reject2) => {
                     delete setBookmark.id;
                     delete setBookmark.key;
-                    let request = objectStore.add(setBookmark);
+                    let request = this._db.transaction(["bookmarks"], "readwrite").objectStore("bookmarks").add(setBookmark);
                     request.onsuccess = e => { 
                         this.bookmarkCount++;
                         setBookmark.id = e.target.result;
@@ -589,7 +591,7 @@ export default class bookmarkStore{
                     request.onerror = e => reject2(setBookmark);
                 }))
                 .then( setBookmark => this.replaceTagID(setBookmark, correspondedTags) )
-                .catch(e => {})
+                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; return resolve(true) }})
                 .then( e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; return resolve(true) }});
             });
         }))
