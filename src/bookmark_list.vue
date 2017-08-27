@@ -148,6 +148,7 @@ export default {
                 if( idxTagInfo >= 0 ) bookmark.tags.splice(idxTagInfo, 1);
                 if( idxTagId >= 0 ) bookmark.tagIds.splice(idxTagId, 1);
             });
+            this.updatedBookmark();
         },
         selectNextItem: function(){
             this.selectedIndex = ( this.selectedIndex < (this.bookmarkList.length-1) ) ? (this.selectedIndex+1) : -1;
