@@ -22,7 +22,7 @@
 </template>
 
 <script>
-import GetBmark from './get_bmark_controller.js'
+import getBmark from './get_bmark_controller.js'
 import Velocity from 'velocity-animate'
 import FindComponent from './findset.vue'
 import BookmarkItemComponent from './bookmark_item.vue'
@@ -30,7 +30,6 @@ import TagSelectComponent from './addtag_ui.vue'
 import TagListComponent from './taglist.vue'
 import JumpLink from './jump_link.js'
 
-let bmark = new GetBmark();
 let getDataAmount = 5;
 
 export default {
@@ -56,7 +55,7 @@ export default {
     },
     created: function(){
         this.find("", 0, getDataAmount);
-        bmark.onInsertedItem = this.insertedBookmark;
+        getBmark.onInsertedItem = this.insertedBookmark;
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
             if( this.isNeedPaginate() ) this.paginate();
@@ -83,7 +82,7 @@ export default {
         find: function(query, offset, length){
             if( this.isFinding ) return;
             this.isFinding = true;
-            bmark.findKeywordOrTag({query: this.query, offset: offset, length: length}, e=>{
+            getBmark.findKeywordOrTag({query: this.query, offset: offset, length: length}, e=>{
                 this.isFinding = false;
                 this.bookmarkList = this.bookmarkList.concat(e);
                 if( e.length < getDataAmount ){
@@ -99,7 +98,7 @@ export default {
         },
         insertedBookmark: function(){
             this.isStopScroll = false;
-            bmark.get_bookmarks_request(0, getDataAmount, e => {console.log(e); this.bookmarkList = e; }); 
+            getBmark.get_bookmarks_request(0, getDataAmount, e => {console.log(e); this.bookmarkList = e; }); 
         },
         paginate: function(){
             this.find(this.query, this.bookmarkList.length, getDataAmount);
@@ -128,11 +127,11 @@ export default {
             this.showTagKey = ( this.showTagKey == item.id ) ? -1 : item.id;
         },
         tagRemoved: function(tag){
-            this.bookmarkList.forEach( bmark => {
-                let idxTagInfo = bmark.tags.findIndex( taginfo => taginfo.id == tag.id );
-                let idxTagId = bmark.tagIds.indexOf(tag.id);
-                if( idxTagInfo >= 0 ) bmark.tags.splice(idxTagInfo, 1);
-                if( idxTagId >= 0 ) bmark.tagIds.splice(idxTagId, 1);
+            this.bookmarkList.forEach( bookmark => {
+                let idxTagInfo = bookmark.tags.findIndex( taginfo => taginfo.id == tag.id );
+                let idxTagId = bookmark.tagIds.indexOf(tag.id);
+                if( idxTagInfo >= 0 ) bookmark.tags.splice(idxTagInfo, 1);
+                if( idxTagId >= 0 ) bookmark.tagIds.splice(idxTagId, 1);
             });
         },
         selectNextItem: function(){
@@ -199,7 +198,7 @@ export default {
                     /*Delete key*/
                     if( !bmarkItem ) return;
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
-                    bmark.removeItem(bmarkItem, ()=>{});
+                    getBmark.removeItem(bmarkItem, ()=>{});
                     this.removedItem(bmarkItem, this.selectedIndex);
                     break;
 
@@ -213,7 +212,7 @@ export default {
                         JumpLink.Jump(bmarkItem, link_info);
                     }
                     else{
-                        bmark.jump_link(bmarkItem, link_info);
+                        getBmark.jump_link(bmarkItem, link_info);
                     }
                     break;
 

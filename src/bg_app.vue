@@ -29,9 +29,8 @@
 <script>
 
 import BookmarkListComponent from './bookmark_list.vue'
-import GetBmark from './get_bmark_controller.js'
+import getBmark from './get_bmark_controller.js'
 import BookmarkIO from './bookmark_io.js'
-let bmark = new GetBmark();
 
 export default {
     data: function () {
@@ -46,9 +45,9 @@ export default {
     },
     methods: {
         save: function(){
-            bmark.getTagsAll( tagData => {
+            getBmark.getTagsAll( tagData => {
                 console.log(tagData);
-                bmark.getBookmarksAll( bmarkData => {
+                getBmark.getBookmarksAll( bmarkData => {
                     BookmarkIO.save({tag: tagData, bookmark: bmarkData});
                 });
             });
@@ -56,7 +55,7 @@ export default {
         load: function(){
             try{
                 BookmarkIO.load().then( data => {
-                    bmark.insertBookmarks(data, e=>{});
+                    getBmark.insertBookmarks(data, e=>{});
                 });
             }
             catch(e){

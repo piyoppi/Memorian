@@ -8,8 +8,7 @@
 </template>
 
 <script>
-import GetBmark from './get_bmark_controller.js'
-let bmark = new GetBmark();
+import getBmark from './get_bmark_controller.js'
 
 export default {
     components: {
@@ -42,13 +41,13 @@ export default {
     methods: {
         detachTag: function(tag, index){
             if( this.tagRemoveEnable ){
-                bmark.removeTag(tag.id, e=>console.log("removed tag"));
+                getBmark.removeTag(tag.id, e=>console.log("removed tag"));
                 let idx = this.tags.findIndex( item => item.id == tag.id );
                 if( idx >= 0 ) this.tags.splice( idx, 1 );
                 this.$emit('tagRemoved', tag);
             }
             else if(this.item){
-                bmark.detachTag(this.item.id, tag.id);
+                getBmark.detachTag(this.item.id, tag.id, ()=>{});
                 this.item.tags.splice(index, 1);
             }
         },

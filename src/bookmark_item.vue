@@ -19,14 +19,13 @@
 
 
 <script>
-import GetBmark from './get_bmark_controller.js'
+import getBmark from './get_bmark_controller.js'
 import hljs from 'highlight.js'
 import styles from 'highlight.js/styles/hybrid.css'
 import clipbrd from 'clipboard'
 import Velocity from 'velocity-animate'
 new clipbrd('.btn_cp');
 
-let bmark = new GetBmark();
 
 export default {
     components: {
@@ -50,23 +49,23 @@ export default {
     },
     methods: {
         jump_link: function(item, tag){
-            bmark.jump_link(item, tag);
+            getBmark.jump_link(item, tag);
         },
         removeCode: function(item, contentIndex, index){
-            bmark.removeCode(item.key, contentIndex, ()=>{});
+            getBmark.removeCode(item.key, contentIndex, ()=>{});
             item.contents.splice(contentIndex, 1);
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }
         },
         removeItem: function(item, index){
-            bmark.removeItem(item.key, ()=>this.$emit('removed_bookmark', item, index));
+            getBmark.removeItem(item.key, ()=>this.$emit('removed_bookmark', item, index));
         },
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
         detachTag: function(tag, index){
-            bmark.detachTag(this.item.id, tag.id, ()=>{});
+            getBmark.detachTag(this.item.id, tag.id, ()=>{});
             this.item.tags.splice(index, 1);
         },
         keyCheck: function(e){

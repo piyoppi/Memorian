@@ -68,8 +68,7 @@ input[type="text"]{
 <script>
 import TagListComponent from './taglist.vue'
 import arraySearcher from 'array_searcher'
-import GetBmark from './get_bmark_controller.js'
-let bmark = new GetBmark();
+import getBmark from './get_bmark_controller.js'
 let searcher = new arraySearcher();
 
 export default{
@@ -89,7 +88,7 @@ export default{
         "isFocus"
     ],
     created: function(){
-        bmark.getTagsAll( e => {
+        getBmark.getTagsAll( e => {
             this.tags = e;
             searcher.setHash(this.tags, ["tagName"]);
         } );

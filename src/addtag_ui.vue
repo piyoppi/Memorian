@@ -22,8 +22,7 @@
 
 
 <script>
-import GetBmark from './get_bmark_controller.js'
-let bmark = new GetBmark();
+import getBmark from './get_bmark_controller.js'
 import arraySearcher from 'array_searcher'
 let searcher = new arraySearcher();
 import TagListComponent from './taglist.vue'
@@ -45,7 +44,7 @@ export default {
         "bookmarkItem"
     ],
     created: function(){
-        bmark.getTagsAll( e => {
+        getBmark.getTagsAll( e => {
             this.tags = e;
             this.initializeTagSearch();
         } );
@@ -76,7 +75,7 @@ export default {
             this.isActiveTagList = true;
         },
         selectTag: function(tag){
-            bmark.attachTag(this.bookmarkItem.id, tag.tagName, e=>{
+            getBmark.attachTag(this.bookmarkItem.id, tag.tagName, e=>{
                 if( !tag || !e ) return;
                 this.bookmarkItem.tags.push(tag);
             });
@@ -86,7 +85,7 @@ export default {
         },
         addTag: function(){
             if( this.tagInput == "" ) return;
-            bmark.attachTag(this.bookmarkItem.id, this.tagInput, taginfo=>{
+            getBmark.attachTag(this.bookmarkItem.id, this.tagInput, taginfo=>{
                 if( !taginfo || !taginfo.tag ) return;
                 if( taginfo.isAddTag ) this.tags.push(taginfo.tag);
                 this.bookmarkItem.tags.push(taginfo.tag);

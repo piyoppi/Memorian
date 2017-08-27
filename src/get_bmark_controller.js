@@ -4,84 +4,69 @@
 export default class popup_controller{
 
     constructor(){
-        this._callback_buffer = {};
         this.onInsertedItem = null;
-        this.id = this.keygen();
 
-        chrome.runtime.onMessage.addListener(
-            (request, sender, sendResponse) => {
+        chrome.runtime.onMessage.addListener( (request, sender, sendResponse) => {
                 switch( request.key ){
                     case "insertedBookmarks":
                         if( this.onInsertedItem ) this.onInsertedItem();
                         break;
-
-                    default:
-                        if( request.key in this._callback_buffer ){
-                            if( this._callback_buffer[request.key].callback ) this._callback_buffer[request.key].callback(request.data);
-                            delete this._callback_buffer[request.key];
-                        }
-                        break;
-
                 }
             }
         );
     }
 
-    keygen(){
-        return String(Math.random() * 100000);
-    }
-
-    get_bookmarks_request(offset, len, callback){
+    static get_bookmarks_request(offset, len, callback){
         chrome.runtime.sendMessage({id: "get_bookmarks", offset: offset, length: len}, e=>callback(e.data));
     }
 
-    getBookmarksAll(callback){
+    static getBookmarksAll(callback){
         chrome.runtime.sendMessage({id: "getBookmarksAll"}, e=>callback(e.data));
     }
 
-    insertBookmarks(data, callback){
+    static insertBookmarks(data, callback){
         chrome.runtime.sendMessage({id: "insertBookmarks", data: data}, e=>callback(e));
     }
 
-    removeItem(dataKey, callback){
+    static removeItem(dataKey, callback){
         chrome.runtime.sendMessage({id: "remove_item", dataKey: dataKey}, e=>callback());
     }
 
-    removeCode(dataKey, index, callback){
+    static removeCode(dataKey, index, callback){
         chrome.runtime.sendMessage({id: "remove_code", dataKey: dataKey, index: index}, e=>callback());
     }
 
-    attachTag(dataKey, tagName, callback){
+    static attachTag(dataKey, tagName, callback){
         chrome.runtime.sendMessage({id: "attachTag", datakey: dataKey, tagName: tagName}, e=>callback(e.data));
     }
 
-    removeTag(tagKey, callback){
+    static removeTag(tagKey, callback){
         chrome.runtime.sendMessage({id: "removeTag", tagKey: tagKey}, e=>callback(e.data));
     }
 
-    getTagsAll(callback){
+    static getTagsAll(callback){
         chrome.runtime.sendMessage({id: "getTagsAll"}, e=>callback(e.data));
     }
 
-    jump_link(item, tag){
+    static jump_link(item, tag){
         chrome.tabs.query({active: true, currentWindow: true}, tab=>{
             chrome.tabs.sendMessage(tab[0].id, {id: "jump_link", item: item, tag: tag }, (e)=>{});
         });
     }
 
-    detachTag(dataKey, tagKey, callback){
-        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagKey: tagKey}, e=>callback(), ()=>{});
+    static detachTag(dataKey, tagKey, callback){
+        chrome.runtime.sendMessage({id: "detachTag", datakey: dataKey, tagKey: tagKey}, e=>callback());
     }
 
-    findUsingTag(query, callback){
+    static findUsingTag(query, callback){
         chrome.runtime.sendMessage({id: "findUsingTag", query: query}, e=>callback(e.data));
     }
 
-    find(query, callback){
+    static find(query, callback){
         chrome.runtime.sendMessage({id: "find", query: query}, e=>callback(e.data));
     }
 
-    findKeywordOrTag(query, callback){
+    static findKeywordOrTag(query, callback){
         if( query.query === "" ){
             this.get_bookmarks_request(query.offset, query.length, callback);
         }
