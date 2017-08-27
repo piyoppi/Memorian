@@ -70,7 +70,9 @@ export default {
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
         detachTag: function(tag, index){
-            getBmark.detachTag(this.item.id, tag.id, ()=>{});
+            getBmark.detachTag(this.item.id, tag.id, ()=>{
+                this.$emit('updatedBookmark');
+            });
             this.item.tags.splice(index, 1);
         },
         keyCheck: function(e){

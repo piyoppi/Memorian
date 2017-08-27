@@ -47,7 +47,9 @@ export default {
                 this.$emit('tagRemoved', tag);
             }
             else if(this.item){
-                getBmark.detachTag(this.item.id, tag.id, ()=>{});
+                getBmark.detachTag(this.item.id, tag.id, ()=>{
+                    this.$emit('tagDetached', tag);
+                });
                 this.item.tags.splice(index, 1);
             }
         },

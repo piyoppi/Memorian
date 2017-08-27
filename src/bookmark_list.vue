@@ -14,7 +14,7 @@
                                          ></bookmark-item-component>
                 <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
-                    <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
+                    <tag-list-component class="taglist" :item="item" :tags="item.tags" @tagDetached="updatedBookmark"></tag-list-component>
                 </div>
                 <transition name="tagsel" v-on:leave="transitionLeaveTags" v-on:enter="transitionShowTags" v-bind:css="false">
                     <div class="tagselect_group" v-if="showTagKey == item.id" >
