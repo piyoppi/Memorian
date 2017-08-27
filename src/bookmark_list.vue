@@ -18,7 +18,10 @@
                 </div>
                 <transition name="tagsel" v-on:leave="transitionLeaveTags" v-on:enter="transitionShowTags" v-bind:css="false">
                     <div class="tagselect_group" v-if="showTagKey == item.id" >
-                        <tag-select-component :bookmarkItem="item" v-bind:key="index" @tagRemoved="tagRemoved"></tag-select-component>
+                        <tag-select-component :bookmarkItem="item"
+                                              v-bind:key="index"
+                                              @tagAttached="updatedBookmark"
+                                              @tagRemoved="tagRemoved"></tag-select-component>
                     </div>
                 </transition>
             </li>

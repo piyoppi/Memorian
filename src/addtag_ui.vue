@@ -78,6 +78,7 @@ export default {
             getBmark.attachTag(this.bookmarkItem.id, tag.tagName, e=>{
                 if( !tag || !e ) return;
                 this.bookmarkItem.tags.push(tag);
+                this.$emit('tagAttached', tag);
             });
         },
         addTagFromEnterKey: function(){
@@ -91,6 +92,7 @@ export default {
                 this.bookmarkItem.tags.push(taginfo.tag);
                 this.initializeTagSearch();
                 this.tagInput = "";
+                this.$emit('tagAttached', taginfo.tag);
             });
         },
     },
