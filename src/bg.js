@@ -29,7 +29,7 @@ function mnu_ElementMemo_click(info, tab){
 chrome.contextMenus.create({ title: "この部分を切り抜く", contexts: ["selection"], onclick: contextMenu_Click });
 chrome.contextMenus.create({ title: "この部分を切り抜く", onclick: mnu_ElementMemo_click });
 
-function retValue(obj){
+function sendEvent(obj){
     chrome.runtime.sendMessage(obj, ()=>{});
 }
 
@@ -38,57 +38,71 @@ chrome.runtime.onMessage.addListener(
             switch( request.id ){
                 case "get_bookmarks":
                     console.log(`get ${request.offset}  ${request.length}`); 
-                    bStore.getBookmarks( request.offset, request.length).then( e => { retValue({data: e, key: request.key}) });
+                    bStore.getBookmarks( request.offset, request.length).then( e => sendResponse({data: e}));
+                    return true;
                     break;
 
                 case "remove_item":
-                    bStore.removeBookmark(request.dataKey);
+                    bStore.removeBookmark(request.dataKey).then( e => sendResponse() );
+                    return true;
                     break;
 
                 case "remove_code":
-                    bStore.removeCode(request.dataKey, request.index);
+                    bStore.removeCode(request.dataKey, request.index).then( e => sendResponse() );
+                    return true;
                     break;
 
                 case "findUsingTag":
-                    bStore.findUsingTagFromQueryString(request.query).then( e => retValue({data: e, key: request.key}) );
+                    bStore.findUsingTagFromQueryString(request.query).then( e => sendResponse({data: e}) );
+                    return true;
                     break;
 
                 case "find":
                     console.log(`find ${request.offset}  ${request.length}`); 
-                    bStore.find(request.query, e => { retValue({data: e, key: request.key}) });
+                    bStore.find(request.query, e => sendResponse({data: e}));
+                    return true;
                     break;
 
                 case "insertBookmarks":
                     bStore.insertBookmarks(request.data).then( e => {
-                        retValue({key: "insertedBookmarks"});
-                        retValue({data: e, key: request.key});
+                        sendEvent({key: "insertedBookmarks"});
+                        sendResponse({data: e});
                     } );
+                    return true;
                     break;
 
                 case "attachTag":
                     bStore.attachTagFromDataKey(request.datakey, request.tagName).then( e=>{
-                        retValue({data: e, key: request.key});
+                        sendResponse({data: e});
                     })
                     .catch(e=>{
-                        retValue({data: null});
+                        sendResponse({data: null});
                     });
+                    return true;
                     break;
 
                 case "removeTag":
                     bStore.detachTagFromAllBookmark(request.tagKey)
-                        .then( e => bStore.removeTag(request.tagKey) );
+                        .then( e => {
+                            bStore.removeTag(request.tagKey);
+                            sendResponse({data: 'removed_tag'});
+                        });
+                    return true;
                     break;
 
                 case "detachTag":
-                    bStore.detachTagFromDataKey(request.datakey, request.tagKey, e=>{ retValue({data: e, key: request.key}) });
+                    bStore.detachTagFromDataKey(request.datakey, request.tagKey).then( e=>sendResponse({data: e}) );
+                    return true;
                     break;
 
                 case "getTagsAll":
-                    bStore.getTagsAll().then(e => retValue({data: e, key: request.key}));
+                    bStore.getTagsAll().then(e => sendResponse({data: e}));
+                    return true;
                     break;
 
                 case "getBookmarksAll":
-                    bStore.getAllBookmarks().then(e => {console.log(e);retValue({data: e, key: request.key});});
+                    bStore.getAllBookmarks().then(e => sendResponse({data: e}));
+                    return true;
                     break;
 
                 case "showBookmarks":

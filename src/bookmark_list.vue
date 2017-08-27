@@ -199,7 +199,7 @@ export default {
                     /*Delete key*/
                     if( !bmarkItem ) return;
                     if( (this.selectedIndex < 0) || (this.selectedIndex >= this.bookmarkList.length) ) return;
-                    bmark.removeItem(bmarkItem);
+                    bmark.removeItem(bmarkItem, ()=>{});
                     this.removedItem(bmarkItem, this.selectedIndex);
                     break;
 

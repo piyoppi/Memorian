@@ -42,9 +42,10 @@ export default {
     methods: {
         detachTag: function(tag, index){
             if( this.tagRemoveEnable ){
-                bmark.removeTag(tag.id, e=>{});
+                bmark.removeTag(tag.id, e=>console.log("removed tag"));
+                let idx = this.tags.findIndex( item => item.id == tag.id );
+                if( idx >= 0 ) this.tags.splice( idx, 1 );
                 this.$emit('tagRemoved', tag);
-                this.tags.splice(index, 1);
             }
             else if(this.item){
                 bmark.detachTag(this.item.id, tag.id);

@@ -139,7 +139,7 @@ export default class bookmarkStore{
     }
 
     detachTagFromDataKey(dataKey, tagKey){
-        this.getBookmark(dataKey).then( bookmark => {
+        return this.getBookmark(dataKey).then( bookmark => {
             if( !bookmark ) throw "BookmarkItemNoneException";
             let findTagIndex = bookmark.tagIds.indexOf(tagKey);
             if( findTagIndex >= 0 ){
@@ -157,6 +157,7 @@ export default class bookmarkStore{
                 tagData.contentIDs.splice(findDataIndex, 1);
                 this.updateTag(tagData);
             }
+            return Promise.resolve(tagData);
         });
     }
 
@@ -384,32 +385,38 @@ export default class bookmarkStore{
     }
 
     removeBookmark(key){
-        let transaction = this._db.transaction(["bookmarks"], "readwrite");
-        let objectStore = transaction.objectStore("bookmarks");
-        let keylistIdx = this.__keyList.indexOf(key);
-        if( keylistIdx >= 0 ) this.__keyList.splice(keylistIdx, 1);
-        objectStore.delete(key);
+        return new Promise( (resolve, reject) => {
+            let transaction = this._db.transaction(["bookmarks"], "readwrite");
+            let objectStore = transaction.objectStore("bookmarks");
+            let keylistIdx = this.__keyList.indexOf(key);
+            if( keylistIdx >= 0 ) this.__keyList.splice(keylistIdx, 1);
+            let request = objectStore.delete(key);
+            request.onsuccess = e => resolve(e);
+            request.onerror = e => reject(e);
+        });
     }
 
     removeCode(key, index){
-        let transaction = this._db.transaction(["bookmarks"], "readwrite");
-        let objectStore = transaction.objectStore("bookmarks");
-        objectStore.get(key).onsuccess = e=>{ 
-            let updateData = e.target.result;
-            if( (index < 0) || (index >= updateData.contents.length) ){ throw "InvalidContentIndexError" }
-            if( !updateData ){ throw "Update data is nothing"; return; }
-            updateData.contents.splice(index, 1);
+        return new Promise( (resolve, reject) => {
+            let transaction = this._db.transaction(["bookmarks"], "readwrite");
+            let objectStore = transaction.objectStore("bookmarks");
+            objectStore.get(key).onsuccess = e=>{ 
+                let updateData = e.target.result;
+                if( (index < 0) || (index >= updateData.contents.length) ){ throw "InvalidContentIndexError" }
+                if( !updateData ){ throw "Update data is nothing"; return; }
+                updateData.contents.splice(index, 1);
 
-            let arrTextforFinding = updateData.text_for_finding.split("\n");
-            arrTextforFinding.splice(index, 1);
-            updateData.text_for_finding = arrTextforFinding.join("\n");
-            console.log(updateData.text_for_finding);
+                let arrTextforFinding = updateData.text_for_finding.split("\n");
+                arrTextforFinding.splice(index, 1);
+                updateData.text_for_finding = arrTextforFinding.join("\n");
+                console.log(updateData.text_for_finding);
 
-            let requestUpdate = objectStore.put(updateData);
-            requestUpdate.onerror = e => { throw "Update was failed" };
-            requestUpdate.onsuccess = e => { return Promise.resolve("hoge"); };
-            this._dataVersion++;
-        };
+                let requestUpdate = objectStore.put(updateData);
+                requestUpdate.onerror = e => { throw "Update was failed" };
+                requestUpdate.onsuccess = e => { resolve(e); };
+                this._dataVersion++;
+            };
+        });
 
     }
 

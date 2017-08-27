@@ -53,21 +53,20 @@ export default {
             bmark.jump_link(item, tag);
         },
         removeCode: function(item, contentIndex, index){
-            bmark.removeCode(item.key, contentIndex);
+            bmark.removeCode(item.key, contentIndex, ()=>{});
             item.contents.splice(contentIndex, 1);
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }
         },
         removeItem: function(item, index){
-            bmark.removeItem(item.key);
-            this.$emit('removed_bookmark', item, index);
+            bmark.removeItem(item.key, ()=>this.$emit('removed_bookmark', item, index));
         },
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});
         },
         detachTag: function(tag, index){
-            bmark.detachTag(this.item.id, tag.id);
+            bmark.detachTag(this.item.id, tag.id, ()=>{});
             this.item.tags.splice(index, 1);
         },
         keyCheck: function(e){

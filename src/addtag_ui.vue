@@ -66,8 +66,6 @@ export default {
             searcher.setHash(this.tags, ["tagName"]);
         },
         tagRemoved: function(tag){
-            let idx = this.tags.findIndex( item => item.id == tag.id );
-            if( idx >= 0 ) this.tags.splice( idx, 1 );
             this.initializeTagSearch();
             this.$emit('tagRemoved', tag);
         },
@@ -79,7 +77,7 @@ export default {
         },
         selectTag: function(tag){
             bmark.attachTag(this.bookmarkItem.id, tag.tagName, e=>{
-                if( !tag ) return;
+                if( !tag || !e ) return;
                 this.bookmarkItem.tags.push(tag);
             });
         },
