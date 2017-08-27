@@ -105,6 +105,10 @@ chrome.runtime.onMessage.addListener(
                     return true;
                     break;
 
+                case "sendUpdatedToBookmarkPage":
+                    sendEvent({key: "getUpdatedByBookmarkPopup"});
+                    break;
+
                 case "showBookmarks":
                     chrome.tabs.create({"url": "html/bg.html" });
                     break;

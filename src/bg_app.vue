@@ -39,6 +39,16 @@ export default {
     },
     created: function(){
         document.addEventListener('keydown', this.keyCheck);
+
+        chrome.runtime.onMessage.addListener( (request, sender, sendResponse) => {
+            if( !request.key ) return;
+            switch( request.key ){
+                case "getUpdatedByBookmarkPopup":
+                console.log("getUpdatedByBookmarkPopup");
+                location.reload();
+                break;
+            }
+        });
     },
     components: {
         BookmarkListComponent 

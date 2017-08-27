@@ -52,14 +52,19 @@ export default {
             getBmark.jump_link(item, tag);
         },
         removeCode: function(item, contentIndex, index){
-            getBmark.removeCode(item.key, contentIndex, ()=>{});
+            getBmark.removeCode(item.key, contentIndex, ()=>{
+                this.$emit('updatedBookmark');
+            });
             item.contents.splice(contentIndex, 1);
             if( item.contents.length === 0 ){
                 this.removeItem(item, index)
             }
         },
         removeItem: function(item, index){
-            getBmark.removeItem(item.key, ()=>this.$emit('removed_bookmark', item, index));
+            getBmark.removeItem(item.key, ()=>{
+                this.$emit('removed_bookmark', item, index);
+                this.$emit('updatedBookmark');
+            });
         },
         leave_code: function(el, done){
             Velocity(el, {height: "0px"}, {duration: 400}, {complete: done});

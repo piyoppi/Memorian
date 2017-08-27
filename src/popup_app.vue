@@ -6,7 +6,7 @@
 
 <template>
     <div>
-        <bookmark-list-component id="bmarklist"></bookmark-list-component>
+        <bookmark-list-component id="bmarklist" @updatedBookmark="updatedBookmark"></bookmark-list-component>
     </div>
 </template>
 
@@ -27,9 +27,13 @@ export default {
         keyCheck: function(e){
             switch(e.keyCode){
                 case 77:
-                    if( e.ctrlKey ) chrome.runtime.sendMessage({id: "showBookmarks"}, (e)=>{}); 
+                    if( e.ctrlKey ) chrome.runtime.sendMessage({id: "showBookmarks"}, e=>{}); 
                     break;
             }
+        },
+        updatedBookmark: function(e){
+            console.log("sendUpdatedToBookmarkPage");
+            chrome.runtime.sendMessage({id: "sendUpdatedToBookmarkPage"}, e=>{});
         },
     }
 }

@@ -6,7 +6,12 @@
         </div>
         <transition-group tag="ul" id="snippet_list" v-on:leave="leave_bmark" >
             <li v-for="(item, index) in bookmarkList" v-on:click = "selectedIndex = index" v-bind:class="{ bmarkselected: (selectedIndex === index) }" v-selected="selectedIndex === index"  class="bmark_item" v-bind:key="item.id">
-                <bookmark-item-component :item="item" :index="index" :selected="selectedIndex === index" @removed_bookmark="removedItem"></bookmark-item-component>
+                <bookmark-item-component :item="item"
+                                         :index="index"
+                                         :selected="selectedIndex === index"
+                                         @removed_bookmark="removedItem"
+                                         @updatedBookmark="updatedBookmark"
+                                         ></bookmark-item-component>
                 <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
                     <tag-list-component class="taglist" :item="item" :tags="item.tags"></tag-list-component>
@@ -70,6 +75,9 @@ export default {
         });
     },
     methods: {
+        updatedBookmark: function(){
+            this.$emit('updatedBookmark');
+        },
         findComponentFocused: function(){
             this.keyCheckEnable = false;
             this.selectedIndex = -1;
