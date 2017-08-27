@@ -55,12 +55,19 @@ export default {
     },
     created: function(){
         this.find("", 0, getDataAmount);
-        getBmark.onInsertedItem = this.insertedBookmark;
         document.addEventListener("scroll", ()=>{
             if( this.isStopScroll ) return;
             if( this.isNeedPaginate() ) this.paginate();
         }, false);
         document.addEventListener('keydown', this.keyCheck);
+
+        chrome.runtime.onMessage.addListener( (request, sender, sendResponse) => {
+            switch( request.key ){
+                case "insertedBookmarks":
+                this.insertedBookmark();
+                break;
+            }
+        });
     },
     methods: {
         findComponentFocused: function(){

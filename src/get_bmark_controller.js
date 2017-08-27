@@ -3,19 +3,6 @@
 
 export default class popup_controller{
 
-    constructor(){
-        this.onInsertedItem = null;
-
-        chrome.runtime.onMessage.addListener( (request, sender, sendResponse) => {
-                switch( request.key ){
-                    case "insertedBookmarks":
-                        if( this.onInsertedItem ) this.onInsertedItem();
-                        break;
-                }
-            }
-        );
-    }
-
     static get_bookmarks_request(offset, len, callback){
         chrome.runtime.sendMessage({id: "get_bookmarks", offset: offset, length: len}, e=>callback(e.data));
     }
