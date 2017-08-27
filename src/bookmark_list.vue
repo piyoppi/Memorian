@@ -103,7 +103,7 @@ export default {
             getBmark.findKeywordOrTag({query: this.query, offset: offset, length: length}, e=>{
                 this.isFinding = false;
                 this.bookmarkList = this.bookmarkList.concat(e);
-                if( e.length < getDataAmount ){
+                if( e.length !== getDataAmount ){
                     this.isStopScroll = true;
                 }
                 else{
