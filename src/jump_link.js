@@ -7,7 +7,7 @@ export default class JumpLink{
     Jump(item, tag){
         chrome.storage.local.set({'tag': tag}, ()=>{
             if( window.location.href !== item.url ){
-                window.location.href = item.url;
+                window.location.href = item.url.replace( /#.*/, '');
             }
             else{
                 this.JumpToElementAfterLoad();
