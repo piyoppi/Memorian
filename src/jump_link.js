@@ -1,27 +1,41 @@
 
 export default class JumpLink{
-    static Jump(item, tag){
-        chrome.storage.sync.set({tag: tag}, function(){});
-        if( window.location.href !== item.url ){
-            window.location.href = item.url;
-        }
-        else{
-            this.JumpToElementAfterLoad();
-        }
+
+    constructor(){
     }
 
-    static JumpToElementAfterLoad(){
-        chrome.storage.sync.get( null, (param) => {
-            if( param === null ) return;
-            this.JumpElement(param.tag);
+    Jump(item, tag){
+        chrome.storage.local.set({'tag': tag}, ()=>{
+            if( window.location.href !== item.url ){
+                window.location.href = item.url;
+            }
+            else{
+                this.JumpToElementAfterLoad();
+            }
         });
     }
 
-    static JumpElement(taginfo){
-        this._JumpElementById(taginfo) || this._JumpElementByText(taginfo);
+    JumpToElementAfterLoad(){
+        chrome.storage.local.get( 'tag', (param) => {
+            if( param.tag === null ) return;
+            this.JumpElement(param.tag);
+            chrome.storage.local.set({'tag': null}, ()=>{});
+        });
     }
 
-    static _JumpElementByText(taginfo){
+    _JumpElement(taginfo, cntRetryCount = 0, jumpLocation = window.location.href){
+        if( !(this._JumpElementById(taginfo) || this._JumpElementByText(taginfo)) ){
+            if( (++cntRetryCount < 20) && (jumpLocation === window.location.href) ){
+                setTimeout( ()=>{ this._JumpElement(taginfo, cntRetryCount, jumpLocation) }, 500 );                 
+            }
+        }
+    }
+
+    JumpElement(taginfo){
+        this._JumpElement(taginfo);
+    }
+
+    _JumpElementByText(taginfo){
         var elemList = Array.prototype.slice.call(document.getElementsByTagName(taginfo.tagName));
         var toElem = null;
         elemList.forEach( elem=>{
@@ -34,7 +48,7 @@ export default class JumpLink{
         return true;
     }
 
-    static _JumpElementById(taginfo){
+    _JumpElementById(taginfo){
         if( taginfo.id === "" ) return false;
         let jumpItem = document.getElementById(taginfo.id);
         if( !jumpItem ) return false;
@@ -42,7 +56,7 @@ export default class JumpLink{
         return true;
     }
 
-    static _ScrollToElement(elem){
+    _ScrollToElement(elem){
         let TopPosition = elem.getBoundingClientRect().top + window.pageYOffset;
         window.scrollTo(0, TopPosition);
     }

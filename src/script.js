@@ -1,7 +1,8 @@
 import selection from './selection.js'
 import parser from './bmark_parser.js'
-import JumpLink from './jump_link.js'
+import jLink from './jump_link.js'
 import Vue from 'vue'
+var jumpLink = new jLink();
 var appOptions = require('./msg.vue');
 var app;
 
@@ -56,10 +57,7 @@ function handler_mousemove(e){
 }
 
 
-window.addEventListener("load", ()=>{
-    JumpLink.JumpToElementAfterLoad();
-});
-
+jumpLink.JumpToElementAfterLoad();
 
 document.addEventListener("contextmenu", handler_mousemove, false);
 
@@ -74,7 +72,8 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
             break;
 
         case "jump_link":
-            JumpLink.Jump(request.item, request.tag);
+            jumpLink.Jump(request.item, request.tag);
+            console.log(request);
             break;
 
         default:
