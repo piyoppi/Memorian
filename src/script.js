@@ -73,7 +73,6 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
 
         case "jump_link":
             jumpLink.Jump(request.item, request.tag);
-            console.log(request);
             break;
 
         default:

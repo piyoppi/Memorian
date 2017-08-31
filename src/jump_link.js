@@ -18,8 +18,8 @@ export default class JumpLink{
     JumpToElementAfterLoad(){
         chrome.storage.local.get( 'tag', (param) => {
             if( param.tag === null ) return;
-            this.JumpElement(param.tag);
             chrome.storage.local.set({'tag': null}, ()=>{});
+            this.JumpElement(param.tag);
         });
     }
 

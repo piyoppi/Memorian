@@ -11,6 +11,7 @@
                                          :selected="selectedIndex === index"
                                          @removed_bookmark="removedItem"
                                          @updatedBookmark="updatedBookmark"
+                                         @linkClick="linkClick"
                                          ></bookmark-item-component>
                 <div class="bookmark_tags_outer">
                     <button class="btn_taglist" v-on:click="showTagList(item)" href="#"></button>
@@ -80,6 +81,9 @@ export default {
     methods: {
         updatedBookmark: function(){
             this.$emit('updatedBookmark');
+        },
+        linkClick: function(item, tag){
+            this.$emit('linkClick', item, tag);
         },
         findComponentFocused: function(){
             this.keyCheckEnable = false;

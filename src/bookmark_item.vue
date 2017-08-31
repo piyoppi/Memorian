@@ -4,7 +4,7 @@
         <button class="btn_removebmark" v-on:click="removeItem(item, index)" href="#"></button>
         <ul class="htag_list">
             <li v-for="htag in item.captions">
-                <a :href="item.url" v-on:click="jump_link(item, htag)">{{ htag.text }}</a>
+                <a href="#" v-on:click.prevent="jump_link(item, htag)">{{ htag.text }}</a>
             </li>
         </ul>
         <transition-group tag="ul" class="code_list" v-on:leave="leave_code" >
@@ -50,6 +50,7 @@ export default {
     methods: {
         jump_link: function(item, tag){
             getBmark.jump_link(item, tag);
+            this.$emit('linkClick', item, tag);
         },
         removeCode: function(item, contentIndex, index){
             getBmark.removeCode(item.id, contentIndex, ()=>{

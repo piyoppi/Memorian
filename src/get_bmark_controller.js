@@ -39,6 +39,7 @@ export default class popup_controller{
         chrome.tabs.query({active: true, currentWindow: true}, tab=>{
             chrome.tabs.sendMessage(tab[0].id, {id: "jump_link", item: item, tag: tag }, (e)=>{});
         });
+        chrome.runtime.sendMessage({id: "jump_link", item: item, tag: tag }, (e)=>{});
     }
 
     static detachTag(dataKey, tagKey, callback){
