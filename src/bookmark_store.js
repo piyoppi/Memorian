@@ -292,6 +292,7 @@ export default class bookmarkStore{
             var requestUpdate = objectStore.put(data);
             requestUpdate.onerror = e => reject(e);
             requestUpdate.onsuccess = e => resolve(e);
+            this._incrementDataVersion();
         });
     }
 
@@ -314,8 +315,8 @@ export default class bookmarkStore{
                 requestUpdate.onsuccess = e => resolve(e);
             }
             get_item.onerror = e => reject(e);
+            this._incrementDataVersion();
         });
-        this._incrementDataVersion();
     }
 
     getBookmark(key){
@@ -389,6 +390,7 @@ export default class bookmarkStore{
 
     _incrementDataVersion(){
         this._dataVersion++;
+        console.log(`ver: ${this._dataVersion}`);
     }
 
     removeBookmark(key){
