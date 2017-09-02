@@ -1,6 +1,6 @@
 <style>
     .btn_save{
-        background-image: url('../img/Floppy.png');
+        background-image: url('../img/fp2.png');
         width: 20px;
         height: 20px;
         margin: 0;
@@ -11,14 +11,14 @@
         height: 20px;
         margin: 0;
     }
-    .need-save{
+    .needsave{
         background-color: orange;
     }
 </style>
 
 <template>
     <div>
-        <button  v-bind:class="{ need-save: dataChanged }" class="btn_save" v-on:click="save"></button><button class="btn_load" v-on:click="load"></button>
+        <button  v-bind:class="{ needsave: currentVersion != savedVersion }" class="btn_save" v-on:click="save"></button><button class="btn_load" v-on:click="load"></button>
     </div>
 </template>
 
@@ -26,19 +26,35 @@
 import getBmark from './get_bmark_controller.js'
 import BookmarkIO from './bookmark_io.js'
 
-chrome.storage.onChanged.addListener(function(changes, namespace) {
-    if( namespace !== "local") return;
-    if( changes.version ){ this.dataChanged = true; }
-});
-
 export default {
     data: function () {
         return {
-            dataChanged: false,
+            savedVersion: 0,
+            currentVersion: 0,
         }
     },
     created: function(){
         document.addEventListener('keydown', this.keyCheck);
+
+        chrome.storage.onChanged.addListener((changes, namespace) => {
+            if( namespace !== "local") return;
+            if( changes.version ) this.currentVersion = changes.version;
+            console.log(changes);
+        });
+        
+        try{
+            chrome.storage.local.get( ['savedVersion', 'version'], (param) => {
+                if( param ){
+                    this.currentVersion = param.version | 0;
+                    this.savedVersion = param.savedVersion | 0;
+                } 
+            });
+        }
+        catch(e){
+            this.currentVersion = 0;
+            this.savedVersion = 0;
+        }
+
     },
     methods: {
         save: function(){
@@ -47,6 +63,8 @@ export default {
                     BookmarkIO.save({tag: tagData, bookmark: bmarkData});
                 });
             });
+            chrome.storage.local.set({'savedVersion': this.currentVersion}, ()=>{});
+            this.savedVersion = this.currentVersion;
         },
         load: function(){
             try{

@@ -390,6 +390,7 @@ export default class bookmarkStore{
     _incrementDataVersion(){
         this._dataVersion++;
         console.log(`ver: ${this._dataVersion}`);
+        chrome.storage.local.set({'version': this._dataVersion}, ()=>{});
     }
 
     removeBookmark(key){

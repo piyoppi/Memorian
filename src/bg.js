@@ -1,5 +1,7 @@
 import bookmarkStore from './bookmark_store.js'
 
+//chrome.storage.local.set({'version': 0}, ()=>{});
+//chrome.storage.local.set({'savedVersion': 0}, ()=>{});
 
 var selectionLengthThreshold = 20;
 var bStore = new bookmarkStore();
