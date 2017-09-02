@@ -279,7 +279,7 @@ export default class bookmarkStore{
                 let request = objectStore.add(addData);
                 request.onsuccess = e => { this.__keyList.unshift(e.target.result); resolve(); };
                 request.onerror = e => resolve();
-                this._dataVersion++;
+                this._incrementDataVersion();
                 this.bookmarkCount++;
             });
         });
@@ -315,7 +315,7 @@ export default class bookmarkStore{
             }
             get_item.onerror = e => reject(e);
         });
-        this._dataVersion++;
+        this._incrementDataVersion();
     }
 
     getBookmark(key){
@@ -385,7 +385,10 @@ export default class bookmarkStore{
                 }
             }
         });
+    }
 
+    _incrementDataVersion(){
+        this._dataVersion++;
     }
 
     removeBookmark(key){
@@ -395,7 +398,7 @@ export default class bookmarkStore{
             let keylistIdx = this.__keyList.indexOf(key);
             if( keylistIdx >= 0 ) this.__keyList.splice(keylistIdx, 1);
             let request = objectStore.delete(key);
-            request.onsuccess = e => { this.bookmarkCount--; resolve(e);};
+            request.onsuccess = e => { this.bookmarkCount--; this._incrementDataVersion(); resolve(e);};
             request.onerror = e => reject(e);
         });
     }
@@ -418,7 +421,7 @@ export default class bookmarkStore{
                 let requestUpdate = objectStore.put(updateData);
                 requestUpdate.onerror = e => { throw "Update was failed" };
                 requestUpdate.onsuccess = e => { resolve(e); };
-                this._dataVersion++;
+                this._incrementDataVersion();
             };
         });
 
@@ -595,8 +598,8 @@ export default class bookmarkStore{
                     request.onerror = e => reject2(setBookmark);
                 }))
                 .then( setBookmark => this.replaceTagID(setBookmark, correspondedTags) )
-                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; return resolve(true) }})
-                .then( e => {if( ++cntProc == data.bookmark.length ){ this._dataVersion++; return resolve(true) }});
+                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve(true) }})
+                .then( e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve(true) }});
             });
         }))
         .then( e => this.getKeyList() );

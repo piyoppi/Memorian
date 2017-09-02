@@ -60,40 +60,6 @@ export default {
         linkClick: function(item, tag){
             jumpLink.Jump(item, tag);
         },
-        save: function(){
-            getBmark.getTagsAll( tagData => {
-                getBmark.getBookmarksAll( bmarkData => {
-                    BookmarkIO.save({tag: tagData, bookmark: bmarkData});
-                });
-            });
-        },
-        load: function(){
-            try{
-                BookmarkIO.load().then( data => {
-                    getBmark.insertBookmarks(data, e=>{});
-                });
-            }
-            catch(e){
-                alert("ファイルの読み込みに失敗しました");
-            }
-        },
-        keyCheck: function(e){
-            switch(e.keyCode){
-                case 83:
-                    if( e.ctrlKey ){
-                        this.save();
-                        e.preventDefault();
-                    }
-                    break;
-                case 76:
-                    if( e.ctrlKey ){
-                        this.load();
-                        e.preventDefault();
-                    }
-                    break;
-
-            }
-        }
     }
 }
 </script>
