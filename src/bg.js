@@ -1,5 +1,6 @@
 import bookmarkStore from './bookmark_store.js'
 
+
 var selectionLengthThreshold = 20;
 var bStore = new bookmarkStore();
 
@@ -10,7 +11,7 @@ function contextMenu_Click(info, tab){
         }
         bStore.addContentIntoBookmarkData(response).then( e => {})
         .catch( e=>{
-            bStore.setBookmarkData(response);
+            bStore.setBookmarkData([response]).then(e=>{});
         });
         chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
         sendEvent({key: "getAddBookmark"});
@@ -21,7 +22,7 @@ function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
         bStore.addContentIntoBookmarkData(response).then( e => {})
         .catch( e=>{
-            bStore.setBookmarkData(response);
+            bStore.setBookmarkData([response]).then(e=>{});
         });
         chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
         sendEvent({key: "getAddBookmark"});

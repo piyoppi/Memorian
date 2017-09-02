@@ -253,32 +253,36 @@ export default class bookmarkStore{
         return { JSON: retDate.toJSON(), Str: dateStr, Int: Date.now() }
     }
 
-    setBookmarkData(data){
-        let transaction = this._db.transaction(["bookmarks"], "readwrite");
-        let objectStore = transaction.objectStore("bookmarks");
-        let textForFinding = this.genTextForFinding(data);
-        let textForDuplicateCheck = this.getTextForDuplicateCheck(data);
-        let addData = {
-            contents: [data.content],
-            url: data.url,
-            title: data.title,
-            header_tag_text: data.header_tag_text,
-            captions: data.captions,
-            text_for_finding: textForFinding + "\n",
-            text_for_dupcheck: textForDuplicateCheck,
-            tagIds: [],
-            clickCount: 0,
-            showCount: 0,
-            createdAt: this.createDateInfoNow(),
-            modifiedAt: null,
-            lastClickAt: null,
-            note: "",
-        };
-        let request = objectStore.add(addData);
-        request.onsuccess = e => { this.__keyList.unshift(e.target.result); };
-        request.onerror = e => {};
-        this._dataVersion++;
-        this.bookmarkCount++;
+    setBookmarkData(datas){
+        return new Promise( (resolve, reject) => {
+            let transaction = this._db.transaction(["bookmarks"], "readwrite");
+            let objectStore = transaction.objectStore("bookmarks");
+            datas.forEach( data => {
+                let textForFinding = this.genTextForFinding(data);
+                let textForDuplicateCheck = this.getTextForDuplicateCheck(data);
+                let addData = {
+                    contents: [data.content],
+                    url: data.url,
+                    title: data.title,
+                    header_tag_text: data.header_tag_text,
+                    captions: data.captions,
+                    text_for_finding: textForFinding + "\n",
+                    text_for_dupcheck: textForDuplicateCheck,
+                    tagIds: [],
+                    clickCount: 0,
+                    showCount: 0,
+                    createdAt: this.createDateInfoNow(),
+                    modifiedAt: null,
+                    lastClickAt: null,
+                    note: "",
+                };
+                let request = objectStore.add(addData);
+                request.onsuccess = e => { this.__keyList.unshift(e.target.result); resolve(); };
+                request.onerror = e => resolve();
+                this._dataVersion++;
+                this.bookmarkCount++;
+            });
+        });
     }
 
     updateBookmarkData(data){

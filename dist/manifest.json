@@ -20,7 +20,10 @@
         "default_title": "Memorian",
         "default_popup": "html/popup.html"
     },
-    "permissions": ["tabs", "contextMenus", "storage"],
+    "permissions": ["tabs",
+                  "contextMenus",
+                  "storage",
+                  "unlimitedStorage"],
     "background": {
         "scripts": ["js/bg.bundle.js"]
     }
