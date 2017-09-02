@@ -64,7 +64,6 @@ export default {
             }
         },
         updatedBookmark: function(e){
-            console.log("sendUpdatedToBookmarkPage");
             chrome.runtime.sendMessage({id: "sendUpdatedToBookmarkPage"}, e=>{});
         },
     }
