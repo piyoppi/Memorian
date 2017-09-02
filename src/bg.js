@@ -6,28 +6,38 @@ import bookmarkStore from './bookmark_store.js'
 var selectionLengthThreshold = 20;
 var bStore = new bookmarkStore();
 
+function regBookmark(tab, response){
+        bStore.addContentIntoBookmarkData(response).then( e => {
+            sendUpdateInfo(tab, response);
+        })
+        .catch( e=>{
+            if( e.code && e.code === 10000 ){
+                bStore.setBookmarkData([response]).then(e=>{ sendUpdateInfo(tab, response); })
+                .catch( e => { chrome.tabs.sendMessage(tab.id, {id: "error", content: e}, ()=>{}); } );
+            }
+            else{
+                chrome.tabs.sendMessage(tab.id, {id: "error", content: e}, ()=>{});
+            }
+        });
+}
+
+function sendUpdateInfo(tab, response){
+    chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
+    sendEvent({key: "getAddBookmark"});
+}
+
 function contextMenu_Click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
         if( response.selectionText.length > selectionLengthThreshold ){
             response.content = response.selectionText;
         }
-        bStore.addContentIntoBookmarkData(response).then( e => {})
-        .catch( e=>{
-            bStore.setBookmarkData([response]).then(e=>{});
-        });
-        chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
-        sendEvent({key: "getAddBookmark"});
+        regBookmark(tab, response);
     });
 }
 
 function mnu_ElementMemo_click(info, tab){
     chrome.tabs.sendMessage(tab.id, {id: "element_memo"}, function(response) {
-        bStore.addContentIntoBookmarkData(response).then( e => {})
-        .catch( e=>{
-            bStore.setBookmarkData([response]).then(e=>{});
-        });
-        chrome.tabs.sendMessage(tab.id, {id: "registered_item", content: response.content}, ()=>{});
-        sendEvent({key: "getAddBookmark"});
+        regBookmark(tab, response);
     });
 }
 

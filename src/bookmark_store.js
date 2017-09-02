@@ -12,6 +12,11 @@ export default class bookmarkStore{
         this.__findResults = {query: "", version: -1, data: null};
         this.__keyList = [];
 
+        this._STRMAX_LEN = 1500;
+        this._MAX_ITEMS = 15;
+
+        this.bookmarkCount = 0;
+
         this.InitializeDatabase();
     }
 
@@ -33,6 +38,16 @@ export default class bookmarkStore{
                 }
             }
         });
+    }
+
+    validateBookmarkData(data, isAdd = true){
+        if( data.text_for_finding.length > this._STRMAX_LEN ){
+            return {result: false, cause: "InvalidStrLenError", code: 1}
+        }
+        if( (this.bookmarkCount > this._MAX_ITEMS) && isAdd ){
+            return {result: false, cause: "DatabaseFullError", code: 2}
+        }
+        return {result: true, cause: "", code: 0}
     }
 
     getBookmarkCount(){
@@ -276,11 +291,16 @@ export default class bookmarkStore{
                     lastClickAt: null,
                     note: "",
                 };
-                let request = objectStore.add(addData);
-                request.onsuccess = e => { this.__keyList.unshift(e.target.result); resolve(); };
-                request.onerror = e => resolve();
-                this._incrementDataVersion();
-                this.bookmarkCount++;
+                let isValid = this.validateBookmarkData(addData);
+                if( isValid.result ){
+                    let request = objectStore.add(addData);
+                    request.onsuccess = e => { this.bookmarkCount++; this.__keyList.unshift(e.target.result); resolve(); };
+                    request.onerror = e => resolve();
+                    this._incrementDataVersion();
+                }
+                else{
+                    reject(isValid);
+                }
             });
         });
     }
@@ -305,16 +325,23 @@ export default class bookmarkStore{
             let get_item = index.get(dupchk_text);
             get_item.onsuccess = e => {
                 let updateData = e.target.result;
-                if( !updateData ){ reject(e); return; }
+                if( !updateData ){ reject({result: false, code: 10000}); return; }
                 updateData.contents.push(data.content);
                 updateData.text_for_finding += this.genTextForFinding(data) + "\n";
                 updateData.modifiedAt = this.createDateInfoNow();
-                var requestUpdate = objectStore.put(updateData);
-                requestUpdate.onerror = e => reject(e);
-                requestUpdate.onsuccess = e => resolve(e);
+
+                let isValid = this.validateBookmarkData(updateData, false);
+                if( isValid.result ){
+                    var requestUpdate = objectStore.put(updateData);
+                    requestUpdate.onerror = e => reject(e);
+                    requestUpdate.onsuccess = e => resolve(e);
+                    this._incrementDataVersion();
+                }
+                else{
+                    reject(isValid);
+                }
             }
             get_item.onerror = e => reject(e);
-            this._incrementDataVersion();
         });
     }
 

@@ -71,6 +71,16 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
             showRegisteredContent(request.content);
             break;
 
+        case "error":
+            let msg = "登録に失敗しました"
+            switch( request.content.code ){
+                case 1: msg="文字数が長すぎて登録できませんでした。"; break;
+                case 2: msg="これ以上アイテムを登録できません。古いアイテムを削除してください"; break;
+            }
+            console.log(request.content.code);
+            showRegisteredContent(msg);
+            break;
+
         case "jump_link":
             jumpLink.Jump(request.item, request.tag);
             break;

@@ -45,8 +45,8 @@ export default {
         try{
             chrome.storage.local.get( ['savedVersion', 'version'], (param) => {
                 if( param ){
-                    this.currentVersion = param.version | 0;
-                    this.savedVersion = param.savedVersion | 0;
+                    this.currentVersion = param.version || 0;
+                    this.savedVersion = param.savedVersion || 0;
                 } 
             });
         }
