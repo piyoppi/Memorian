@@ -395,7 +395,7 @@ export default class bookmarkStore{
             let keylistIdx = this.__keyList.indexOf(key);
             if( keylistIdx >= 0 ) this.__keyList.splice(keylistIdx, 1);
             let request = objectStore.delete(key);
-            request.onsuccess = e => resolve(e);
+            request.onsuccess = e => { this.bookmarkCount--; resolve(e);};
             request.onerror = e => reject(e);
         });
     }
