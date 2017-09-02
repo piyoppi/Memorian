@@ -20,17 +20,16 @@
 
 <template>
     <div>
-        <button class="btn_save" v-on:click="save"></button>
-        <button class="btn_load" v-on:click="load"></button>
+        <bookmark-iobutton-component></bookmark-iobutton-component>
         <bookmark-list-component id="bmarklist" @linkClick="linkClick" show_type="page"></bookmark-list-component>
     </div>
 </template>
 
 <script>
 
+import BookmarkIobuttonComponent from './bookmark_io.vue'
 import BookmarkListComponent from './bookmark_list.vue'
 import getBmark from './get_bmark_controller.js'
-import BookmarkIO from './bookmark_io.js'
 import jLink from './jump_link.js'
 var jumpLink = new jLink();
 
@@ -54,7 +53,8 @@ export default {
         });
     },
     components: {
-        BookmarkListComponent 
+        BookmarkListComponent,
+        BookmarkIobuttonComponent 
     },
     methods: {
         linkClick: function(item, tag){
@@ -62,7 +62,6 @@ export default {
         },
         save: function(){
             getBmark.getTagsAll( tagData => {
-                console.log(tagData);
                 getBmark.getBookmarksAll( bmarkData => {
                     BookmarkIO.save({tag: tagData, bookmark: bmarkData});
                 });
