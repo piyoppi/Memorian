@@ -85,10 +85,8 @@ chrome.runtime.onMessage.addListener(
                             if( e.missing.length > 0 ){
                                 alert(`${e.missing.length}個のアイテムの登録に失敗しました。データが不正な可能性があります。`);
                             }
-                            else{
-                                sendEvent({key: "insertedBookmarks"});
-                                sendResponse({data: e});
-                            }
+                            sendEvent({key: "insertedBookmarks"});
+                            sendResponse({data: e});
                         } )
                     }
                     catch(e){
