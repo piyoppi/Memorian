@@ -67,12 +67,14 @@ export default {
         },
         load: function(){
             try{
+                if( !confirm( "ファイル取り込みを続行してもいいですか？（ファイル取り込みの前にバックアップを取ることをお勧めします。）" )) return;
                 BookmarkIO.load().then( data => {
                     getBmark.insertBookmarks(data, e=>{});
                 });
             }
             catch(e){
-                alert("�t�@�C���̓ǂݍ��݂Ɏ��s���܂���");
+                alert("ファイルの読み込みに失敗しました");
+                console.log("file_load_error");
             }
         },
         keyCheck: function(e){

@@ -7,6 +7,7 @@
                v-on:keyup.enter="addTagFromEnterKey"
                v-on:focus="isTaglistKeyEnable = true"
                v-on:blur="isTaglistKeyEnable = false"
+               maxlength="30"
                ></input>
         <button class="add_tag" v-on:click="addTag()" href="#">Add</button>
         <tag-list-component class="taglist"

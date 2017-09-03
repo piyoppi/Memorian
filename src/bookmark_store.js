@@ -13,9 +13,9 @@ export default class bookmarkStore{
         this.__keyList = [];
 
         this._STRMAX_LEN = 1500;
-        this._MAX_ITEMS = 15;
-        this._TAG_STRMAX= 15;
-        this._TAG_MAX_ITEMS = 15;
+        this._MAX_ITEMS = 1500;
+        this._TAG_STRMAX= 30;
+        this._TAG_MAX_ITEMS = 100;
 
         this.bookmarkCount = 0;
         this.tagCount = 0;
