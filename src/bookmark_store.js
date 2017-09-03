@@ -41,11 +41,26 @@ export default class bookmarkStore{
     }
 
     validateBookmarkData(data, isAdd = true){
+        console.log(`${this.bookmarkCount} -- chk`);
         if( data.text_for_finding.length > this._STRMAX_LEN ){
             return {result: false, cause: "InvalidStrLenError", code: 1}
         }
-        if( (this.bookmarkCount > this._MAX_ITEMS) && isAdd ){
-            return {result: false, cause: "DatabaseFullError", code: 2}
+        if( isAdd ){
+            let chkIsFillBookmarkDatabase = this.checkIsFillBookmarkDatabase();
+            if( !chkIsFillBookmarkDatabase.result ) return chkIsFillBookmarkDatabase;
+        }
+        return {result: true, cause: "", code: 0}
+    }
+
+    checkIsFillBookmarkDatabase( addCount = 0, isThrow = false ){
+        let compCount = (this.bookmarkCount + addCount);
+        if( compCount > this._MAX_ITEMS ){
+            if( isThrow ) {
+                throw {result: false, cause: "DatabaseFullError", diff: compCount - this._MAX_ITEMS, code: 2}
+            }
+            else{
+                return {result: false, cause: "DatabaseFullError", diff: compCount - this._MAX_ITEMS, code: 2}
+            }
         }
         return {result: true, cause: "", code: 0}
     }
@@ -599,8 +614,11 @@ export default class bookmarkStore{
     insertBookmarks(data){
         let correspondedTags = null;
 
+        this.checkIsFillBookmarkDatabase(data.bookmark.length, true);
+
         return this.insertTags(data.tag).then( tagInfos => { correspondedTags = tagInfos; return Promise.resolve() } )
         .then( e => new Promise((resolve, reject) => {
+            let missingData = [];
             let cntProc = 0;
             data.bookmark.forEach( bookmark => {
                 this.getDuplicateBookmark(bookmark).then( dupBookmark => {
@@ -618,19 +636,28 @@ export default class bookmarkStore{
                 .then( setBookmark => new Promise( (resolve2, reject2) => {
                     delete setBookmark.id;
                     delete setBookmark.key;
-                    let request = this._db.transaction(["bookmarks"], "readwrite").objectStore("bookmarks").add(setBookmark);
-                    request.onsuccess = e => { 
-                        this.bookmarkCount++;
-                        setBookmark.id = e.target.result;
-                        resolve2(setBookmark);
-                    };
-                    request.onerror = e => reject2(setBookmark);
+                    let isValid = this.validateBookmarkData(setBookmark);
+                    if( isValid.result ){
+                        let request = this._db.transaction(["bookmarks"], "readwrite").objectStore("bookmarks").add(setBookmark);
+                        request.onsuccess = e => { 
+                            this.bookmarkCount++;
+                            setBookmark.id = e.target.result;
+                            resolve2(setBookmark);
+                            this.__keyList.unshift(e.target.result);
+                        };
+                        request.onerror = e => reject2(setBookmark);
+                    }
+                    else{
+                        missingData.push({item: setBookmark, error: e});
+                        console.log(missingData);
+                        reject2(e);
+                    }
                 }))
                 .then( setBookmark => this.replaceTagID(setBookmark, correspondedTags) )
-                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve(true) }})
-                .then( e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve(true) }});
+                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve({missing: missingData}) }})
+                .then( e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve({missing: missingData}) }});
             });
         }))
-        .then( e => this.getKeyList() );
+        .then( e => Promise.resolve({ missing: e.missing }) );
     }
 }

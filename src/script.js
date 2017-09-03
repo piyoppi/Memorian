@@ -4,13 +4,11 @@ import jLink from './jump_link.js'
 import Vue from 'vue'
 var jumpLink = new jLink();
 var appOptions = require('./msg.vue');
-var app;
 
-var el = document.createElement("div");
+let el = document.createElement("div");
 el.id = "chrome_extension_bmark_msg";
-console.log(el);
 document.body.appendChild(el);
-app = new Vue(appOptions).$mount("#" + el.id);
+let app = new Vue(appOptions).$mount("#" + el.id);
 app.hide();
 
 
@@ -77,8 +75,7 @@ chrome.runtime.onMessage.addListener( function(request, sender, sendResponse) {
                 case 1: msg="文字数が長すぎて登録できませんでした。"; break;
                 case 2: msg="これ以上アイテムを登録できません。古いアイテムを削除してください"; break;
             }
-            console.log(request.content.code);
-            showRegisteredContent(msg);
+            alert("コードスニペットメモツール「めもりあん」からのメッセージ：" + msg);
             break;
 
         case "jump_link":

@@ -79,10 +79,22 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "insertBookmarks":
-                    bStore.insertBookmarks(request.data).then( e => {
-                        sendEvent({key: "insertedBookmarks"});
-                        sendResponse({data: e});
-                    } );
+                    try {
+                        bStore.insertBookmarks(request.data).then( e => {
+                            console.log(e);
+                            if( e.missing.length > 0 ){
+                                alert(`${e.missing.length}個のアイテムの登録に失敗しました。データが不正な可能性があります。`);
+                            }
+                            else{
+                                sendEvent({key: "insertedBookmarks"});
+                                sendResponse({data: e});
+                            }
+                        } )
+                    }
+                    catch(e){
+                        console.log("3err");
+                        if( e.diff ) alert(`アイテム最大数を超えるため追加に失敗しました。${e.diff}個のアイテムを削除してください。`);
+                    }
                     return true;
                     break;
 
