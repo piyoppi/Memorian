@@ -99,6 +99,7 @@ export default {
             this.find(query, 0, getDataAmount);
         },
         isNeedPaginate: function(){
+            //console.log(`${document.documentElement.clientHeight} ${window.innerHeight} ${window.scrollY}`);
             return ((document.documentElement.clientHeight - window.innerHeight - window.scrollY) < 10);
         },
         find: function(query, offset, length){
@@ -117,6 +118,7 @@ export default {
         },
         removedItem: function(item, index){
             this.bookmarkList.splice(index, 1);
+            setTimeout( ()=>{if( this.isNeedPaginate() ) this.paginate();}, 100 );
         },
         insertedBookmark: function(){
             this.isStopScroll = false;

@@ -79,6 +79,7 @@ chrome.runtime.onMessage.addListener(
                     break;
 
                 case "insertBookmarks":
+                    console.log("insertedBookmark");
                     try {
                         bStore.insertBookmarks(request.data).then( e => {
                             let errorMessage = "";
