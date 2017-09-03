@@ -78,6 +78,7 @@ export default {
             getBmark.attachTag(this.bookmarkItem.id, tag.tagName, e=>{
                 if( !tag || !e ) return;
                 this.bookmarkItem.tags.push(tag);
+                this.tagInput = "";
                 this.$emit('tagAttached', tag);
             });
         },
