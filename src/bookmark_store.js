@@ -44,7 +44,7 @@ export default class bookmarkStore{
 
     validateTagData(data, isAdd = true){
         if( data.tagName.length > this._TAG_STRMAX){
-            return {result: false, cause: "InvalidStrLenError", code: 1}
+            return {result: false, cause: "InvalidStrLenError", code: 3}
         }
         if( isAdd ){
             let chkIsFillTagDatabase = this.checkIsFillTagDatabase();
@@ -56,10 +56,10 @@ export default class bookmarkStore{
         let compCount = (this.tagCount + addCount);
         if( compCount > this._TAG_MAX_ITEMS){
             if( isThrow ) {
-                throw {result: false, cause: "DatabaseFullError", diff: compCount - this._TAG_MAX_ITEMS, code: 2}
+                throw {result: false, cause: "DatabaseFullError", diff: compCount - this._TAG_MAX_ITEMS, code: 4}
             }
             else{
-                return {result: false, cause: "DatabaseFullError", diff: compCount - this._TAG_MAX_ITEMS, code: 2}
+                return {result: false, cause: "DatabaseFullError", diff: compCount - this._TAG_MAX_ITEMS, code: 4}
             }
         }
         return {result: true, cause: "", code: 0}
@@ -592,18 +592,27 @@ export default class bookmarkStore{
         if( !tags || tags.length == 0 ) return Promise.resolve({});
         return new Promise( (resolve, reject) => {
             let correspondedTags = {};
+            let missingTags = [];
             let cntProc = 0;
+
+            let chkFinishProc = () => {
+                if( ++cntProc == tags.length ) resolve({ correspondedTags: correspondedTags, missingTags: missingTags});
+            }
 
             tags.forEach( tag => {
                 this.getTag(tag.tagName).then(registeredTag => {
                     if( registeredTag ){
                         correspondedTags[tag.id] = {old: tag, tag: registeredTag};
-                        if( ++cntProc == tags.length ) resolve(correspondedTags);
+                        chkFinishProc();
                     }
                     else{
                         this.addTag(tag.tagName).then( addTag => {
                             correspondedTags[tag.id] = {old: tag, tag: addTag}
-                            if( ++cntProc == tags.length ) resolve(correspondedTags);
+                            chkFinishProc();
+                        })
+                        .catch( e=>{
+                            missingTags.push(tag.tagName);
+                            chkFinishProc();
                         });
                     }
                 });
@@ -657,18 +666,25 @@ export default class bookmarkStore{
         let correspondedTags = null;
 
         this.checkIsFillBookmarkDatabase(data.bookmark.length, true);
+        this.checkIsFillTagDatabase(data.tag.length, true);
 
-        return this.insertTags(data.tag).then( tagInfos => { correspondedTags = tagInfos; return Promise.resolve() } )
+        return this.insertTags(data.tag).then( tagInfos => {
+            correspondedTags = tagInfos.correspondedTags;
+            return Promise.resolve(tagInfos);
+        } )
         .then( e => new Promise((resolve, reject) => {
+            let missingTags = e.missingTags;
             let missingData = [];
             let cntProc = 0;
+            let chkFinishProc = () => {
+                if( ++cntProc == data.bookmark.length ){
+                    this._incrementDataVersion(); return resolve({missingDatas: missingData, missingTags: missingTags})
+                }
+            }
+
             data.bookmark.forEach( bookmark => {
                 this.getDuplicateBookmark(bookmark).then( dupBookmark => {
                     if( dupBookmark ){
-                        //if(JSON.stringify(bookmark) == JSON.stringify(dupBookmark)){
-                        //}
-                        //else{
-                        //}
                         return Promise.reject(bookmark);
                     }
                     else{
@@ -696,10 +712,9 @@ export default class bookmarkStore{
                     }
                 }))
                 .then( setBookmark => this.replaceTagID(setBookmark, correspondedTags) )
-                .catch(e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve({missing: missingData}) }})
-                .then( e => {if( ++cntProc == data.bookmark.length ){ this._incrementDataVersion(); return resolve({missing: missingData}) }});
+                .catch(e => chkFinishProc())
+                .then( e => chkFinishProc());
             });
         }))
-        .then( e => Promise.resolve({ missing: e.missing }) );
     }
 }

@@ -81,17 +81,21 @@ chrome.runtime.onMessage.addListener(
                 case "insertBookmarks":
                     try {
                         bStore.insertBookmarks(request.data).then( e => {
-                            console.log(e);
-                            if( e.missing.length > 0 ){
-                                alert(`${e.missing.length}個のアイテムの登録に失敗しました。データが不正な可能性があります。`);
+                            let errorMessage = "";
+                            if( e.missingDatas.length > 0 ){
+                                errorMessage += `${e.missingDatas.length}個のアイテムの登録に失敗しました。データが不正な可能性があります。`;
                             }
+                            if( e.missingTags.length > 0 ){
+                                errorMessage += `${e.missingTags.length}個のタグの登録に失敗しました。データが不正な可能性があります。`;
+                            }
+                            if( errorMessage !== "" ) alert( errorMessage );
                             sendEvent({key: "insertedBookmarks"});
                             sendResponse({data: e});
                         } )
                     }
                     catch(e){
-                        console.log("3err");
-                        if( e.diff ) alert(`アイテム最大数を超えるため追加に失敗しました。${e.diff}個のアイテムを削除してください。`);
+                        if( e.diff && e.code && e.code == 2 ) alert(`アイテム最大数を超えるため追加に失敗しました。${e.diff}個のアイテムを削除してください。`);
+                        if( e.diff && e.code && e.code == 4 ) alert(`タグ最大数を超えるため追加に失敗しました。${e.diff}個のタグを削除してください。`);
                     }
                     return true;
                     break;
@@ -103,8 +107,8 @@ chrome.runtime.onMessage.addListener(
                     .catch(e=>{
                         if( e.code ){
                             switch(e.code){
-                                case 1: alert("タグの文字列が長すぎます"); break;
-                                case 2: alert("タグ数の最大値を超えたためタグの追加に失敗しました。タグを削除してください。"); break;
+                                case 3: alert("タグの文字列が長すぎます"); break;
+                                case 4: alert("タグ数の最大値を超えたためタグの追加に失敗しました。タグを削除してください。"); break;
                             }
                         }
                         sendResponse({data: null});
