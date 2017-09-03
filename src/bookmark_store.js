@@ -709,8 +709,8 @@ export default class bookmarkStore{
                     }
                 }))
                 .then( setBookmark => this.replaceTagID(setBookmark, correspondedTags) )
-                .catch(e => chkFinishProc())
-                .then( e => chkFinishProc());
+                .then( e => chkFinishProc())
+                .catch(e => chkFinishProc());
             });
         }))
     }
