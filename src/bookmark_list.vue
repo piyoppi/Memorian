@@ -99,8 +99,7 @@ export default {
             this.find(query, 0, getDataAmount);
         },
         isNeedPaginate: function(){
-            //console.log(`${document.documentElement.clientHeight} ${window.innerHeight} ${window.scrollY}`);
-            return ((document.documentElement.clientHeight - window.innerHeight - window.scrollY) < 10);
+            return ((document.documentElement.clientHeight - window.innerHeight - window.scrollY) < 10) && !this.isStopScroll;
         },
         find: function(query, offset, length){
             if( this.isFinding ) return;

@@ -14,9 +14,11 @@ export default class bookmarkIO{
             let elemInput = document.createElement("input");
             elemInput.type = "file";
             elemInput.onchange = (e) => {
+                console.log("inputchanged");
                 if( elemInput.files.length < 1 ) throw "LoadFileError";
                 let reader = new FileReader();
                 reader.onload = (evt) => {
+                    console.log("load_end");
                     let dataJSON = evt.target.result;
                     resolve(JSON.parse(dataJSON));
                 };
