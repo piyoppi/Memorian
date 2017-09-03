@@ -101,6 +101,12 @@ chrome.runtime.onMessage.addListener(
                         sendResponse({data: e});
                     })
                     .catch(e=>{
+                        if( e.code ){
+                            switch(e.code){
+                                case 1: alert("タグの文字列が長すぎます"); break;
+                                case 2: alert("タグ数の最大値を超えたためタグの追加に失敗しました。タグを削除してください。"); break;
+                            }
+                        }
                         sendResponse({data: null});
                     });
                     return true;

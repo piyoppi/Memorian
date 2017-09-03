@@ -14,9 +14,11 @@ export default class bookmarkStore{
 
         this._STRMAX_LEN = 1500;
         this._MAX_ITEMS = 15;
+        this._TAG_STRMAX= 15;
+        this._TAG_MAX_ITEMS = 15;
 
         this.bookmarkCount = 0;
-
+        this.tagCount = 0;
         this.InitializeDatabase();
     }
 
@@ -40,8 +42,31 @@ export default class bookmarkStore{
         });
     }
 
+    validateTagData(data, isAdd = true){
+        if( data.tagName.length > this._TAG_STRMAX){
+            return {result: false, cause: "InvalidStrLenError", code: 1}
+        }
+        if( isAdd ){
+            let chkIsFillTagDatabase = this.checkIsFillTagDatabase();
+            if( !chkIsFillTagDatabase.result ) return chkIsFillTagDatabase;
+        }
+        return {result: true, cause: "", code: 0}
+    }
+    checkIsFillTagDatabase( addCount = 0, isThrow = false ){
+        let compCount = (this.tagCount + addCount);
+        if( compCount > this._TAG_MAX_ITEMS){
+            if( isThrow ) {
+                throw {result: false, cause: "DatabaseFullError", diff: compCount - this._TAG_MAX_ITEMS, code: 2}
+            }
+            else{
+                return {result: false, cause: "DatabaseFullError", diff: compCount - this._TAG_MAX_ITEMS, code: 2}
+            }
+        }
+        return {result: true, cause: "", code: 0}
+    }
+
+
     validateBookmarkData(data, isAdd = true){
-        console.log(`${this.bookmarkCount} -- chk`);
         if( data.text_for_finding.length > this._STRMAX_LEN ){
             return {result: false, cause: "InvalidStrLenError", code: 1}
         }
@@ -73,11 +98,18 @@ export default class bookmarkStore{
         };
     }
 
+    getTagCount(){
+        this._db.transaction(["tags"], "readwrite").objectStore("tags").count().onsuccess = (e)=>{
+            this.tagCount = e.target.result;
+        };
+    }
+
     InitializeDatabase(){
         var request = window.indexedDB.open("Bookmarkers", this.DB_VERSION);
         request.onsuccess = (e) => {
             this._db = e.target.result;
             this.getBookmarkCount();
+            this.getTagCount();
             this.getKeyList().then();
         }
         request.onerror = () => {};
@@ -123,6 +155,7 @@ export default class bookmarkStore{
         let transaction = this._db.transaction(["tags"], "readwrite");
         let objectStore = transaction.objectStore("tags");
         objectStore.delete(tagKey);
+        this.tagCount--;
     }
 
     detachTagFromAllBookmark(tagKey){
@@ -269,11 +302,20 @@ export default class bookmarkStore{
                 tagName: tagName,
                 contentIDs: []
             };
-            let transaction = this._db.transaction(["tags"], "readwrite");
-            let objectStore = transaction.objectStore("tags");
-            let request = objectStore.add(addData);
-            request.onsuccess = e => this.getTag(tagName).then( e => resolve(e) );
-            request.onerror = e => reject(e);
+            let isValid = this.validateTagData(addData);
+            if( isValid.result ){
+                let transaction = this._db.transaction(["tags"], "readwrite");
+                let objectStore = transaction.objectStore("tags");
+                let request = objectStore.add(addData);
+                request.onsuccess = e => {
+                    this.tagCount++;
+                    return this.getTag(tagName).then( e => resolve(e) );
+                };
+                request.onerror = e => reject(e);
+            }
+            else{
+                reject(isValid);
+            }
         });
     }
 
