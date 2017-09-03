@@ -46,7 +46,6 @@ export default {
             switch( request.key ){
                 case "getUpdatedByBookmarkPopup":
                 case "getAddBookmark":
-                    console.log("getUpdatedByBookmarkPopup");
                     location.reload();
                     break;
             }

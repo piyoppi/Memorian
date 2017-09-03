@@ -35,7 +35,6 @@ export default class bookmarkStore{
                 }
                 else{
                     this.__keyList.sort( (a, b)=>b-a );
-                    console.log( this.__keyList );
                     resolve(this.__keyList);
                 }
             }
@@ -502,7 +501,6 @@ export default class bookmarkStore{
                 let arrTextforFinding = updateData.text_for_finding.split("\n");
                 arrTextforFinding.splice(index, 1);
                 updateData.text_for_finding = arrTextforFinding.join("\n");
-                console.log(updateData.text_for_finding);
 
                 let requestUpdate = objectStore.put(updateData);
                 requestUpdate.onerror = e => { throw "Update was failed" };
@@ -707,7 +705,6 @@ export default class bookmarkStore{
                     }
                     else{
                         missingData.push({item: setBookmark, error: e});
-                        console.log(missingData);
                         reject2(e);
                     }
                 }))

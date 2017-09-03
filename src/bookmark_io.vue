@@ -39,7 +39,6 @@ export default {
         chrome.storage.onChanged.addListener((changes, namespace) => {
             if( namespace !== "local") return;
             if( changes.version ) this.currentVersion = changes.version;
-            console.log(changes);
         });
         
         try{
