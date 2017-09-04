@@ -18,6 +18,11 @@
         width: 20px;
         height: 20px;
     }
+    .info{
+        background-image: url('../img/hatena.png');
+        width: 20px;
+        height: 20px;
+    }
     .tools{
         position: fixed;
         bottom: 0;
@@ -31,6 +36,7 @@
     <div>
         <bookmark-list-component id="bmarklist" @updatedBookmark="updatedBookmark"></bookmark-list-component>
         <div class="tools">
+            <button class="info" v-on:click="showInformation"></button>
             <button class="tab_open" v-on:click="showBookmarks"></button>
             <bookmark-iobutton-component class="bmark-io"></bookmark-iobutton-component>
         </div>
@@ -55,6 +61,9 @@ export default {
     methods: {
         showBookmarks: function(){
             chrome.runtime.sendMessage({id: "showBookmarks"}, e=>{}); 
+        },
+        showInformation: function(){
+            chrome.runtime.sendMessage({id: "showInformation"}, e=>{}); 
         },
         keyCheck: function(e){
             switch(e.keyCode){

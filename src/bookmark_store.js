@@ -574,6 +574,7 @@ export default class bookmarkStore{
                 this.getBookmarks(0, this.bookmarkCount).then( (data)=>{
                     this.__allDatas = { version: this._dataVersion, data: data };
                     resolve( data );
+                    console.log("getall");
                 });
             }
             else{

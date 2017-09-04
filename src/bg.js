@@ -149,6 +149,10 @@ chrome.runtime.onMessage.addListener(
                     chrome.tabs.create({"url": "html/bg.html" });
                     break;
 
+                case "showInformation":
+                    chrome.tabs.create({"url": "html/info.html" });
+                    break;
+
                 default:
                     sendResponse("none");
                     break;

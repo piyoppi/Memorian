@@ -16,11 +16,17 @@
         width: 20px;
         height: 20px;
     }
+    .info{
+        background-image: url('../img/hatena.png');
+        width: 20px;
+        height: 20px;
+    }
 </style>
 
 <template>
     <div>
         <bookmark-iobutton-component></bookmark-iobutton-component>
+        <button class="info" v-on:click="showInformation"></button>
         <bookmark-list-component id="bmarklist" @linkClick="linkClick" show_type="page"></bookmark-list-component>
     </div>
 </template>
@@ -58,6 +64,9 @@ export default {
     methods: {
         linkClick: function(item, tag){
             jumpLink.Jump(item, tag);
+        },
+        showInformation: function(){
+            chrome.runtime.sendMessage({id: "showInformation"}, e=>{}); 
         },
     }
 }
