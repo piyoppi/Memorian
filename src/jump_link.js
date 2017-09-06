@@ -33,7 +33,8 @@ export default class JumpLink{
     _JumpElement(taginfo, item, cntRetryCount = 0, jumpLocation = window.location.href){
         if( !(this._JumpElementById(taginfo, item) || this._JumpElementByText(taginfo, item)) ){
             if( (++cntRetryCount < 10) && (jumpLocation === window.location.href) ){
-                setTimeout( ()=>{ this._JumpElement(taginfo, cntRetryCount, jumpLocation) }, 800 );                 
+                setTimeout( ()=>{ this._JumpElement(taginfo, item, cntRetryCount, jumpLocation) }, 1000 );
+                console.log('Retry jump...');
             }
         }
     }
