@@ -5,8 +5,7 @@
     "content_scripts": [
         {
             "matches": [ "http://*/*", "https://*/*" ],
-            "js": ["js/script.bundle.js"],
-            "css": ["css/style.css"]
+            "js": ["js/script.bundle.js"]
         }
     ],
     "icons": {
